@@ -1,7 +1,7 @@
 function jsonEditorSidebar() {
   return SpreadsheetApp.getUi().showSidebar(
     HtmlService
-    .createHtmlOutputFromFile('views/JSONEditor')
+    .createHtmlOutputFromFile('JSONEditor')
     .setTitle('JSON Editor'),
   );
 }

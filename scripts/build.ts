@@ -20,7 +20,7 @@ import { pathExists, copy, outputFile, remove } from 'fs-extra';
   // copy
   for (const item of copies) {
     const src = resolve(item);
-    const dest = resolve(DEPLOY, item.replace('src/', ''));
+    const dest = resolve(DEPLOY, item.replace('src/views', ''));
     if (!! await pathExists(src)) {
       await copy(src, dest);
     }
