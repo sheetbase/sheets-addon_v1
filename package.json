@@ -1,48 +1,41 @@
 {
-    "name": "@sheetbase/sheets-addon",
-    "version": "0.0.1",
-    "description": "A Sheetbase add-on for Google Sheets.",
-    "author": "Sheetbase",
-    "homepage": "https://sheetbase.dev",
-    "license": "MIT",
-    "private": true,
-    "scripts": {
-        "addon": "sheetbase-app-scripts build",
-        "docs": "sheetbase-app-scripts docs",
-        "build": "npm run addon && npm run docs",
-        "push": "cd deploy && clasp push",
-        "lint": "tslint --project tslint.json && echo 'All files pass linting.'",
-        "test": "tsc -p tests/tsconfig.test.json && nyc --cache false mocha --timeout 100000 build/tests/*.js"
-    },
-    "nyc": {
-        "exclude": [
-            "**/tests"
-        ]
-    },
-    "keywords": [
-        "sheetbase",
-        "google-apps-script",
-        "google-sheets",
-        "addon"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/sheetbase/sheets-addon.git"
-    },
-    "bugs": {
-        "url": "https://github.com/sheetbase/sheets-addon/issues"
-    },
-    "dependencies": {},
-    "devDependencies": {
-        "@sheetbase/app-scripts": "^1.2.0",
-        "@types/chai": "^4.2.0",
-        "@types/google-apps-script": "^0.0.56",
-        "@types/mocha": "^5.2.7",
-        "@types/node": "^12.7.2",
-        "chai": "^4.2.0",
-        "mocha": "^6.2.0",
-        "nyc": "^14.1.1",
-        "tslint": "^5.18.0",
-        "typescript": "^3.5.3"
-    }
+   "name": "@sheetbase/sheets-addon",
+   "version": "0.0.1",
+   "description": "A Sheetbase add-on for Google Sheets.",
+   "author": "Sheetbase",
+   "homepage": "https://sheetbase.dev",
+   "license": "MIT",
+   "private": true,
+   "scripts": {
+      "build": "tsc --skipLibCheck -m commonjs ./scripts/build.ts && node ./scripts/build.js",
+      "push": "cd deploy && clasp push",
+      "lint": "tslint --project tslint.json && echo 'All files pass linting.'"
+   },
+   "nyc": {
+      "exclude": [
+         "**/tests"
+      ]
+   },
+   "keywords": [
+      "sheetbase",
+      "google-apps-script",
+      "google-sheets",
+      "addon"
+   ],
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/sheetbase/sheets-addon.git"
+   },
+   "bugs": {
+      "url": "https://github.com/sheetbase/sheets-addon/issues"
+   },
+   "dependencies": {},
+   "devDependencies": {
+      "@types/fs-extra": "^8.0.0",
+      "@types/google-apps-script": "^0.0.56",
+      "@types/node": "^12.7.2",
+      "fs-extra": "^8.1.0",
+      "tslint": "^5.18.0",
+      "typescript": "^3.5.3"
+   }
 }

@@ -1,11 +1,16 @@
 {
-  "extends": "./node_modules/@sheetbase/app-scripts/config/tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist/esm3",
-    "declaration": true,
-    "declarationDir": "./dist",
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "module": "none",
+    "outDir": "./deploy",
+    "skipLibCheck": true,
+    "lib": [
+      "es2015"
+    ]
   },
   "files": [
-    "./src/public_api.ts"
+    "./src/addon.ts",
+    "./src/index.ts"
   ]
 }

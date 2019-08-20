@@ -1,9 +1,9 @@
-export function displayError(message: string, title = 'Oops, something wrong!') {
+function displayError(message: string, title = 'Oops, something wrong!') {
   const ui = SpreadsheetApp.getUi();
   return ui.alert(title, message, ui.ButtonSet.OK);
 }
 
-export function getData(
+function getData(
   spreadsheetId?: string,
   rangeA1?: string,
   noHeaders = false,
@@ -18,7 +18,7 @@ export function getData(
   return !!raw ? data : transformValue(data, noHeaders);
 }
 
-export function setData(
+function setData(
   data: any,
   spreadsheetId?: string,
   rangeA1?: string, // set: Sheet1!A:A | append: Sheet1
@@ -58,7 +58,7 @@ export function setData(
     range.setValue(data) : range.setValues(data);
 }
 
-export function transformValue(values: any[], noHeaders = false) {
+function transformValue(values: any[], noHeaders = false) {
   const items = [];
   // header
   let headers = ['value'];
@@ -108,7 +108,7 @@ export function transformValue(values: any[], noHeaders = false) {
   return items;
 }
 
-export function getDoc(docId: string, withStyle = false) {
+function getDoc(docId: string, withStyle = false) {
   DriveApp.getStorageUsed(); // trigger drive scope
   const url = 'https://www.googleapis.com/drive/v3/files/' + docId + '/export?mimeType=text/html';
   // send request
