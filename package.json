@@ -7,9 +7,9 @@
     "license": "MIT",
     "private": true,
     "scripts": {
-        "module": "sheetbase-app-scripts build --module",
+        "addon": "sheetbase-app-scripts build",
         "docs": "sheetbase-app-scripts docs",
-        "build": "npm run module && npm run docs",
+        "build": "npm run addon && npm run docs",
         "push": "cd deploy && clasp push",
         "lint": "tslint --project tslint.json && echo 'All files pass linting.'",
         "test": "tsc -p tests/tsconfig.test.json && nyc --cache false mocha --timeout 100000 build/tests/*.js"
