@@ -6,7 +6,7 @@ import { pathExists, copy, outputFile, remove } from 'fs-extra';
 
   const DEPLOY = resolve('deploy');
   const copies = [
-    'src/views',
+    'src/tools',
     '.clasp.json',
     'appsscript.json',
   ];
@@ -20,7 +20,7 @@ import { pathExists, copy, outputFile, remove } from 'fs-extra';
   // copy
   for (const item of copies) {
     const src = resolve(item);
-    const dest = resolve(DEPLOY, item.replace('src/views', ''));
+    const dest = resolve(DEPLOY, item.replace('src/tools', ''));
     if (!! await pathExists(src)) {
       await copy(src, dest);
     }

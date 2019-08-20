@@ -1,6 +1,6 @@
 {
    "name": "@sheetbase/sheets-addon",
-   "version": "0.0.1",
+   "version": "1.0.0",
    "description": "A Sheetbase add-on for Google Sheets.",
    "author": "Sheetbase",
    "homepage": "https://sheetbase.dev",

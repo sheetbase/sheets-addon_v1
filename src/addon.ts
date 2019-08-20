@@ -7,7 +7,7 @@ function getData(
   spreadsheetId?: string,
   rangeA1?: string,
   noHeaders = false,
-  raw = false,
+  raw = true,
 ) {
   const spreadsheet = !!spreadsheetId ?
     SpreadsheetApp.openById(spreadsheetId) : SpreadsheetApp.getActiveSpreadsheet();
