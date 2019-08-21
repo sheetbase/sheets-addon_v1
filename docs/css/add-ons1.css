@@ -22,6 +22,11 @@ NOTE:
 This is a modified version of the original package: https://ssl.gstatic.com/docs/script/css/add-ons1.css
 
 + Remove button collision rules
++ table -> .table
++ input, label -> .input, .label
++ select -> .select
++ textarea -> .textarea
++ fieldset, legend -> .fieldset, .legend
 
 */
 
@@ -128,28 +133,28 @@ a:hover {
 
 /* TABLES */
 
-table {
+.table {
   border-spacing: 0;
 }
 
-th {
+.table th {
   border-bottom: 1px solid #acacac;
   font-weight: normal;
   padding: 2px 0 11px 0;
   text-align: left;
 }
 
-td {
+.table td {
   border-bottom: 1px solid #ebebeb;
   padding: 11px 0;
 }
 
-tr:last-child > td, tr:last-child > th {
+.table tr:last-child > td, .table tr:last-child > th {
   border-bottom: 0;
 }
 
-table.layout th,
-table.layout td {
+.table.layout th,
+.table.layout td {
   border: 0;
   padding: 0;
   vertical-align: top;
@@ -501,7 +506,7 @@ input + input */
 
 /* CHECKBOXES */
 
-input[type="checkbox"] {
+.input[type="checkbox"] {
   -webkit-appearance: none;
   background: #fff;
   border: 1px solid #c6c6c6;
@@ -517,22 +522,22 @@ input[type="checkbox"] {
   width: 13px;
 }
 
-input[type="checkbox"]:hover {
+.input[type="checkbox"]:hover {
   border: 1px solid #b2b2b2;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
 }
 
-input[type="checkbox"]:active {
+.input[type="checkbox"]:active {
   background-color: #ebebeb;
   border: 1px solid #c6c6c6;
 }
 
-input[type="checkbox"]:focus {
+.input[type="checkbox"]:focus {
   border: 1px solid #4d90fe;
 }
 
-input[type="checkbox"]:checked:after {
+.input[type="checkbox"]:checked:after {
   background: url(https://ssl.gstatic.com/ui/v1/menu/checkmark_2x.png) no-repeat 0 0 / 21px;
   content: '';
   display: block;
@@ -543,7 +548,7 @@ input[type="checkbox"]:checked:after {
   width: 21px;
 }
 
-input[type="checkbox"]:disabled {
+.input[type="checkbox"]:disabled {
   background-color: #fff;
   border: 1px solid #e1e1e1;
   -webkit-box-shadow: none;
@@ -553,7 +558,7 @@ input[type="checkbox"]:disabled {
 
 /* RADIO BUTTONS */
 
-input[type="radio"] {
+.input[type="radio"] {
   -webkit-appearance: none;
   background: #fff;
   border: 1px solid #c6c6c6;
@@ -570,25 +575,25 @@ input[type="radio"] {
   width: 15px;
 }
 
-input[type="radio"]:hover {
+.input[type="radio"]:hover {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
 }
 
-input[type="radio"]:active {
+.input[type="radio"]:active {
   background: #ebebeb;
   border: 1px solid #c6c6c6;
 }
 
-input[type="radio"]:focus {
+.input[type="radio"]:focus {
   border: 1px solid #4d90fe;
 }
 
-input[type="radio"]:checked {
+.input[type="radio"]:checked {
   background: #fff;
 }
 
-input[type="radio"]:checked:after {
+.input[type="radio"]:checked:after {
   background: #606060;
   -webkit-border-radius: 50%;
   border-radius: 50%;
@@ -601,7 +606,7 @@ input[type="radio"]:checked:after {
   width: 7px;
 }
 
-input[type="radio"]:disabled {
+.input[type="radio"]:disabled {
   background-color: #fff;
   border: 1px solid #e1e1e1;
   -webkit-box-shadow: none;
@@ -609,13 +614,13 @@ input[type="radio"]:disabled {
   opacity: .5;
 }
 
-input:disabled + label {
+.input:disabled + .label {
   color: #afafaf;
 }
 
 /* SELECTS */
 
-select {
+.select {
   -moz-appearance: none;
   -webkit-appearance: none;
   background: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
@@ -646,11 +651,11 @@ select {
   white-space: nowrap;
 }
 
-select:-ms-expand {
-    display: none;
+.select:-ms-expand {
+  display: none;
 }
 
-select:hover {
+.select:hover {
   background-image: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
   background-image: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -ms-linear-gradient(top, #f8f8f8, #f1f1f1);
   background-image: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -o-linear-gradient(top, #f8f8f8, #f1f1f1);
@@ -660,11 +665,11 @@ select:hover {
   color: #111;
 }
 
-select:focus {
+.select:focus {
   border: 1px solid #4d90fe;
 }
 
-select:disabled {
+.select:disabled {
   background-image: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png);
   border: 1px solid #dcdcdc;
   color: #333;
@@ -673,38 +678,38 @@ select:disabled {
 
 /* OTHER FORM ELEMENTS */
 
-.form-group label + input,
-.form-group label + select,
-.form-group label + textarea {
+.form-group .label + .input,
+.form-group .label + .select,
+.form-group .label + .textarea {
   display: block;
 }
 
-fieldset {
+.fieldset {
   border: 1px solid #ebebeb;
   margin: 0;
 }
 
-legend {
+.legend {
   font-weight: bold;
   padding: 8px;
 }
 
-input[type="date"],
-input[type="datetime"],
-input[type="datetime-local"],
-input[type="email"],
-input[type="month"],
-input[type="number"],
-input[type="password"],
-input[type="search"],
-input[type="tel"],
-input[type="text"],
-input[type="time"],
-input[type="url"],
-input[type="week"],
-select[multiple],
-select[size],
-textarea {
+.input[type="date"],
+.input[type="datetime"],
+.input[type="datetime-local"],
+.input[type="email"],
+.input[type="month"],
+.input[type="number"],
+.input[type="password"],
+.input[type="search"],
+.input[type="tel"],
+.input[type="text"],
+.input[type="time"],
+.input[type="url"],
+.input[type="week"],
+.select[multiple],
+.select[size],
+.textarea {
   background: #fff;
   border: 1px solid #d9d9d9;
   -moz-border-radius: 1px;
@@ -723,56 +728,56 @@ textarea {
   padding: 4px;
 }
 
-input[type="date"],
-input[type="datetime"],
-input[type="datetime-local"],
-input[type="email"],
-input[type="month"],
-input[type="number"],
-input[type="password"],
-input[type="search"],
-input[type="tel"],
-input[type="text"],
-input[type="time"],
-input[type="url"],
-input[type="week"] {
+.input[type="date"],
+.input[type="datetime"],
+.input[type="datetime-local"],
+.input[type="email"],
+.input[type="month"],
+.input[type="number"],
+.input[type="password"],
+.input[type="search"],
+.input[type="tel"],
+.input[type="text"],
+.input[type="time"],
+.input[type="url"],
+.input[type="week"] {
   height: 25px;
 }
 
-input[type="date"]:focus,
-input[type="datetime"]:focus,
-input[type="datetime-local"]:focus,
-input[type="email"]:focus,
-input[type="month"]:focus,
-input[type="number"]:focus,
-input[type="password"]:focus,
-input[type="search"]:focus,
-input[type="tel"]:focus,
-input[type="text"]:focus,
-input[type="time"]:focus,
-input[type="url"]:focus,
-input[type="week"]:focus,
-select[multiple]:focus,
-select[size]:focus,
-textarea:focus {
+.input[type="date"]:focus,
+.input[type="datetime"]:focus,
+.input[type="datetime-local"]:focus,
+.input[type="email"]:focus,
+.input[type="month"]:focus,
+.input[type="number"]:focus,
+.input[type="password"]:focus,
+.input[type="search"]:focus,
+.input[type="tel"]:focus,
+.input[type="text"]:focus,
+.input[type="time"]:focus,
+.input[type="url"]:focus,
+.input[type="week"]:focus,
+.select[multiple]:focus,
+.select[size]:focus,
+.textarea:focus {
   border: 1px solid #4d90fe;
   -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
   -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
 }
 
-select[multiple],
-select[size] {
+.select[multiple],
+.select[size] {
   height: auto;
   padding: 0;
 }
 
-select[multiple]:disabled
-select[size]:disabled {
+.select[multiple]:disabled
+.select[size]:disabled {
   background: #fff;
   opacity: 1;
 }
 
-textarea {
+.textarea {
   resize: vertical;
 }

@@ -21,47 +21,45 @@
 
 <body>
 
-  <div class="container" id="vue">
+  <main class="container">
 
-    <div class="editor">
+    <textarea id="tinymce"></textarea>
 
-      <textarea id="tinymce"></textarea>
+    <section id="vue">
 
-      <div class="margin-top">
+      <div class="editor margin-top">  
         <button class="button" v-on:click="getHTML">Get &rarr;</button>    
         <button class="button" v-on:click="clearHTML">Clear</button>
         <button class="button action right" v-on:click="setHTML">&larr; Set</button>
+
       </div>
-
-    </div>
-
-    <fieldset class="loader margin-top">
-
-      <legend>Load content from Google Docs:</legend>
-
-      <div class="body">
   
-        <div class="inputs">
+      <fieldset class="loader margin-top">  
+        <legend>Load content from Google Docs:</legend>
+        <div class="body">
+    
+          <div class="inputs">
+    
+            <input class="input" type="text" placeholder="A document id ..." v-model="docId">
   
-          <input type="text" placeholder="A document id ..." v-model="docId">
+            <div class="meta">
+              <input class="input" type="checkbox" id="doc-style" v-model="docStyle">
+              <label class="label" for="doc-style">Included style</label>
+            </div>  
+    
+          </div>
+    
+          <div class="margin-top">
+            <button class="button action" v-on:click="loadDocContent">Load</button>
+            <button class="button right" :disabled="!docId" v-on:click="viewDoc">View</button>
+          </div>
+    
+        </div>  
+      </fieldset>
 
-          <div class="meta">
-            <input type="checkbox" id="doc-style" v-model="docStyle">
-            <label for="doc-style">Included style</label>
-          </div>  
-  
-        </div>
-  
-        <div class="margin-top">
-          <button class="button action" v-on:click="loadDocContent">Load</button>
-          <button class="button right" :disabled="!docId" v-on:click="viewDoc">View</button>
-        </div>
-  
-      </div>
+    </section>
 
-    </fieldset>
-
-  </div>
+  </main>
 
   <!-- Vue -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
