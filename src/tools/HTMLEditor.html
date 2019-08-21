@@ -16,11 +16,9 @@
 
     <div class="editor">
 
-      <div class="form-group">
-        <textarea id="tinymce"></textarea>
-      </div>
+      <textarea id="tinymce"></textarea>
 
-      <div class="buttons">
+      <div class="margin-top">
         <button class="button" v-on:click="getHTML">Get &rarr;</button>    
         <button class="button" v-on:click="clearHTML">Clear</button>
         <button class="button action right" v-on:click="setHTML">&larr; Set</button>
@@ -28,28 +26,31 @@
 
     </div>
 
-    <div class="loader">
+    <fieldset class="loader margin-top">
 
-      <div class="inputs">
+      <legend>Load content from Google Docs:</legend>
 
-        <div class="input">
-          <label for="docid">Load content from Google Docs:</label>
-          <input id="docid" type="text" placeholder="Enter doc id ..." v-model="docId">
+      <div class="body">
+  
+        <div class="inputs">
+  
+          <input type="text" placeholder="A document id ..." v-model="docId">
+
+          <div class="doc-style">
+            <input type="checkbox" id="doc-style" v-model="docStyle">
+            <label for="doc-style">Included style</label>
+          </div>  
+  
         </div>
-
-        <div class="form-group">
-          <input type="checkbox" id="docstyle" v-model="docStyle">
-          <label for="docstyle">Included style</label>
+  
+        <div class="margin-top">
+          <button class="button action" v-on:click="loadDocContent">Load</button>
+          <button class="button right" v-if="!!docId" v-on:click="viewDoc">View</button>
         </div>
-
+  
       </div>
 
-      <div class="buttons">
-        <button class="button action" v-on:click="loadFromDocs">Load</button>
-        <button class="button right" v-if="docId" v-on:click="viewDoc">View</button>
-      </div>
-
-    </div>
+    </fieldset>
 
   </div>
 
@@ -108,7 +109,8 @@
   <script>
 
     // init editor
-    // full featured (free plugin): https://www.tiny.cloud/docs/demo/full-featured/
+    // full featured (with free plugin)
+    // https://www.tiny.cloud/docs/demo/full-featured/
     tinymce.init({
       selector: 'textarea#tinymce',
       base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14',
@@ -123,8 +125,7 @@
       menubar: 'file edit view insert format tools table tc help',
       // toolbar
       toolbar_drawer: 'sliding',
-      toolbar1: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment',
-      toolbar2: 'code paste spellchecker', // included plugins
+      toolbar1: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment' + ' | code paste spellchecker',
       quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
     });
 
@@ -142,26 +143,25 @@
           return google.script.run.withFailureHandler(this.errorAlert).displayError(msg, title);
         },
 
-        getId: function () {
+        /*
+         * loader
+         */
+
+        getDocId: function () {
           var _this = this;
           return google.script.run
           .withSuccessHandler(function (docId) {
-            _this.docId = docId;
-            return _this.loadFromDocs();
+            return _this.docId = docId;
           })
           .withFailureHandler(this.errorAlert)
           .getData();
         },
 
-        clearHTML: function () {
-          return tinymce.activeEditor.setContent('');
-        },
-
-        loadFromDocs: function () {
+        loadDocContent: function () {
           var _this = this;
-          if (!this.docId) {
-            return this.errorAlert('Please, enter a valid Google Docs Id.', null, 'Invalid input!');
-          }
+          // try to load from the active cell
+          if (!this.docId) { _this.getDocId() }
+          // load content
           return google.script.run
           .withSuccessHandler(function (html) {
             if(!html) {
@@ -171,6 +171,18 @@
           })
           .withFailureHandler(this.errorAlert)
           .getDoc(this.docId, this.docStyle);
+        },
+        
+        viewDoc: function() {
+          return window.open('https://docs.google.com/document/d/'+ this.docId +'/view');
+        },
+        
+        /*
+         * editor
+         */
+
+        clearHTML: function () {
+          return tinymce.activeEditor.setContent('');
         },
 
         getHTML: function () {
@@ -183,15 +195,14 @@
         },
 
         setHTML: function () {
-          var html = tinymce.activeEditor.getContent({format: 'html'});
-          html = html.replace(/\\n/g,'').replace(/\n/g,'').replace('<!DOCTYPE html><html><head></head><body>','').replace('</body></html>','');
+          var html = tinymce.activeEditor.getContent({ format: 'html' })
+            .replace(/\\n/g,'')
+            .replace(/\n/g,'')
+            .replace('<!DOCTYPE html><html><head></head><body>','')
+            .replace('</body></html>','');
           return google.script.run
           .withFailureHandler(this.errorAlert)
           .setData(html);
-        },
-        
-        viewDoc: function() {
-          return window.open('https://docs.google.com/document/d/'+ this.docId +'/view');
         }
 
       }
