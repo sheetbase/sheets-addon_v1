@@ -9,10 +9,13 @@
   <link rel="stylesheet" href="https://sheetbase.github.io/sheets-addon/css/add-ons1.css">
 
   <style>
-    .loader .inputs input[type="text"] {
+    .loader {
+      margin-top: 1rem;
+    }
+    .loader .form-group input[type="text"] {
       width: 100%;
     }
-    .loader .inputs .meta {
+    .loader .form-group .meta {
       margin-top: .5rem;
     }
   </style>
@@ -31,20 +34,21 @@
         <button class="button" v-on:click="getHTML">Get &rarr;</button>    
         <button class="button" v-on:click="clearHTML">Clear</button>
         <button class="button action right" v-on:click="setHTML">&larr; Set</button>
-
       </div>
   
-      <fieldset class="loader margin-top">  
-        <legend>Load content from Google Docs:</legend>
+      <fieldset class="fieldset loader">
+        <legend class="legend">Load content from Google Docs:</legend>
         <div class="body">
     
-          <div class="inputs">
+          <div class="form-group">
     
             <input class="input" type="text" placeholder="A document id ..." v-model="docId">
   
             <div class="meta">
-              <input class="input" type="checkbox" id="doc-style" v-model="docStyle">
-              <label class="label" for="doc-style">Included style</label>
+              <label class="label">
+                <input class="input" type="checkbox" v-model="docStyle">
+                <span>Keep Docs style</span>
+              </label>
             </div>  
     
           </div>
@@ -130,6 +134,7 @@
       plugins: 'print preview fullpage importcss searchreplace autolink autosave save directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons' + ' code paste spellchecker',
       // menu
       menubar: 'file edit view insert format tools table tc help',
+      contextmenu: "link image imagetools table configurepermanentpen",
       // toolbar
       toolbar_drawer: 'sliding',
       toolbar1: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment' + ' | code paste spellchecker',
@@ -158,7 +163,8 @@
           var _this = this;
           return google.script.run
           .withSuccessHandler(function (docId) {
-            return _this.docId = docId;
+            _this.docId = docId;
+            return _this.loadDocContent();
           })
           .withFailureHandler(this.errorAlert)
           .getData();
@@ -167,17 +173,20 @@
         loadDocContent: function () {
           var _this = this;
           // try to load from the active cell
-          if (!this.docId) { _this.getDocId() }
-          // load content
-          return google.script.run
-          .withSuccessHandler(function (html) {
-            if(!html) {
-              return _this.errorAlert('Can not get the content, the Docs ID may be in wrong format');
-            }
-            return tinymce.activeEditor.setContent(html);
-          })
-          .withFailureHandler(this.errorAlert)
-          .getDoc(this.docId, this.docStyle);
+          if (!this.docId) {
+            return _this.getDocId();
+          } else {
+            // load content
+            return google.script.run
+            .withSuccessHandler(function (html) {
+              if(!html) {
+                return _this.errorAlert('Can not get the content, the Docs ID may be in wrong format');
+              }
+              return tinymce.activeEditor.setContent(html);
+            })
+            .withFailureHandler(this.errorAlert)
+            .getDoc(this.docId, this.docStyle);
+          }
         },
         
         viewDoc: function() {

@@ -14,7 +14,7 @@
   <style>
     #jsoneditor {
       width: 100%;
-      height: 350px;
+      height: 500px;
     }
   </style>
 
@@ -34,10 +34,6 @@
         <button class="button action right" v-on:click="setJSON">&larr; Set</button>
       </div>
 
-      <div class="preview">
-        Preview
-      </div>
-
     </section>  
 
   </main>
@@ -53,6 +49,9 @@
     // init
     var editor = new JSONEditor(
       document.getElementById('jsoneditor'),
+      {
+        modes: [ 'tree', 'code', 'preview' ],
+      }
     );
 
     // init vue app
