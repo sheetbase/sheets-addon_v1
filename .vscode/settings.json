@@ -7,7 +7,6 @@
 		"**/build": true,
         "**/dist": true,
         "**/deploy": true,
-        "**/docs": true,
 
         "**/.nyc_output": true,
         "**/coverage": true
