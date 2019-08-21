@@ -414,7 +414,8 @@ input[type="submit"].share:active */
   color: #fff;
 }
 
-.button.disabled
+.button.disabled,
+.button:disabled
 /* button:disabled,
 input[type="button"]:disabled,
 input[type="image"]:disabled,
@@ -431,7 +432,9 @@ input[type="submit"]:disabled */
 }
 
 .button.action.disabled,
-.button.blue.disabled
+.button.blue.disabled,
+.button.action:disabled,
+.button.blue:disabled
 /* button.action:disabled,
 button.blue:disabled,
 input[type="button"].action:disabled,
@@ -449,7 +452,9 @@ input[type="submit"].blue:disabled */
 }
 
 .button.create.disabled,
-.button.red.disabled
+.button.red.disabled,
+.button.create:disabled,
+.button.red:disabled
 /* button.create:disabled,
 button.red:disabled,
 input[type="button"].create:disabled,
@@ -467,7 +472,9 @@ input[type="submit"].red:disabled */
 }
 
 .button.green.disabled,
-.button.share.disabled
+.button.share.disabled,
+.button.green:disabled,
+.button.share:disabled
 /* button.green:disabled,
 button.share:disabled,
 input[type="button"].green:disabled,
