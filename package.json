@@ -7,7 +7,7 @@
    "license": "MIT",
    "private": true,
    "scripts": {
-      "build": "tsc --skipLibCheck -m commonjs ./scripts/build.ts && node ./scripts/build.js",
+      "build": "tsc --skipLibCheck -m commonjs --outDir ./build/scripts ./scripts/build.ts && node ./build/scripts/build.js",
       "push": "cd deploy && clasp push",
       "lint": "tslint --project tslint.json && echo 'All files pass linting.'"
    },
@@ -34,7 +34,10 @@
       "@types/fs-extra": "^8.0.0",
       "@types/google-apps-script": "^0.0.56",
       "@types/node": "^12.7.2",
+      "@types/prettier": "^1.18.2",
       "fs-extra": "^8.1.0",
+      "prettier": "^1.18.2",
+      "rollup": "^1.19.4",
       "tslint": "^5.18.0",
       "typescript": "^3.5.3"
    }

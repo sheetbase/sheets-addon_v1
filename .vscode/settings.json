@@ -2,8 +2,6 @@
     "files.exclude": {
         "**/.vscode": true,
 
-        "**/scripts/*.js": true,
-
 		"**/build": true,
         "**/dist": true,
         "**/deploy": true,

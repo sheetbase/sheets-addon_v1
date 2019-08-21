@@ -2,8 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "moduleResolution": "node",
-    "module": "none",
-    "outDir": "./deploy",
+    "module": "es2015",
+    "outDir": "./build",
     "skipLibCheck": true,
     "lib": [
       "es2015"
