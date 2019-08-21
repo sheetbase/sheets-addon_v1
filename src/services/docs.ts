@@ -1,17 +1,19 @@
-export function getDoc(docId: string, withStyle = false) {
-  DriveApp.getStorageUsed(); // trigger drive scope
-  const url = 'https://www.googleapis.com/drive/v3/files/' + docId + '/export?mimeType=text/html';
+import { fetchGet } from './fetch';
+
+export function getDoc(docId: string, clean = true) {
   // send request
-  const response = UrlFetchApp.fetch(url, {
-    method: 'get',
-    headers: {Authorization: 'Bearer ' + ScriptApp.getOAuthToken()},
-    muteHttpExceptions:true,
-  });
-  // error
-  if(!response || response.getResponseCode() !== 200) return;
+  const response = fetchGet(
+    'https://www.googleapis.com/drive/v3/files/' + docId + '/export?mimeType=text/html',
+    {
+      headers: {
+        Authorization: 'Bearer ' + ScriptApp.getOAuthToken(),
+      },
+      muteHttpExceptions:true,
+    },
+  );
   // proccess content
   let content = response.getContentText();
-  if(!withStyle) {
+  if(!!clean) {
     // remove attrs
     ['style', 'id', 'class', 'width', 'height'].map(attr => {
       content = content.replace(new RegExp('(\ ' + attr + '\=\".*?\")', 'g'), '');
