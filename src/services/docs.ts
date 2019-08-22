@@ -1,6 +1,6 @@
 import { fetchGet } from './fetch';
 
-export function getDoc(docId: string, clean = true) {
+export function getDocsContent(docId: string, clean = true) {
   // send request
   const response = fetchGet(
     'https://www.googleapis.com/drive/v3/files/' + docId + '/export?mimeType=text/html',

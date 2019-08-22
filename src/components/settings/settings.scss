@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+}
+
+.menu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 10rem;
+
+  li {
+    margin: 1rem;
+    color: #777777;
+    cursor: pointer;
+    
+    &:hover {
+      color: #333333;
+    }
+  }
+
+}
+
+.pages {
+  flex: 1;
+
+  .page.general {
+    
+  }
+
+  .page.about {
+
+  }
+
+}

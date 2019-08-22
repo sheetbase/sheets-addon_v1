@@ -8,22 +8,6 @@
   <link rel="stylesheet" href="https://sheetbase.github.io/sheets-addon/css/addon.css">
   <link rel="stylesheet" href="https://sheetbase.github.io/sheets-addon/css/add-ons1.css">
 
-  <style>
-    #tinymce {
-      width: 100%;
-      border-color: #ffffff;
-    }
-    .loader {
-      margin-top: 1rem;
-    }
-    .loader .form-group input[type="text"] {
-      width: 100%;
-    }
-    .loader .form-group .meta {
-      margin-top: .5rem;
-    }
-  </style>
-
 </head>
 
 <body>
@@ -120,115 +104,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14/plugins/visualblocks/plugin.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14/plugins/visualchars/plugin.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14/plugins/wordcount/plugin.min.js"></script>
-  
-  <script>
-
-    // init editor
-    // full featured (with free plugin)
-    // https://www.tiny.cloud/docs/demo/full-featured/
-    tinymce.init({
-      selector: 'textarea#tinymce',
-      base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14',
-      entity_encoding: 'raw',
-      content_css: false,
-      height: 500,
-      // plugins
-      // EXCLUDED: bbcode & powerpaste mediaembed tinydrive tinycomments mentions tinymcespellchecker formatpainter linkchecker a11ychecker casechange checklist pageembed permanentpen advcode
-      // INCLUDED: code paste spellchecker
-      plugins: 'print preview fullpage importcss searchreplace autolink autosave save directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons' + ' code paste spellchecker',
-      // menu
-      menubar: 'file edit view insert format tools table tc help',
-      contextmenu: "link image imagetools table configurepermanentpen",
-      // toolbar
-      toolbar_drawer: 'sliding',
-      toolbar1: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment' + ' | code paste spellchecker',
-      quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-    });
-
-    // init vue app
-    var app = new Vue({
-      el: '#vue',
-      data: {
-        docId: '',
-        docStyle: false
-      },
-      methods: {
-
-        errorAlert: function (msg, el, title) {
-          console.error(msg, el ? el: '');
-          return google.script.run.withFailureHandler(this.errorAlert).displayError(msg, title);
-        },
-
-        /*
-         * loader
-         */
-
-        getDocId: function () {
-          var _this = this;
-          return google.script.run
-          .withSuccessHandler(function (docId) {
-            _this.docId = docId;
-            return _this.loadDocContent();
-          })
-          .withFailureHandler(this.errorAlert)
-          .getData();
-        },
-
-        loadDocContent: function () {
-          var _this = this;
-          // try to load from the active cell
-          if (!this.docId) {
-            return _this.getDocId();
-          } else {
-            // load content
-            return google.script.run
-            .withSuccessHandler(function (html) {
-              if(!html) {
-                return _this.errorAlert('Can not get the content, the Docs ID may be in wrong format');
-              }
-              return tinymce.activeEditor.setContent(html);
-            })
-            .withFailureHandler(this.errorAlert)
-            .getDoc(this.docId, this.docStyle);
-          }
-        },
-        
-        viewDoc: function() {
-          return window.open('https://docs.google.com/document/d/'+ this.docId +'/view');
-        },
-        
-        /*
-         * editor
-         */
-
-        clearHTML: function () {
-          return tinymce.activeEditor.setContent('');
-        },
-
-        getHTML: function () {
-          return google.script.run
-          .withSuccessHandler(function (data) {
-            return tinymce.activeEditor.setContent(data);               
-          })
-          .withFailureHandler(this.errorAlert)
-          .getData();
-        },
-
-        setHTML: function () {
-          var html = tinymce.activeEditor.getContent({ format: 'html' })
-            .replace(/\\n/g,'')
-            .replace(/\n/g,'')
-            .replace('<!DOCTYPE html><html><head></head><body>','')
-            .replace('</body></html>','');
-          return google.script.run
-          .withFailureHandler(this.errorAlert)
-          .setData(html);
-        }
-
-      }
-    });
-
-  </script>
 
 </body>
 

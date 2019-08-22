@@ -4,6 +4,7 @@
     "moduleResolution": "node",
     "module": "es2015",
     "outDir": "./build",
+    "target": "es3",
     "skipLibCheck": true,
     "lib": [
       "es2015"

@@ -12,7 +12,7 @@ export function getData(
     spreadsheet.getRange(rangeA1) : SpreadsheetApp.getActiveRange();
   const data = (range.getWidth() <= 1 && range.getHeight() <= 1) ?
     range.getValue() : range.getValues();
-  return !!raw ? data : transformValue(data, noHeaders);
+  return !!raw ? data : transformValue_(data, noHeaders);
 }
 
 export function setData(
@@ -55,7 +55,7 @@ export function setData(
     range.setValue(data) : range.setValues(data);
 }
 
-export function transformValue(values: any[], noHeaders = false) {
+function transformValue_(values: any[], noHeaders = false) {
   const items = [];
   // header
   let headers = ['value'];

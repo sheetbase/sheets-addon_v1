@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+  <base target="_top">
+
+  <!-- Addon -->
+  <link rel="stylesheet" href="https://sheetbase.github.io/sheets-addon/css/addon.css">
+  <link rel="stylesheet" href="https://sheetbase.github.io/sheets-addon/css/add-ons1.css">
+
+</head>
+
+<body>
+
+  <main class="container" id="vue">
+
+    <ul class="menu">
+      <li class="general" v-on:click="page='general'">General</li>
+      <li class="about" v-on:click="page='about'">About</li>
+    </ul>
+
+    <div class="pages">
+
+      <div class="page general" v-if="page==='general'">
+
+        <div class="display border" v-if="!!projectInfo">
+
+          <div class="project"
+            v-if="!!projectInfo.project"
+          >
+            <div class="info">
+              <h1>{{ projectInfo.project.name }}</h1>
+              <p>{{ projectInfo.project.id }}</p>
+            </div>
+            <button class="button">Open</button>
+          </div>
+
+          <ul class="services">
+
+            <li class="database"
+              v-if="!!projectInfo.database"
+              v-on:click="viewSheets(projectInfo.database.id)"
+            >
+              <img src="https://img.icons8.com/dusk/32/000000/database.png">
+              <span>Database</span>
+            </li>
+
+            <li class="backend"
+              v-if="!!projectInfo.backend"
+              v-on:click="viewScript(projectInfo.backend.id)"
+            >
+              <img src="https://img.icons8.com/color/32/000000/server.png">
+              <span>Backend</span>
+            </li>
+
+            <li class="upload"
+              v-if="!!projectInfo.upload"
+              v-on:click="viewFolder(projectInfo.upload.id)"
+            >
+              <img src="https://img.icons8.com/dusk/32/000000/upload.png">
+              <span>Upload</span>
+            </li>
+
+          </ul>
+
+        </div>
+        
+        <div class="settings">
+
+          <div class="form-group">
+            <label>
+              <span>Homepage</span>
+              <input type="text" v-model="homepage" placeholder="App homepage ..." />
+            </label>
+            <button class="button">Open</button>
+          </div>
+
+          <div class="submit">
+            <button class="button action">Save</button>
+            <div class="message"
+              v-if="!!settingsFormMessage"
+            >{{ settingsFormMessage.message }}</div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="page about" v-if="page==='about'">
+
+        <p>About us!</p>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Vue -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+
+</body>
+
+</html>

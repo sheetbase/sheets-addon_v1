@@ -2,37 +2,47 @@ interface DriveItemInfo {
   id: string;
   name: string;
   description: string;
-  created: Date;
-  updated: Date;
+  created: string;
+  updated: string;
   link: string;
   size: number;
   sharing: DriveSharing;
 }
 
-interface FolderInfo extends DriveItemInfo {}
-interface FileInfo extends DriveItemInfo {
+type FileSharing = SharingPreset | DriveSharing;
+type SharingPreset = 'PUBLIC' | 'PRIVATE';
+interface DriveSharing {
+  access?: string;
+  permission?: string;
+}
+
+export interface FolderInfo extends DriveItemInfo {}
+export interface FileInfo extends DriveItemInfo {
   mimeType: string;
   url: string;
   downloadUrl: string;
 }
 
-type FileSharing = SharingPreset | DriveSharing;
-type SharingPreset = 'PUBLIC' | 'PRIVATE';
-interface DriveSharing {
-  access?: GoogleAppsScript.Drive.Access;
-  permission?: GoogleAppsScript.Drive.Permission;
-}
+/**
+ *
+ * static
+ */
 
-const SHARING_PRESETS: {[preset: string]: DriveSharing} = {
+const SHARING_PRESETS: { [preset: string]: DriveSharing } = {
   PUBLIC: {
-    access: DriveApp.Access.ANYONE_WITH_LINK,
-    permission: DriveApp.Permission.VIEW,
+    access: 'ANYONE_WITH_LINK',
+    permission: 'VIEW',
   },
   PRIVATE: {
-    access: DriveApp.Access.PRIVATE,
-    permission: DriveApp.Permission.NONE,
+    access: 'PRIVATE',
+    permission: 'NONE',
   },
 };
+
+/**
+ *
+ * drive general
+ */
 
 export function getDriveItemInfo(
   item: GoogleAppsScript.Drive.File | GoogleAppsScript.Drive.Folder,
@@ -40,12 +50,12 @@ export function getDriveItemInfo(
   const id = item.getId();
   const name = item.getName();
   const description = item.getDescription();
-  const created = item.getDateCreated();
-  const updated = item.getLastUpdated();
+  const created = item.getDateCreated().toISOString();
+  const updated = item.getLastUpdated().toISOString();
   const link = item.getUrl();
   const size = item.getSize();
-  const access = item.getSharingAccess();
-  const permission = item.getSharingPermission();
+  const access = '' + item.getSharingAccess();
+  const permission = '' + item.getSharingPermission();
   return {
     id,
     name,
@@ -58,77 +68,133 @@ export function getDriveItemInfo(
   };
 }
 
-export function getProjectFolder() {
-  const activeSpreadsheetId = SpreadsheetApp
-  .getActiveSpreadsheet()
-  .getId();
-  return DriveApp
-  .getFileById(activeSpreadsheetId)
-  .getParents()
-  .next();
+/**
+ *
+ * project folder
+ */
+
+export function getActiveFolder() {
+  const id = SpreadsheetApp.getActiveSpreadsheet().getId();
+  return DriveApp.getFileById(id).getParents().next();
 }
 
-export function getProjectFolderInfo(): FolderInfo {
-  return getDriveItemInfo(
-    getProjectFolder(),
-  );
+export function getActiveFolderInfo(): FolderInfo {
+  return getDriveItemInfo(getActiveFolder());
 }
 
-export function getProjectFolderInfoAsString() {
-  return JSON.stringify(getProjectFolderInfo());
+/**
+ *
+ * folder
+ */
+
+export function getFolderById(id: string) {
+  return DriveApp.getFolderById(id);
 }
 
-export function getFolder(
-  // a folder -> return immediately
-  // or name
-  // or path
-  folder: string | GoogleAppsScript.Drive.Folder,
-  // use the project folder if not provided
+export function getFolderByName(
+  name: string,
   parentFolder?: GoogleAppsScript.Drive.Folder,
 ) {
-  let finalFolder: GoogleAppsScript.Drive.Folder;
-  if (typeof folder === 'string') {
-    const folderNames = folder.split('/').map(x => x.trim());
-    // create folders
-    finalFolder = parentFolder || getProjectFolder();
-    for (let i = 0; i < folderNames.length; i++) {
-      const folderName = folderNames[i];
-      // get all children
-      // and return the first
-      // or create new one
-      const childFolders = finalFolder.getFoldersByName(folderName);
-      if(!childFolders.hasNext()) {
-        finalFolder = finalFolder.createFolder(folderName);
-      } else {
-        finalFolder = childFolders.next();
-      }
-    }
-  } else {
-    finalFolder = folder; // return immediately
-  }
-  return finalFolder;
+  return getFolderByPath(name, parentFolder);
 }
 
-export function getFolderInfo(
-  folder: string | GoogleAppsScript.Drive.Folder,
-): FolderInfo {
-  return getDriveItemInfo(
-    getFolder(folder),
-  );
-}
-
-export function getFolderInfoAsString(
-  folder: string | GoogleAppsScript.Drive.Folder,
+export function getFolderByPath(
+  path: string,
+  parentFolder?: GoogleAppsScript.Drive.Folder,
 ) {
-  return JSON.stringify(getFolderInfo(folder));
+  let folder: GoogleAppsScript.Drive.Folder;
+  const folderNames = path.split('/').map(x => x.trim());
+  // create folders
+  folder = parentFolder || getActiveFolder();
+  for (let i = 0; i < folderNames.length; i++) {
+    const folderName = folderNames[i];
+    // get all children
+    // and return the first
+    // or create new one
+    const childFolders = folder.getFoldersByName(folderName);
+    if(!childFolders.hasNext()) {
+      folder = folder.createFolder(folderName);
+    } else {
+      folder = childFolders.next();
+    }
+  }
+  // final result
+  return folder;
+}
+
+export function getFolderInfo(folder: GoogleAppsScript.Drive.Folder): FolderInfo {
+  return getDriveItemInfo(folder);
+}
+
+/**
+ *
+ * file
+ */
+
+export function getFileById(id: string) {
+  return DriveApp.getFileById(id);
 }
 
 export function getFileByName(
-  folder: string | GoogleAppsScript.Drive.Folder,
+  folder: GoogleAppsScript.Drive.Folder,
   name: string,
 ) {
-  const childFiles = getFolder(folder).getFilesByName(name);
+  const childFiles = folder.getFilesByName(name);
   return !!childFiles.hasNext() ? childFiles.next() : null;
+}
+
+export function createFile(
+  parentFolder: GoogleAppsScript.Drive.Folder,
+  blob: GoogleAppsScript.Base.Blob,
+  sharing: FileSharing = 'PUBLIC',
+) {
+  const share = (typeof sharing === 'string') ? SHARING_PRESETS[sharing] : sharing;
+  // create file
+  return parentFolder
+  .createFile(blob)
+  .setSharing(
+    DriveApp.Access[share.access || 'PRIVATE'],
+    DriveApp.Permission[share.permission || 'NONE'],
+  );
+}
+
+export function createFileFromString(
+  parentFolder: GoogleAppsScript.Drive.Folder,
+  name: string,
+  mimeType: string,
+  content: string,
+  sharing: FileSharing = 'PUBLIC',
+) {
+  // create file
+  const blob = Utilities.newBlob(content, mimeType, name);
+  return createFile(parentFolder, blob, sharing);
+}
+
+export function createFileText(
+  parentFolder: GoogleAppsScript.Drive.Folder,
+  name: string,
+  content: string,
+  sharing: FileSharing = 'PUBLIC',
+) {
+  return createFileFromString(parentFolder, name, 'text/plain', content, sharing);
+}
+
+export function createFileJSON(
+  parentFolder: GoogleAppsScript.Drive.Folder,
+  name: string,
+  content: string,
+  sharing: FileSharing = 'PUBLIC',
+) {
+  return createFileFromString(parentFolder, name, 'application/json', content, sharing);
+}
+
+export function createFileHTML(
+  parentFolder: GoogleAppsScript.Drive.Folder,
+  name: string,
+  content: string,
+  sharing: FileSharing = 'PUBLIC',
+) {
+  return createFileFromString(parentFolder, name, 'text/html', content, sharing);
 }
 
 export function getFileInfo(file: GoogleAppsScript.Drive.File): FileInfo {
@@ -142,72 +208,4 @@ export function getFileInfo(file: GoogleAppsScript.Drive.File): FileInfo {
     url,
     downloadUrl,
   };
-}
-
-export function getFileInfoAsString(file: GoogleAppsScript.Drive.File) {
-  return JSON.stringify(getFileInfo(file));
-}
-
-function setFileSharing(
-  file: GoogleAppsScript.Drive.File,
-  sharing: FileSharing,
-) {
-  const { access, permission } = (typeof sharing === 'string') ?
-    SHARING_PRESETS[sharing] : sharing;
-  return file.setSharing(
-    access || DriveApp.Access.PRIVATE,
-    permission || DriveApp.Permission.NONE,
-  );
-}
-
-export function createFile(
-  folder: string | GoogleAppsScript.Drive.Folder,
-  blob: GoogleAppsScript.Base.Blob,
-  sharing: FileSharing = 'PUBLIC',
-) {
-  // create file
-  const file = getFolder(folder).createFile(blob);
-  // set sharing
-  setFileSharing(file, sharing);
-  // result
-  return file;
-}
-
-export function createFileFromString(
-  folder: string | GoogleAppsScript.Drive.Folder,
-  name: string,
-  mimeType: string,
-  content: string,
-  sharing: FileSharing = 'PUBLIC',
-) {
-  // create file
-  const blob = Utilities.newBlob(content, mimeType, name);
-  return createFile(folder, blob, sharing);
-}
-
-export function createFileText(
-  folder: string | GoogleAppsScript.Drive.Folder,
-  name: string,
-  content: string,
-  sharing: FileSharing = 'PUBLIC',
-) {
-  return createFileFromString(folder, name, 'text/plain', content, sharing);
-}
-
-export function createFileJSON(
-  folder: string | GoogleAppsScript.Drive.Folder,
-  name: string,
-  content: string,
-  sharing: FileSharing = 'PUBLIC',
-) {
-  return createFileFromString(folder, name, 'application/json', content, sharing);
-}
-
-export function createFileHTML(
-  folder: string | GoogleAppsScript.Drive.Folder,
-  name: string,
-  content: string,
-  sharing: FileSharing = 'PUBLIC',
-) {
-  return createFileFromString(folder, name, 'text/html', content, sharing);
 }
