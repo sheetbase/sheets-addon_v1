@@ -1,3 +1,5 @@
+export type ErrorAlert = (error: string | Error, title?: string) => any;
+
 export interface Google {
   script: Script;
 }

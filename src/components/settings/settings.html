@@ -2,7 +2,7 @@
 <html>
 <head>
   
-  <base target="_top">
+  <base target="_blank">
 
   <!-- Addon -->
   <link rel="stylesheet" href="https://sheetbase.github.io/sheets-addon/css/addon.css">
@@ -16,6 +16,7 @@
 
     <ul class="menu">
       <li class="general" v-on:click="page='general'">General</li>
+      <li class="settings" v-on:click="page='settings'">Settings</li>
       <li class="about" v-on:click="page='about'">About</li>
     </ul>
 
@@ -23,72 +24,109 @@
 
       <div class="page general" v-if="page==='general'">
 
-        <div class="display border" v-if="!!projectInfo">
+        <div class="placeholder" v-if="!projectInfo">
+          <img src="https://sheetbase.dev/assets/images/logo.png" alt="Sheetbase">
+        </div>
+
+        <div class="display" v-else>
 
           <div class="project"
             v-if="!!projectInfo.project"
           >
-            <div class="info">
-              <h1>{{ projectInfo.project.name }}</h1>
-              <p>{{ projectInfo.project.id }}</p>
+            <h1 class="title">{{ projectInfo.project.name }}</h1>
+            <div class="meta">
+              <span>Drive ID:</span>
+              <a :href="'https://drive.google.com/drive/folders/' + projectInfo.project.id">{{ projectInfo.project.id }}</a>
             </div>
-            <button class="button">Open</button>
           </div>
 
           <ul class="services">
 
-            <li class="database"
-              v-if="!!projectInfo.database"
-              v-on:click="viewSheets(projectInfo.database.id)"
-            >
-              <img src="https://img.icons8.com/dusk/32/000000/database.png">
-              <span>Database</span>
+            <li class="service database" v-if="!!projectInfo.database">
+              <a
+                :href="'https://docs.google.com/spreadsheets/d/' + projectInfo.database.id + '/edit'"
+              >
+                <img src="https://img.icons8.com/dusk/32/000000/database.png">
+                <span>Database</span>
+              </a>
             </li>
 
-            <li class="backend"
-              v-if="!!projectInfo.backend"
-              v-on:click="viewScript(projectInfo.backend.id)"
-            >
-              <img src="https://img.icons8.com/color/32/000000/server.png">
-              <span>Backend</span>
+            <li class="service backend" v-if="!!projectInfo.backend">
+              <a
+                :href="'https://script.google.com/d/' + projectInfo.backend.id + '/edit'"
+              >
+                <img src="https://img.icons8.com/color/32/000000/server.png">
+                <span>Backend</span>
+              </a>
             </li>
 
-            <li class="upload"
-              v-if="!!projectInfo.upload"
-              v-on:click="viewFolder(projectInfo.upload.id)"
-            >
-              <img src="https://img.icons8.com/dusk/32/000000/upload.png">
-              <span>Upload</span>
+            <li class="service upload" v-if="!!projectInfo.upload">
+              <a
+                :href="'https://drive.google.com/drive/folders/' + projectInfo.upload.id"
+              >
+                <img src="https://img.icons8.com/dusk/32/000000/upload.png">
+                <span>Upload</span>
+              </a>
             </li>
 
           </ul>
 
         </div>
-        
-        <div class="settings">
 
-          <div class="form-group">
-            <label>
-              <span>Homepage</span>
-              <input type="text" v-model="homepage" placeholder="App homepage ..." />
-            </label>
-            <button class="button">Open</button>
+      </div>
+
+      <div class="page settings" v-if="page==='settings'">
+
+        <h2>Settings</h2>
+
+        <div class="form-group">
+          <label class="label">
+            <span>Homepage</span>
+            <input class="input" type="text" v-model="homepage" placeholder="App homepage ..." />
+          </label>
+          <div class="action">
+            <a :href="homepage || 'https://sheetbase.dev'">View</a>
           </div>
+        </div>
 
-          <div class="submit">
-            <button class="button action">Save</button>
-            <div class="message"
-              v-if="!!settingsFormMessage"
-            >{{ settingsFormMessage.message }}</div>
-          </div>
-
+        <div class="submit">
+          <button class="button action" v-on:click="saveSettings()">Save</button>
+          <div :class="['message', settingsMsg.type]" v-if="!!settingsMsg">{{ settingsMsg.message }}</div>
         </div>
 
       </div>
 
       <div class="page about" v-if="page==='about'">
 
-        <p>About us!</p>
+        <h2>About</h2>
+
+        <div class="addon">
+
+          <h3>Sheets Add-on</h3>
+          <p>A Google Sheets add-on for managing a Sheetbase project.</p>
+
+          <ul>
+            <li>Homepage: <a href="https://sheetbase.dev">https://sheetbase.dev</a></li>
+            <li>Version: 1.0.0</li>
+            <li>License: MIT</li>
+            <li>Sourcecode: <a href="https://github.com/sheetbase/sheets-addon">https://github.com/sheetbase/sheets-addon</a></li>
+          </ul>
+
+        </div>
+
+        <div class="libs">
+
+          <h3>Third-party libraries</h3>
+          <p>This add-on is made possible by these great open-source libraries:</p>
+
+          <ul>
+            <li>VueJS (MIT): <a href="https://vuejs.org">https://vuejs.org</a></li>
+            <li>TinyMCE (LGPL-2.1): <a href="https://www.tiny.cloud">https://www.tiny.cloud</a></li>
+            <li>Jsoneditor (Apache-2.0): <a href="http://jsoneditoronline.org">http://jsoneditoronline.org</a></li>
+            <li>And others: NodeJS, Clasp, Typescript, Rollup, ...</li>
+          </ul>
+
+        </div>
 
       </div>
 
@@ -98,6 +136,9 @@
 
   <!-- Vue -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+
+  <!-- Addon -->
+  <script src="https://sheetbase.github.io/sheets-addon/js/addon.js"></script>
 
 </body>
 

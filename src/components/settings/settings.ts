@@ -1,18 +1,9 @@
 import Vue from 'vue';
 
-import { Google } from '../../types';
+import { ErrorAlert, Google } from '../../types';
 
 declare const google: Google;
-
-function errorAlert(error: string | Error, title?: string) {
-  error = (typeof error === 'string') ? new Error(error) : error;
-  // show in console
-  console.error(error);
-  // show in alert
-  return google.script.run
-  .withFailureHandler(errorAlert)
-  .displayError(error.message, title);
-}
+declare const errorAlert: ErrorAlert;
 
 // init vue app
 const app = new Vue({
@@ -20,9 +11,10 @@ const app = new Vue({
   data: {
     page: 'general',
     // page: general
-    homepage: '',
     projectInfo: null,
-    settingsFormMessage: null,
+    // page: settings
+    homepage: '',
+    settingsMsg: null,
     // page: info
     // ...
   },
@@ -32,7 +24,7 @@ const app = new Vue({
       const _this = this;
       return google.script.run
       .withSuccessHandler<any>(settings => {
-        _this.homepage = settings['PROJECT_HOMEPAGE'];
+        _this.homepage = settings['SETTING_HOMEPAGE'];
       })
       .withFailureHandler(errorAlert)
       .getProperties();
@@ -50,28 +42,16 @@ const app = new Vue({
       const _this = this;
       return google.script.run
       .withSuccessHandler<void>(() => {
-        setTimeout(() => _this.settingsFormMessage = null, 3000);
-        return _this.settingsFormMessage = {
+        setTimeout(() => _this.settingsMsg = null, 3000);
+        return _this.settingsMsg = {
           type: 'success',
           message: 'Setting updated!',
         };
       })
       .withFailureHandler(errorAlert)
       .setProperties({
-        PROJECT_HOMEPAGE: _this.homepage,
+        SETTING_HOMEPAGE: _this.homepage,
       });
-    },
-
-    viewFolder (id: string) {
-      return window.open('https://drive.google.com/drive/folders/' + id);
-    },
-
-    viewScript (id: string) {
-      return window.open('https://script.google.com/d/' + id + '/edit');
-    },
-
-    viewSheets (id: string) {
-      return window.open('https://docs.google.com/spreadsheets/d/' + id + '/edit');
     },
 
   },

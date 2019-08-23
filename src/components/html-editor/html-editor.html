@@ -2,7 +2,7 @@
 <html>
 <head>
 
-  <base target="_top">
+  <base target="_blank">
 
   <!-- Addon -->
   <link rel="stylesheet" href="https://sheetbase.github.io/sheets-addon/css/addon.css">
@@ -19,9 +19,9 @@
     <section id="vue">
 
       <div class="editor margin-top">  
-        <button class="button" v-on:click="getHTML">Get &rarr;</button>    
-        <button class="button" v-on:click="clearHTML">Clear</button>
-        <button class="button action right" v-on:click="setHTML">&larr; Set</button>
+        <button class="button" v-on:click="getHTML()">Get &rarr;</button>    
+        <button class="button" v-on:click="clearHTML()">Clear</button>
+        <button class="button action right" v-on:click="setHTML()">&larr; Set</button>
       </div>
   
       <fieldset class="fieldset loader">
@@ -30,7 +30,7 @@
     
           <div class="form-group">
     
-            <input class="input" type="text" placeholder="A document id ..." v-model="docId">
+            <input class="input" type="text" placeholder="A Google Docs document id ..." v-model="docId">
   
             <div class="meta">
               <label class="label">
@@ -42,8 +42,8 @@
           </div>
     
           <div class="margin-top">
-            <button class="button action" v-on:click="loadDocContent">Load</button>
-            <button class="button right" :disabled="!docId" v-on:click="viewDoc">View</button>
+            <button class="button action" v-on:click="loadDocContent()">Load</button>
+            <button class="button right" :disabled="!docId" v-on:click="viewDoc()">View</button>
           </div>
     
         </div>  
@@ -104,6 +104,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14/plugins/visualblocks/plugin.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14/plugins/visualchars/plugin.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14/plugins/wordcount/plugin.min.js"></script>
+
+  <!-- Addon -->
+  <script src="https://sheetbase.github.io/sheets-addon/js/addon.js"></script>
 
 </body>
 

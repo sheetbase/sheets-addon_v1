@@ -2,28 +2,19 @@
 import Vue from 'vue';
 import tinymce from 'tinymce';
 
-import { Google } from '../../types';
+import { ErrorAlert, Google } from '../../types';
 
 declare const google: Google;
-
-function errorAlert(error: string | Error, title?: string) {
-  error = (typeof error === 'string') ? new Error(error) : error;
-  // show in console
-  console.error(error);
-  // show in alert
-  return google.script.run
-  .withFailureHandler(errorAlert)
-  .displayError(error.message, title);
-}
+declare const errorAlert: ErrorAlert;
 
 // init editor
 // full featured (with free plugin)
 // https://www.tiny.cloud/docs/demo/full-featured/
 tinymce.init({
   selector: 'textarea#tinymce',
-  document_base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14',
   entity_encoding: 'raw',
-  content_css: null,
+  base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14',
+  content_css: false,
   height: 500,
   // plugins
   // EXCLUDED: bbcode & powerpaste mediaembed tinydrive tinycomments mentions tinymcespellchecker formatpainter linkchecker a11ychecker casechange checklist pageembed permanentpen advcode
@@ -34,7 +25,7 @@ tinymce.init({
   // toolbar
   toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment' + ' | code paste spellchecker',
   selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-});
+} as any);
 
 // init vue app
 const app = new Vue({

@@ -1,19 +1,10 @@
 import Vue from 'vue';
 import JSONEditor from 'jsoneditor';
 
-import { Google } from '../../types';
+import { ErrorAlert, Google } from '../../types';
 
 declare const google: Google;
-
-function errorAlert(error: string | Error, title?: string) {
-  error = (typeof error === 'string') ? new Error(error) : error;
-  // show in console
-  console.error(error);
-  // show in alert
-  return google.script.run
-  .withFailureHandler(errorAlert)
-  .displayError(error.message, title);
-}
+declare const errorAlert: ErrorAlert;
 
 // init
 const editor = new JSONEditor(

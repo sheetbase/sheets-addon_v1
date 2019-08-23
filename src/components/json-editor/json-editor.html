@@ -2,7 +2,7 @@
 <html>
 <head>
 
-  <base target="_top">
+  <base target="_blank">
 
   <!-- Addon -->
   <link rel="stylesheet" href="https://sheetbase.github.io/sheets-addon/css/addon.css">
@@ -22,9 +22,9 @@
     <section id="vue">
 
       <div class="editor margin-top">
-        <button class="button" v-on:click="getJSON">Get &rarr;</button>
-        <button class="button" v-on:click="clearJSON">Clear</button>
-        <button class="button action right" v-on:click="setJSON">&larr; Set</button>
+        <button class="button" v-on:click="getJSON()">Get &rarr;</button>
+        <button class="button" v-on:click="clearJSON()">Clear</button>
+        <button class="button action right" v-on:click="setJSON()">&larr; Set</button>
       </div>
 
     </section>  
@@ -36,6 +36,9 @@
 
   <!-- JSON Editor -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/6.3.0/jsoneditor.min.js"></script>
+
+  <!-- Addon -->
+  <script src="https://sheetbase.github.io/sheets-addon/js/addon.js"></script>
 
 </body>
 

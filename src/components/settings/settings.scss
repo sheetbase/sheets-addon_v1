@@ -1,34 +1,165 @@
-.container {
+@import '../../theming/index.scss';
+
+main {
+
   display: flex;
-}
+  
+  .menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 10rem;
+  
+    li {
+      margin: 1rem;
+      color: addon-color('medium');
+      cursor: pointer;
 
-.menu {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  width: 10rem;
-
-  li {
-    margin: 1rem;
-    color: #777777;
-    cursor: pointer;
-    
-    &:hover {
-      color: #333333;
+      &:hover {
+        color: addon-color('dark');
+      }
     }
+  
   }
+  
+  .pages {
+    flex: 1;
+  
+    .general {
 
-}
+      .placeholder {
+        padding-left: 10rem;
+        padding-top: 0;
+  
+        img {
+          width: 100px;
+        }
+      }
+  
+      .display {
+  
+        .project {
 
-.pages {
-  flex: 1;
+          .title {
+            font-size: 3rem;
+            margin-top: 1rem;
+          }
 
-  .page.general {
-    
-  }
+          .meta {
+            font-size: 1.1rem;
 
-  .page.about {
+            span, a {
+              color: addon-color('medium');
+            }
+          }
 
+        }
+  
+        .services {
+          @include list-flex;
+          margin-top: 2rem;
+          padding-top: 2rem;
+          border-top: 1px solid #{addon-color('light')};
+          
+          .service {
+            margin-right: 1rem;
+            
+            a {
+              display: flex;
+              align-items: center;
+              color: addon-color('dark');
+              padding: 1rem 1.5rem;
+              border: 1px solid #{addon-color('light')};
+              text-transform: uppercase;
+
+              img {
+                width: 1.5rem;
+              }
+
+              span {
+                flex: 1;
+                margin-left: 1rem;
+              }
+
+              &:hover {
+                text-decoration: none;
+              }
+            }
+
+            &:hover {
+              background: addon-color('light');
+            }
+
+          }
+  
+        }
+  
+      }
+  
+    }
+  
+    .settings {
+
+      h2 {
+        margin-bottom: 2rem;
+      }
+      
+      .form-group {
+        display: flex;
+        align-items: center;
+        margin-top: 1rem;
+
+        .label {
+          flex: 1;
+
+          span, input {
+            display: block;
+          }
+
+          input {
+            width: 100%;
+            margin-top: .5rem;
+          }
+        }
+
+        .action {
+          width: 5rem;
+          margin-left: 2rem;
+          margin-top: 2rem;
+          text-align: center;
+
+          a {
+            text-transform: uppercase;
+          }
+        }
+
+      }
+  
+      .submit {
+        display: flex;
+        width: 100%;
+        margin-top: 3rem;
+
+        .message {
+          margin-top: .25rem;
+          margin-left: 2rem;
+
+          &.success {
+            color: addon-color('success');
+          }
+        }
+      }
+  
+    }
+  
+    .about {
+      
+      h3 {
+        margin-top: 2rem;
+      }
+
+    }
+  
   }
 
 }

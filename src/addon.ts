@@ -17,7 +17,7 @@ function settingsDialog() {
   return SpreadsheetApp.getUi().showModalDialog(
     HtmlService
     .createHtmlOutputFromFile('Settings').setWidth(700).setHeight(500),
-    'Project settings',
+    'Sheetbase project',
   );
 }
 
