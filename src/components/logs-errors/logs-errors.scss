@@ -21,6 +21,10 @@ main {
     .item {
       margin-right: 2rem;
       
+      &:last-child {
+        margin-right: 0;
+      }
+      
       a {
         display: flex;
         align-items: center;
