@@ -16,9 +16,13 @@
 
 */
 
+/* VUE */
+
 [v-cloak] {
   display: none;
 }
+
+/* SIDEBAR CONTAINER */
 
 .container {
   padding: 1rem;
@@ -29,7 +33,6 @@
 .right {
   float: right;
 }
-
 .clear {
   clear: both;
 }
@@ -39,19 +42,15 @@
 .margin {
   margin: 1rem;
 }
-
 .margin-top {
   margin-top: 1rem;
 }
-
 .margin-right {
   margin-right: 1rem;
 }
-
 .margin-bottom {
   margin-bottom: 1rem;
 }
-
 .margin-left {
   margin-left: 1rem;
 }
@@ -61,19 +60,15 @@
 .padding {
   padding: 1rem;
 }
-
 .padding-top {
   padding-top: 1rem;
 }
-
 .padding-right {
   padding-right: 1rem;
 }
-
 .padding-bottom {
   padding-bottom: 1rem;
 }
-
 .padding-left {
   margin-left: 1rem;
 }
@@ -83,19 +78,15 @@
 .border {
   border: 1px solid #d9d9d9;
 }
-
 .border-top {
   border-top: 1px solid #d9d9d9;
 }
-
 .border-right {
   border-right: 1px solid #d9d9d9;
 }
-
 .border-bottom {
   border-bottom: 1px solid #d9d9d9;
 }
-
 .border-left {
   border-left: 1px solid #d9d9d9;
 }
@@ -105,15 +96,12 @@
 .primary {
   color: #4d90fe;
 }
-
 .secondary {
-  color: #f1f1f1;
+  color: #d9d9d9;
 }
-
 .success {
   color: #3d9400;
 }
-
 .danger {
   color: #dd4b39;
 }
@@ -125,21 +113,58 @@
 {
   background: #4d90fe;
 }
-
 .bg-secondary,
 .bg-normal
 {
-  background: #f1f1f1;
+  background: #d9d9d9;
 }
-
 .bg-success,
 .bg-share
 {
   background: #3d9400;
 }
-
 .bg-danger,
 .bg-create
 {
+  background: #dd4b39;
+}
+
+/* ADDON SHELL */
+
+.addon-wrapper {
+  width: 100%;
+  border: 1px solid #d9d9d9;
+}
+.addon-wrapper .addon-head {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #d9d9d9;
+}
+.addon-wrapper .addon-body {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+.addon-wrapper .addon-foot {
+  padding: 0.1rem 1rem;
+  border-top: 1px solid #d9d9d9;
+}
+.addon-wrapper.primary {
+  border: 1px solid #4d90fe;
+}
+.addon-wrapper.primary .addon-head {
+  background: #4d90fe;
+}
+.addon-wrapper.secondary .addon-head {
+  background: #d9d9d9;
+}
+.addon-wrapper.success {
+  border: 1px solid #3d9400;
+}
+.addon-wrapper.success .addon-head {
+  background: #3d9400;
+}
+.addon-wrapper.danger {
+  border: 1px solid #dd4b39;
+}
+.addon-wrapper.danger .addon-head {
   background: #dd4b39;
 }
