@@ -33,14 +33,13 @@ main {
         color: addon-color('dark');
         border: 1px solid #{addon-color('light')};
         padding: 2rem;
-        width: 12rem;
+        width: 14rem;
 
         img {
           width: 2rem;
         }
 
         span {
-          flex: 1;
           margin-left: 1rem;
           font-size: 1.5rem;
         }
