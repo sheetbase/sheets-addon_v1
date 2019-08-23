@@ -1,3 +1,4 @@
+// JSON Editor
 function jsonEditorSidebar() {
   return SpreadsheetApp.getUi().showSidebar(
     HtmlService
@@ -6,6 +7,7 @@ function jsonEditorSidebar() {
   );
 }
 
+// HTML Editor
 function htmlEditorSidebar() {
   return SpreadsheetApp.getUi().showSidebar(
     HtmlService
@@ -14,6 +16,7 @@ function htmlEditorSidebar() {
   );
 }
 
+// Logs & Errors
 function logsErrorsDialog() {
   return SpreadsheetApp.getUi().showModalDialog(
     HtmlService
@@ -22,6 +25,7 @@ function logsErrorsDialog() {
   );
 }
 
+// Settings
 function settingsDialog() {
   return SpreadsheetApp.getUi().showModalDialog(
     HtmlService
@@ -30,6 +34,7 @@ function settingsDialog() {
   );
 }
 
+// init
 function onOpen(e) {
   return SpreadsheetApp.getUi().createMenu('Sheetbase')
   .addItem('JSON Editor', 'jsonEditorSidebar')
@@ -39,7 +44,6 @@ function onOpen(e) {
   .addItem('Settings', 'settingsDialog')
   .addToUi();
 }
-
 function onInstall(e) {
   return onOpen(e);
 }

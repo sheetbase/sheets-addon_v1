@@ -1,3 +1,4 @@
+import { getCacheRefresh } from '../../services/cache';
 import {
   getActiveFolder,
   getFolderByName,
@@ -7,22 +8,21 @@ import {
 } from '../../services/drive';
 
 export function getProjectInfo() {
-  const projectFolder = getActiveFolder();
-  // project
-  const project = getFolderInfo(projectFolder);
-  project.name = project.name.replace('Sheetbase: ', '');
-  // database
-  const database = getFileInfo(
-    getFileByName(projectFolder, project.name + ' Database'),
-  );
-  // backend
-  const backend = getFileInfo(
-    getFileByName(projectFolder, project.name + ' Backend'),
-  );
-  // upload
-  const upload = getFolderInfo(
-    getFolderByName(project.name + ' Upload', projectFolder),
-  );
-  // result
-  return { project, database, backend, upload };
+  const getInfo = () => {
+    const projectFolder = getActiveFolder();
+    // info
+    const project = getFolderInfo(projectFolder);
+    project.name = project.name.replace('Sheetbase: ', '');
+    const database = getFileInfo(
+      getFileByName(projectFolder, project.name + ' Database'),
+    );
+    const backend = getFileInfo(
+      getFileByName(projectFolder, project.name + ' Backend'),
+    );
+    const upload = getFolderInfo(
+      getFolderByName(project.name + ' Upload', projectFolder),
+    );
+    return { project, database, backend, upload };
+  };
+  return getCacheRefresh('SETTINGS_PROJECT_INFO', getInfo, 21600);
 }

@@ -1,3 +1,5 @@
+// https://developers.google.com/apps-script/reference/url-fetch/url-fetch-app
+
 type FetchMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
 export function fetch(

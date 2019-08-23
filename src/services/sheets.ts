@@ -1,5 +1,7 @@
 import { displayError } from './ui';
 
+// https://developers.google.com/apps-script/reference/spreadsheet/spreadsheet-app
+
 export function getData(
   spreadsheetId?: string,
   rangeA1?: string,

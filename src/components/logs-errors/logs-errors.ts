@@ -10,25 +10,25 @@ const app = new Vue({
   el: '#vue',
   data: {
     ready: false,
-    googleCloudId: '',
+    gcpId: '',
   },
   methods: {
 
-    getSettings () {
+    getGCPId () {
       const _this = this;
       return google.script.run
-      .withSuccessHandler<any>(settings => {
-        _this.googleCloudId = settings['SETTING_GG_CLOUD_ID'];
+      .withSuccessHandler<string>(gcpId => {
+        _this.gcpId = gcpId;
         return _this.ready = true;
       })
       .withFailureHandler(errorAlert)
-      .getProperties();
+      .getProperty('SETTING_GCP_ID');
     },
 
   },
 
   created () {
-    this.getSettings();
+    this.getGCPId();
   },
 
 });

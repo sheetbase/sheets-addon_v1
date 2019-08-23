@@ -20,19 +20,19 @@
 
     <div class="body" v-else>
 
-      <div class="no-items" v-if="!googleCloudId">
+      <div class="no-items" v-if="!gcpId">
         Please set the <em>Google Cloud Project ID</em> in the <strong>Settings</strong>.
       </div>
   
       <ul class="items" v-else>
         <li class="item">
-          <a :href="'https://console.cloud.google.com/logs/viewer?resource=app_script_function&project=' + googleCloudId">
+          <a :href="'https://console.cloud.google.com/logs/viewer?resource=app_script_function&project=' + gcpId">
             <img src="https://img.icons8.com/nolan/32/000000/log.png">
             <span>Logs</span>
           </a>
         </li>
         <li class="item">
-          <a :href="'https://console.cloud.google.com/errors?time=P7D&order=COUNT_DESC&resolution=OPEN&resolution=ACKNOWLEDGED&project=' + googleCloudId">
+          <a :href="'https://console.cloud.google.com/errors?time=P7D&order=COUNT_DESC&resolution=OPEN&resolution=ACKNOWLEDGED&project=' + gcpId">
             <img src="https://img.icons8.com/flat_round/32/000000/error--v3.png">
             <span>Errors</span>
           </a>

@@ -1,5 +1,7 @@
 import { fetchGet } from './fetch';
 
+// https://developers.google.com/apps-script/reference/document/document-app
+
 export function getDocsContent(docId: string, clean = true) {
   // send request
   const response = fetchGet(

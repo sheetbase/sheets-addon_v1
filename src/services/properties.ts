@@ -1,3 +1,5 @@
+// https://developers.google.com/apps-script/reference/properties/properties
+
 export function getProperty(key: string) {
   return PropertiesService.getDocumentProperties()
   .getProperty(key);

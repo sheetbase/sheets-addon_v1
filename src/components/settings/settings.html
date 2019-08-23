@@ -45,8 +45,8 @@
             <h1 class="title">{{ projectInfo.project.name }}</h1>
             <ul class="meta">
               <li v-if="!!homepage">Homepage: <a :href="homepage">{{ homepage }}</a></li>
-              <li>Drive: <a :href="'https://drive.google.com/drive/folders/' + projectInfo.project.id">{{ projectInfo.project.id }}</a></li>
-              <li v-if="!!googleCloudId">GCP: <a :href="'https://console.cloud.google.com/home/dashboard?project=' + googleCloudId">{{ googleCloudId }}</a></li>
+              <li>Project ID: <a :href="'https://drive.google.com/drive/folders/' + projectInfo.project.id">{{ projectInfo.project.id }}</a></li>
+              <li v-if="!!gcpId">GCP: <a :href="'https://console.cloud.google.com/home/dashboard?project=' + gcpId">{{ gcpId }}</a></li>
             </ul>
           </div>
 
@@ -100,12 +100,12 @@
           <div class="form-group">
             <label class="label">
               <span>Google project</span>
-              <input class="input" type="text" v-model="googleCloudId" placeholder="Google Cloud project ID ..." />
+              <input class="input" type="text" v-model="gcpId" placeholder="Google Cloud project ID ..." />
             </label>
             <div class="actions">
               <a
-                v-if="!!googleCloudId"
-                :href="'https://console.cloud.google.com/home/dashboard?project=' + googleCloudId"
+                v-if="!!gcpId"
+                :href="'https://console.cloud.google.com/home/dashboard?project=' + gcpId"
               >View</a>
             </div>
           </div>
