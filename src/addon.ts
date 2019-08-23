@@ -16,6 +16,15 @@ function htmlEditorSidebar() {
   );
 }
 
+// Linking Editor
+function linkingEditorSidebar() {
+  return SpreadsheetApp.getUi().showSidebar(
+    HtmlService
+    .createHtmlOutputFromFile('LinkingEditor')
+    .setTitle('Linking Editor'),
+  );
+}
+
 // Logs & Errors
 function logsErrorsDialog() {
   return SpreadsheetApp.getUi().showModalDialog(
@@ -39,6 +48,7 @@ function onOpen(e) {
   return SpreadsheetApp.getUi().createMenu('Sheetbase')
   .addItem('JSON Editor', 'jsonEditorSidebar')
   .addItem('HTML Editor', 'htmlEditorSidebar')
+  .addItem('Linking Editor', 'linkingEditorSidebar')
   .addSeparator()
   .addItem('Logs & Errors', 'logsErrorsDialog')
   .addItem('Settings', 'settingsDialog')
