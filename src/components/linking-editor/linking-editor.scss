@@ -1,30 +1,30 @@
-.addon-wrapper {
-  width: 100%;
-  border: 1px solid #d9d9d9;
-  
-  .addon-head {
-    padding: 1rem;
-    border-bottom: 1px solid #d9d9d9;
-  }
-  
-  .addon-body {
-    overflow-x: hidden;
-    overflow-y: scroll;
-  }
-  
-  .addon-foot {
-    padding: .1rem 1rem;
-    border-top: 1px solid #d9d9d9;
-  }
-
-}
-
 @import '../../theming/index.scss';
 
 main {
 
-  .body {
-    height: 300px;
+  #linking-editor {
+
+    .head {
+  
+    }
+  
+    .body {
+      height: 500px;
+      padding: 1rem;
+    }
+  
+    .foot {
+      padding: 1rem;
+    }
+
+  }
+
+  .preview {
+    margin-top: 1rem;
+
+    pre.data {
+      margin-top: 0;
+    }
   }
 
 }

@@ -106,3 +106,16 @@ function transformValue_(values: any[], noHeaders = false) {
   // result
   return items;
 }
+
+export function getAllSheets(spreadsheetId?: string) {
+  const spreadsheet = !!spreadsheetId ?
+  SpreadsheetApp.openById(spreadsheetId) :
+  SpreadsheetApp.getActiveSpreadsheet();
+  return spreadsheet.getSheets();
+}
+
+export function getAllSheetNames(spreadsheetId?: string) {
+  const names: string[] = [];
+  getAllSheets(spreadsheetId).forEach(sheet => names.push(sheet.getName()));
+  return names;
+}

@@ -6,3 +6,4 @@ export { displayError } from './services/ui';
 
 // tool specific functions
 export * from './components/settings/settings.server';
+export * from './components/linking-editor/linking-editor.server';
