@@ -2,7 +2,19 @@
 
 main {
 
-  display: flex;
+  .loading {
+    width: 100%;
+    text-align: center;
+    padding-top: 8rem;
+
+    img {
+      width: 100px;
+    }
+  }
+
+  .body {
+    display: flex;
+  }
   
   .menu {
     margin: 0;
@@ -25,81 +37,72 @@ main {
   .pages {
     flex: 1;
   
+    // general page
     .general {
-
-      .placeholder {
-        padding-left: 10rem;
-        padding-top: 0;
   
-        img {
-          width: 100px;
+      .project {
+
+        .title {
+          font-size: 2rem;
+          margin-top: 1rem;
         }
-      }
-  
-      .display {
-  
-        .project {
 
-          .title {
-            font-size: 2rem;
-            margin-top: 1rem;
-          }
-
-          .meta {
-            margin-left: 1rem;
-            padding-left: 1rem;
-            font-size: 1rem;
-
-            li {
-              margin-top: .5rem;
-            }
-          }
-
-        }
-  
-        .services {
-          @include list-flex;
+        .meta {
+          margin: 0;
+          padding: 0;
+          margin-left: 1rem;
           margin-top: 2rem;
-          padding-top: 2rem;
-          border-top: 1px solid #{addon-color('light')};
+          font-size: 1rem;
+
+          li {
+            margin-top: .5rem;
+          }
+        }
+
+      }
+
+      .services {
+        @include list-flex;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #{addon-color('light')};
+        
+        .service {
+          margin-right: 1rem;
           
-          .service {
-            margin-right: 1rem;
-            
-            a {
-              display: flex;
-              align-items: center;
-              color: addon-color('dark');
-              padding: 1rem 1.5rem;
-              border: 1px solid #{addon-color('light')};
-              text-transform: uppercase;
+          a {
+            display: flex;
+            align-items: center;
+            color: addon-color('dark');
+            padding: 1rem 1.5rem;
+            border: 1px solid #{addon-color('light')};
+            text-transform: uppercase;
 
-              img {
-                width: 1.5rem;
-              }
+            img {
+              width: 1.5rem;
+            }
 
-              span {
-                flex: 1;
-                margin-left: 1rem;
-              }
-
-              &:hover {
-                text-decoration: none;
-              }
+            span {
+              flex: 1;
+              margin-left: 1rem;
             }
 
             &:hover {
-              background: addon-color('light');
+              text-decoration: none;
             }
-
           }
-  
+
+          &:hover {
+            background: addon-color('light');
+          }
+
         }
-  
+
       }
   
     }
-  
+    
+    // settings page
     .settings {
 
       h2 {
@@ -153,7 +156,8 @@ main {
       }
   
     }
-  
+    
+    // about page
     .about {
       
       h3 {

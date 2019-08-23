@@ -9,6 +9,7 @@ declare const errorAlert: ErrorAlert;
 const app = new Vue({
   el: '#vue',
   data: {
+    ready: false,
     page: 'general',
     // page: general
     projectInfo: null,
@@ -35,7 +36,10 @@ const app = new Vue({
     getProjectInfo () {
       const _this = this;
       return google.script.run
-      .withSuccessHandler<any>(info => _this.projectInfo = info)
+      .withSuccessHandler<any>(info => {
+        _this.projectInfo = info;
+        return _this.ready = true;
+      })
       .withFailureHandler(errorAlert)
       .getProjectInfo();
     },
@@ -60,8 +64,8 @@ const app = new Vue({
   },
 
   created () {
-    this.getSettings();
     this.getProjectInfo();
+    this.getSettings();
   },
 
 });

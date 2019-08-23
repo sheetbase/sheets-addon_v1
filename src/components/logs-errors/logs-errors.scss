@@ -1,0 +1,57 @@
+@import '../../theming/index.scss';
+
+main {
+
+  .loading {
+    width: 100%;
+    text-align: center;
+    padding-top: 8rem;
+
+    img {
+      width: 100px;
+    }
+  }
+  
+  .items {
+    @include list-flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 3rem;
+    
+    .item {
+      margin-right: 2rem;
+      
+      a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+        color: addon-color('dark');
+        border: 1px solid #{addon-color('light')};
+        padding: 2rem;
+        width: 12rem;
+
+        img {
+          width: 2rem;
+        }
+
+        span {
+          flex: 1;
+          margin-left: 1rem;
+          font-size: 1.5rem;
+        }
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+
+      &:hover {
+        background: addon-color('light');
+      }
+
+    }
+
+  }
+
+}

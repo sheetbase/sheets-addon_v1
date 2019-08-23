@@ -16,6 +16,10 @@
 
 */
 
+[v-cloak] {
+  display: none;
+}
+
 .container {
   padding: 1rem;
 }

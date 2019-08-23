@@ -12,33 +12,33 @@
 
 <body>
 
-  <main class="container" id="vue">
+  <main class="container" id="vue" v-cloak>
 
-    <ul class="menu">
-      <li class="general"
-        :class="{'active': page==='general'}"
-        v-on:click="page='general'"
-      >General</li>
-      <li class="settings"
-        :class="{'active': page==='settings'}"
-        v-on:click="page='settings'"
-      >Settings</li>
-      <li class="about"
-        :class="{'active': page==='about'}"
-        v-on:click="page='about'"
-      >About</li>
-    </ul>
+    <div class="loading" v-if="!ready">
+      <img src="https://sheetbase.dev/assets/images/logo.png" alt="Sheetbase">
+    </div>
 
-    <div class="pages">
+    <div class="body" v-else>
 
-      <div class="page general" v-if="page==='general'">
-
-        <div class="placeholder" v-if="!projectInfo">
-          <img src="https://sheetbase.dev/assets/images/logo.png" alt="Sheetbase">
-        </div>
-
-        <div class="display" v-else>
-
+      <ul class="menu">
+        <li class="general"
+          :class="{'active': page==='general'}"
+          v-on:click="page='general'"
+        >General</li>
+        <li class="settings"
+          :class="{'active': page==='settings'}"
+          v-on:click="page='settings'"
+        >Settings</li>
+        <li class="about"
+          :class="{'active': page==='about'}"
+          v-on:click="page='about'"
+        >About</li>
+      </ul>
+  
+      <div class="pages">
+  
+        <div class="page general" v-if="page==='general'">
+  
           <div class="project"
             v-if="!!projectInfo.project"
           >
@@ -80,77 +80,77 @@
             </li>
 
           </ul>
-
+  
         </div>
-
-      </div>
-
-      <div class="page settings" v-if="page==='settings'">
-
-        <h2>Settings</h2>
-
-        <div class="form-group">
-          <label class="label">
-            <span>Homepage</span>
-            <input class="input" type="text" v-model="homepage" placeholder="App homepage ..." />
-          </label>
-          <div class="actions">
-            <a :href="homepage || 'https://sheetbase.dev'">View</a>
+  
+        <div class="page settings" v-if="page==='settings'">
+  
+          <h2>Settings</h2>
+  
+          <div class="form-group">
+            <label class="label">
+              <span>Homepage</span>
+              <input class="input" type="text" v-model="homepage" placeholder="App homepage ..." />
+            </label>
+            <div class="actions">
+              <a :href="homepage || 'https://sheetbase.dev'">View</a>
+            </div>
           </div>
-        </div>
-
-        <div class="form-group">
-          <label class="label">
-            <span>Google project</span>
-            <input class="input" type="text" v-model="googleCloudId" placeholder="Google Cloud project ID ..." />
-          </label>
-          <div class="actions">
-            <a
-              v-if="!!googleCloudId"
-              :href="'https://console.cloud.google.com/home/dashboard?project=' + googleCloudId"
-            >View</a>
+  
+          <div class="form-group">
+            <label class="label">
+              <span>Google project</span>
+              <input class="input" type="text" v-model="googleCloudId" placeholder="Google Cloud project ID ..." />
+            </label>
+            <div class="actions">
+              <a
+                v-if="!!googleCloudId"
+                :href="'https://console.cloud.google.com/home/dashboard?project=' + googleCloudId"
+              >View</a>
+            </div>
           </div>
+  
+          <div class="submit">
+            <button class="button action" v-on:click="saveSettings()">Save</button>
+            <div :class="['message', settingsMsg.type]" v-if="!!settingsMsg">{{ settingsMsg.message }}</div>
+          </div>
+  
         </div>
-
-        <div class="submit">
-          <button class="button action" v-on:click="saveSettings()">Save</button>
-          <div :class="['message', settingsMsg.type]" v-if="!!settingsMsg">{{ settingsMsg.message }}</div>
+  
+        <div class="page about" v-if="page==='about'">
+  
+          <h2>About</h2>
+  
+          <div class="addon">
+  
+            <h3>Sheets Add-on</h3>
+            <p>A Google Sheets add-on for managing a Sheetbase project.</p>
+  
+            <ul>
+              <li>Homepage: <a href="https://sheetbase.dev">https://sheetbase.dev</a></li>
+              <li>Version: 1.0.0</li>
+              <li>License: MIT</li>
+              <li>Sourcecode: <a href="https://github.com/sheetbase/sheets-addon">https://github.com/sheetbase/sheets-addon</a></li>
+            </ul>
+  
+          </div>
+  
+          <div class="libs">
+  
+            <h3>Third-party libraries</h3>
+            <p>This add-on is made possible by these great open-source libraries:</p>
+  
+            <ul>
+              <li>VueJS (MIT): <a href="https://vuejs.org">https://vuejs.org</a></li>
+              <li>TinyMCE (LGPL-2.1): <a href="https://www.tiny.cloud">https://www.tiny.cloud</a></li>
+              <li>Jsoneditor (Apache-2.0): <a href="http://jsoneditoronline.org">http://jsoneditoronline.org</a></li>
+              <li>And others: NodeJS, Clasp, Typescript, Rollup, ...</li>
+            </ul>
+  
+          </div>
+  
         </div>
-
-      </div>
-
-      <div class="page about" v-if="page==='about'">
-
-        <h2>About</h2>
-
-        <div class="addon">
-
-          <h3>Sheets Add-on</h3>
-          <p>A Google Sheets add-on for managing a Sheetbase project.</p>
-
-          <ul>
-            <li>Homepage: <a href="https://sheetbase.dev">https://sheetbase.dev</a></li>
-            <li>Version: 1.0.0</li>
-            <li>License: MIT</li>
-            <li>Sourcecode: <a href="https://github.com/sheetbase/sheets-addon">https://github.com/sheetbase/sheets-addon</a></li>
-          </ul>
-
-        </div>
-
-        <div class="libs">
-
-          <h3>Third-party libraries</h3>
-          <p>This add-on is made possible by these great open-source libraries:</p>
-
-          <ul>
-            <li>VueJS (MIT): <a href="https://vuejs.org">https://vuejs.org</a></li>
-            <li>TinyMCE (LGPL-2.1): <a href="https://www.tiny.cloud">https://www.tiny.cloud</a></li>
-            <li>Jsoneditor (Apache-2.0): <a href="http://jsoneditoronline.org">http://jsoneditoronline.org</a></li>
-            <li>And others: NodeJS, Clasp, Typescript, Rollup, ...</li>
-          </ul>
-
-        </div>
-
+  
       </div>
 
     </div>

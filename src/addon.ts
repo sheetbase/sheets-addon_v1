@@ -13,10 +13,19 @@ function htmlEditorSidebar() {
     .setTitle('HTML Editor'),
   );
 }
+
+function logsErrorsDialog() {
+  return SpreadsheetApp.getUi().showModalDialog(
+    HtmlService
+    .createHtmlOutputFromFile('LogsErrors').setWidth(720).setHeight(480),
+    'Project monitoring',
+  );
+}
+
 function settingsDialog() {
   return SpreadsheetApp.getUi().showModalDialog(
     HtmlService
-    .createHtmlOutputFromFile('Settings').setWidth(700).setHeight(500),
+    .createHtmlOutputFromFile('Settings').setWidth(720).setHeight(480),
     'Sheetbase project',
   );
 }
@@ -26,6 +35,7 @@ function onOpen(e) {
   .addItem('JSON Editor', 'jsonEditorSidebar')
   .addItem('HTML Editor', 'htmlEditorSidebar')
   .addSeparator()
+  .addItem('Logs & Errors', 'logsErrorsDialog')
   .addItem('Settings', 'settingsDialog')
   .addToUi();
 }

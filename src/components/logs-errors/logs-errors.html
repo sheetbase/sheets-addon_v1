@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <base target="_blank">
+
+  <!-- Addon -->
+  <link rel="stylesheet" href="https://sheetbase.github.io/sheets-addon/css/addon.css">
+  <link rel="stylesheet" href="https://sheetbase.github.io/sheets-addon/css/add-ons1.css">
+
+</head>
+
+<body>
+
+  <main class="container" id="vue" v-cloak>
+
+    <div class="loading" v-if="!ready">
+      <img src="https://sheetbase.dev/assets/images/logo.png" alt="Sheetbase">
+    </div>
+
+    <div class="body" v-else>
+
+      <div class="no-items" v-if="!googleCloudId">
+        Please set the <em>Google Cloud Project ID</em> in the <strong>Settings</strong>.
+      </div>
+  
+      <ul class="items" v-else>
+        <li class="item">
+          <a :href="'https://console.cloud.google.com/logs/viewer?resource=app_script_function&project=' + googleCloudId">
+            <img src="https://img.icons8.com/nolan/32/000000/log.png">
+            <span>Logs</span>
+          </a>
+        </li>
+        <li class="item">
+          <a :href="'https://console.cloud.google.com/errors?time=P7D&order=COUNT_DESC&resolution=OPEN&resolution=ACKNOWLEDGED&project=' + googleCloudId">
+            <img src="https://img.icons8.com/flat_round/32/000000/error--v3.png">
+            <span>Errors</span>
+          </a>
+        </li>
+      </ul>
+  
+    </div>
+
+  </main>
+
+  <!-- Vue -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+
+  <!-- Addon -->
+  <script src="https://sheetbase.github.io/sheets-addon/js/addon.js"></script>
+
+</body>
+
+</html>
