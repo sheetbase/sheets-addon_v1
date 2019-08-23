@@ -13,8 +13,9 @@ const app = new Vue({
     // page: general
     projectInfo: null,
     // page: settings
-    homepage: '',
     settingsMsg: null,
+    homepage: '',
+    googleCloudId: '',
     // page: info
     // ...
   },
@@ -25,6 +26,7 @@ const app = new Vue({
       return google.script.run
       .withSuccessHandler<any>(settings => {
         _this.homepage = settings['SETTING_HOMEPAGE'];
+        _this.googleCloudId = settings['SETTING_GG_CLOUD_ID'];
       })
       .withFailureHandler(errorAlert)
       .getProperties();
@@ -51,6 +53,7 @@ const app = new Vue({
       .withFailureHandler(errorAlert)
       .setProperties({
         SETTING_HOMEPAGE: _this.homepage,
+        SETTING_GG_CLOUD_ID: _this.googleCloudId,
       });
     },
 

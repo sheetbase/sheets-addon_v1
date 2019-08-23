@@ -15,9 +15,18 @@
   <main class="container" id="vue">
 
     <ul class="menu">
-      <li class="general" v-on:click="page='general'">General</li>
-      <li class="settings" v-on:click="page='settings'">Settings</li>
-      <li class="about" v-on:click="page='about'">About</li>
+      <li class="general"
+        :class="{'active': page==='general'}"
+        v-on:click="page='general'"
+      >General</li>
+      <li class="settings"
+        :class="{'active': page==='settings'}"
+        v-on:click="page='settings'"
+      >Settings</li>
+      <li class="about"
+        :class="{'active': page==='about'}"
+        v-on:click="page='about'"
+      >About</li>
     </ul>
 
     <div class="pages">
@@ -34,10 +43,11 @@
             v-if="!!projectInfo.project"
           >
             <h1 class="title">{{ projectInfo.project.name }}</h1>
-            <div class="meta">
-              <span>Drive ID:</span>
-              <a :href="'https://drive.google.com/drive/folders/' + projectInfo.project.id">{{ projectInfo.project.id }}</a>
-            </div>
+            <ul class="meta">
+              <li v-if="!!homepage">Homepage: <a :href="homepage">{{ homepage }}</a></li>
+              <li>Drive: <a :href="'https://drive.google.com/drive/folders/' + projectInfo.project.id">{{ projectInfo.project.id }}</a></li>
+              <li v-if="!!googleCloudId">GCP: <a :href="'https://console.cloud.google.com/home/dashboard?project=' + googleCloudId">{{ googleCloudId }}</a></li>
+            </ul>
           </div>
 
           <ul class="services">
@@ -84,8 +94,21 @@
             <span>Homepage</span>
             <input class="input" type="text" v-model="homepage" placeholder="App homepage ..." />
           </label>
-          <div class="action">
+          <div class="actions">
             <a :href="homepage || 'https://sheetbase.dev'">View</a>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label">
+            <span>Google project</span>
+            <input class="input" type="text" v-model="googleCloudId" placeholder="Google Cloud project ID ..." />
+          </label>
+          <div class="actions">
+            <a
+              v-if="!!googleCloudId"
+              :href="'https://console.cloud.google.com/home/dashboard?project=' + googleCloudId"
+            >View</a>
           </div>
         </div>
 

@@ -15,7 +15,7 @@ main {
       color: addon-color('medium');
       cursor: pointer;
 
-      &:hover {
+      &:hover, &.active {
         color: addon-color('dark');
       }
     }
@@ -41,15 +41,17 @@ main {
         .project {
 
           .title {
-            font-size: 3rem;
+            font-size: 2rem;
             margin-top: 1rem;
           }
 
           .meta {
-            font-size: 1.1rem;
+            margin-left: 1rem;
+            padding-left: 1rem;
+            font-size: 1rem;
 
-            span, a {
-              color: addon-color('medium');
+            li {
+              margin-top: .5rem;
             }
           }
 
@@ -122,7 +124,7 @@ main {
           }
         }
 
-        .action {
+        .actions {
           width: 5rem;
           margin-left: 2rem;
           margin-top: 2rem;
@@ -141,8 +143,8 @@ main {
         margin-top: 3rem;
 
         .message {
-          margin-top: .25rem;
-          margin-left: 2rem;
+          margin-top: .5rem;
+          margin-left: 1rem;
 
           &.success {
             color: addon-color('success');
