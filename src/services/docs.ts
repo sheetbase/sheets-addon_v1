@@ -10,7 +10,7 @@ export function getDocsContent(docId: string, clean = true) {
       headers: {
         Authorization: 'Bearer ' + ScriptApp.getOAuthToken(),
       },
-      muteHttpExceptions:true,
+      muteHttpExceptions: true,
     },
   );
   // proccess content

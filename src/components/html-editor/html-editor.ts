@@ -66,7 +66,7 @@ const app = new Vue({
         return google.script.run
         .withSuccessHandler(successHandler)
         .withFailureHandler(errorAlert)
-        .getDocsContent(this.docId, this.docStyle);
+        .getDocsContent(this.docId, !this.docStyle);
       }
     },
 
