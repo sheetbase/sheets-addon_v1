@@ -22,9 +22,9 @@
 
           <select class="select"
             v-model="selectedSource"
-            @change="!!selectedSource ? loadItems() : false;"
+            @change="changeSource()"
           >
-            <option class="option" selected disabled>Select a source</option>
+            <option class="option" disabled>Linking source</option>
             <option class="option"
               v-for="value in sources"
               :value="value"
@@ -36,6 +36,12 @@
 
         <div class="filter">
           <input class="input" type="text" placeholder="Filter items ...">
+          <button class="only-selected"
+            :class="{'active': !!showSelectedOnly}"
+            v-on:click="showSelectedOnly=!showSelectedOnly"
+          >
+            <img src="https://img.icons8.com/material-outlined/16/000000/checked-checkbox.png">
+          </button>
           <div class="layouts">
             <button class="layout list"
               :class="{'active': layout === 'list'}"
@@ -59,7 +65,10 @@
         <ul :class="['items', layout]">
           <li class="item"
             v-for="item in items"
-            :class="{'active': !!selectedItems[item.$key] }"
+            :class="{
+              'active': !!selectedItems[item.$key],
+              'not-visible': !isVisible(item)
+            }"
             v-on:click="selectItem(item)"
           >
 
@@ -68,8 +77,8 @@
             </div>
 
             <div class="info">
-              <h3 class="title">{{ item.title || item.name || item.displayName || 'N/A' }}</h3>
-              <p class="description">{{ item.description || item.excerpt || item.email || '...' }}</p>
+              <h3 class="title">{{ item.title || item.displayName || item.$key }}</h3>
+              <p class="description">{{ item.excerpt || item.description || ('#' + item['#']) }}</p>
             </div>
 
           </li>
@@ -81,6 +90,13 @@
 
         <div class="linking-modes">
           <div class="modes">
+            <button class="mode text"
+              :class="{'active': mode === 'text'}"
+              v-on:click="mode='text'"
+            >
+              <img src="https://img.icons8.com/material-sharp/16/000000/text-color.png">
+            </button>
+            <!-- | -->
             <button class="mode key"
               :class="{'active': mode === 'key'}"
               v-on:click="mode='key'"
@@ -93,12 +109,6 @@
             >
               <img src="https://img.icons8.com/material/16/000000/header-1--v1.png">
             </button>
-            <button class="mode text"
-              :class="{'active': mode === 'text'}"
-              v-on:click="mode='text'"
-            >
-              <img src="https://img.icons8.com/material-sharp/16/000000/text-color.png">
-            </button>
             <button class="mode custom"
               :class="{'active': mode === 'custom'}"
               v-on:click="mode='custom'"
@@ -107,13 +117,13 @@
             </button>
           </div>
 
-          <div class="fields" v-if="mode==='custom'">
-            <input class="input" type="text" v-bind="fields" placeholder="Field list, saperated by commas ...">
+          <div class="custom-fields" v-if="mode==='custom'">
+            <input class="input" type="text" v-bind="customFields" placeholder="Field list, saperated by spaces ...">
           </div>
 
           <div class="extra">
-            <label class="label">
-              <input class="input" type="checkbox" v-model="withSource">
+            <label class="label including-source" v-if="mode!=='text'">
+              <input class="input" type="checkbox" v-model="includingSource">
               <span>Including source</span>
             </label>
           </div>
@@ -138,7 +148,7 @@
 
       <fieldset class="fieldset preview">
         <legend class="legend">Preview:</legend>
-        <pre class="data"><code>{{ getPreview() || 'Please select at least one item.' }}</code></pre>
+        <pre class="data"><code>{{ getResultAsString(true) || 'Please select at least one item.' }}</code></pre>
       </fieldset>
 
     </section>
