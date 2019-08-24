@@ -12,46 +12,62 @@
 
 <body>
 
-  <main class="container">
+  <div class="container">
 
-    <textarea id="tinymce"></textarea>
+    <main>
 
-    <section id="vue">
+      <textarea class="master" id="tinymce"></textarea>
 
-      <div class="editor margin-top">  
-        <button class="button" v-on:click="getHTML()">Get &rarr;</button>    
-        <button class="button" v-on:click="clearHTML()">Clear</button>
-        <button class="button action right" v-on:click="setHTML()">&larr; Set</button>
-      </div>
+      <div id="vue">
+
+        <!-- 1st -->
+        <section class="alpha">
   
-      <fieldset class="fieldset loader">
-        <legend class="legend">Load content from Google Docs:</legend>
-        <div class="body">
-    
-          <div class="form-group">
-    
-            <input class="input" type="text" placeholder="A Google Docs document id ..." v-model="docId">
-  
-            <div class="meta">
-              <label class="label">
-                <input class="input" type="checkbox" v-model="docStyle">
-                <span>Keep Docs style</span>
-              </label>
-            </div>  
-    
-          </div>
-    
           <div class="margin-top">
-            <button class="button action" v-on:click="loadDocContent()">Load</button>
-            <button class="button right" :disabled="!docId" v-on:click="viewDoc()">View</button>
+            <button class="button" v-on:click="getHTML()">Get &rarr;</button>    
+            <button class="button" v-on:click="clearHTML()">Clear</button>
+            <button class="button action right" v-on:click="setHTML()">&larr; Set</button>
           </div>
-    
-        </div>  
-      </fieldset>
 
-    </section>
+          <!-- Save to .html file option ... -->
+  
+        </section>
+        
+        <!-- 2nd -->
+        <section class="bravo">
+          
+          <fieldset class="fieldset loader">
+            <legend class="legend">Load content from Google Docs:</legend>
+            <div class="content">
+        
+              <div class="form-group">
+        
+                <input class="input" type="text" placeholder="A Google Docs document id ..." v-model="docId">
+      
+                <div class="meta">
+                  <label class="label">
+                    <input class="input" type="checkbox" v-model="docStyle">
+                    <span>Keep Docs style</span>
+                  </label>
+                </div>  
+        
+              </div>
+        
+              <div class="margin-top">
+                <button class="button action" v-on:click="loadDocContent()">Load</button>
+                <button class="button right" :disabled="!docId" v-on:click="viewDoc()">View</button>
+              </div>
+        
+            </div>  
+          </fieldset>
+  
+        </section>
 
-  </main>
+      </div>
+
+    </main>
+
+  </div>
 
   <!-- Vue -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>

@@ -3,10 +3,6 @@
 main {
 
   #linking-editor {
-
-    .head {
-  
-    }
   
     .body {
       height: 500px;
@@ -19,12 +15,16 @@ main {
 
   }
 
-  .preview {
-    margin-top: 1rem;
+  section.bravo {
 
-    pre.data {
-      margin-top: 0;
+    .preview {
+      margin-top: 1rem;
+
+      .content pre {
+        margin-top: 0;
+      }  
     }
+
   }
 
 }

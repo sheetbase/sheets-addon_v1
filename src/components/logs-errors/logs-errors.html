@@ -12,11 +12,11 @@
 
 <body>
 
-  <main id="vue" v-cloak>
+  <div class="container" id="vue" v-cloak>
 
     <div class="loading" v-if="!ready"></div>
-
-    <div class="content" v-else>
+  
+    <main v-else>
 
       <div class="no-items" v-if="!gcpId">
         Please set the <em>Google Cloud Project ID</em> in the <strong>Settings</strong>.
@@ -37,9 +37,9 @@
         </li>
       </ul>
   
-    </div>
+    </main>
 
-  </main>
+  </div>
 
   <!-- Vue -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>

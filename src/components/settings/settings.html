@@ -12,11 +12,11 @@
 
 <body>
 
-  <main id="vue" v-cloak>
+  <div class="container" id="vue" v-cloak>
 
     <div class="loading" v-if="!ready"></div>
-
-    <div class="content" v-else>
+  
+    <main v-else>
 
       <ul class="menu">
         <li class="general"
@@ -47,9 +47,9 @@
               <li v-if="!!gcpId">GCP: <a :href="'https://console.cloud.google.com/home/dashboard?project=' + gcpId">{{ gcpId }}</a></li>
             </ul>
           </div>
-
+  
           <ul class="services">
-
+  
             <li class="service database" v-if="!!projectInfo.database">
               <a
                 :href="'https://docs.google.com/spreadsheets/d/' + projectInfo.database.id + '/edit'"
@@ -58,7 +58,7 @@
                 <span>Database</span>
               </a>
             </li>
-
+  
             <li class="service backend" v-if="!!projectInfo.backend">
               <a
                 :href="'https://script.google.com/d/' + projectInfo.backend.id + '/edit'"
@@ -67,7 +67,7 @@
                 <span>Backend</span>
               </a>
             </li>
-
+  
             <li class="service upload" v-if="!!projectInfo.upload">
               <a
                 :href="'https://drive.google.com/drive/folders/' + projectInfo.upload.id"
@@ -76,7 +76,7 @@
                 <span>Upload</span>
               </a>
             </li>
-
+  
           </ul>
   
         </div>
@@ -150,10 +150,10 @@
         </div>
   
       </div>
+  
+    </main>
 
-    </div>
-
-  </main>
+  </div>
 
   <!-- Vue -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>

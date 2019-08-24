@@ -1,7 +1,7 @@
 @import '../../theming/index.scss';
 
 main {
-  
+
   .items {
     @include list-flex;
     justify-content: center;

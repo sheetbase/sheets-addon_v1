@@ -19,6 +19,7 @@ type LinkingValue = true | string | Item;
 const app = new Vue({
   el: '#vue',
   data: {
+    ready: false,
     // data
     linkingData: null as {
       [$key: string]: LinkingValue;
@@ -97,7 +98,10 @@ const app = new Vue({
      */
 
     loadSources () {
-      const successHandler = (sources: string[]) => this.sources = sources;
+      const successHandler = (sources: string[]) => {
+        this.sources = sources;
+        return this.ready = true;
+      };
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)

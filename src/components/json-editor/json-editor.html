@@ -15,21 +15,32 @@
 
 <body>
 
-  <main class="container">
+  <div class="container">
 
-    <section id="jsoneditor"></section>
+    <main>
 
-    <section id="vue">
+      <section id="jsoneditor"></section>
+  
+      <div id="vue">
 
-      <div class="editor margin-top">
-        <button class="button" v-on:click="getJSON()">Get &rarr;</button>
-        <button class="button" v-on:click="clearJSON()">Clear</button>
-        <button class="button action right" v-on:click="setJSON()">&larr; Set</button>
+        <!-- 1st -->
+        <section class="alpha">
+
+          <div class="margin-top">
+            <button class="button" v-on:click="getJSON()">Get &rarr;</button>
+            <button class="button" v-on:click="clearJSON()">Clear</button>
+            <button class="button action right" v-on:click="setJSON()">&larr; Set</button>
+          </div>
+
+          <!-- Save to .json file option ... -->
+
+        </section>
+
       </div>
+  
+    </main>
 
-    </section>  
-
-  </main>
+  </div>
 
   <!-- Vue -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>

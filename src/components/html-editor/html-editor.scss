@@ -1,19 +1,23 @@
-#tinymce {
-  width: 100%;
-  border-color: #ffffff; // hide border before tinymce fully loaded
-}
+main {
 
-.loader {
-  margin-top: 1rem;
+  #tinymce {
+    width: 100%;
+    border-color: #ffffff; // hide border before tinymce fully loaded
+  }
 
-  .form-group {
+  section.bravo {
 
-    input[type="text"] {
-      width: 100%;
-    }
+    .loader {
+      margin-top: 1rem;
 
-    .meta {
-      margin-top: .5rem;
+      .form-group {
+        input[type="text"] {
+          width: 100%;
+        }
+        .meta {
+          margin-top: .5rem;
+        }    
+      }
     }
 
   }
