@@ -9,7 +9,7 @@ main {
     margin-top: 3rem;
     
     .item {
-      margin-right: 2rem;
+      margin-bottom: 2rem;
       
       &:last-child {
         margin-right: 0;
@@ -22,8 +22,8 @@ main {
         text-transform: uppercase;
         color: addon-color('dark');
         border: 1px solid #{addon-color('light')};
-        padding: 2rem;
-        width: 14rem;
+        padding: 3rem;
+        width: 30rem;
 
         img {
           width: 2rem;
