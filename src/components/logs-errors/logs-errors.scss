@@ -1,16 +1,6 @@
 @import '../../theming/index.scss';
 
 main {
-
-  .loading {
-    width: 100%;
-    text-align: center;
-    padding-top: 8rem;
-
-    img {
-      width: 100px;
-    }
-  }
   
   .items {
     @include list-flex;

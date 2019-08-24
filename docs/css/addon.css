@@ -28,6 +28,17 @@
   padding: 1rem;
 }
 
+/* LOADING */
+
+.loading {
+  width: 100%;
+  height: 420px;
+  background: url('https://sheetbase.dev/assets/images/logo.png');
+  background-size: 100px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 /* FLOATING */
 
 .right {
@@ -131,40 +142,40 @@
 
 /* ADDON SHELL */
 
-.addon-wrapper {
+.shell {
   width: 100%;
   border: 1px solid #d9d9d9;
 }
-.addon-wrapper .addon-head {
+.shell .head {
   padding: 0.6rem 1rem;
   border-bottom: 1px solid #d9d9d9;
 }
-.addon-wrapper .addon-body {
+.shell .body {
   overflow-x: hidden;
   overflow-y: scroll;
 }
-.addon-wrapper .addon-foot {
+.shell .foot {
   padding: 0.1rem 1rem;
   border-top: 1px solid #d9d9d9;
 }
-.addon-wrapper.primary {
+.shell.primary {
   border: 1px solid #4d90fe;
 }
-.addon-wrapper.primary .addon-head {
+.shell.primary .head {
   background: #4d90fe;
 }
-.addon-wrapper.secondary .addon-head {
+.shell.secondary .head {
   background: #d9d9d9;
 }
-.addon-wrapper.success {
+.shell.success {
   border: 1px solid #3d9400;
 }
-.addon-wrapper.success .addon-head {
+.shell.success .head {
   background: #3d9400;
 }
-.addon-wrapper.danger {
+.shell.danger {
   border: 1px solid #dd4b39;
 }
-.addon-wrapper.danger .addon-head {
+.shell.danger .head {
   background: #dd4b39;
 }

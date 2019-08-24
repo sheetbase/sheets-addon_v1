@@ -14,11 +14,9 @@
 
   <main id="vue" v-cloak>
 
-    <div class="loading" v-if="!ready">
-      <img src="https://sheetbase.dev/assets/images/logo.png" alt="Sheetbase">
-    </div>
+    <div class="loading" v-if="!ready"></div>
 
-    <div class="body" v-else>
+    <div class="content" v-else>
 
       <div class="no-items" v-if="!gcpId">
         Please set the <em>Google Cloud Project ID</em> in the <strong>Settings</strong>.
