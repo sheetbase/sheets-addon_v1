@@ -15,12 +15,12 @@ const app = new Vue({
   methods: {
 
     getGCPId () {
-      const _this = this;
+      const successHandler = (gcpId: string) => {
+        this.gcpId = gcpId;
+        return this.ready = true;
+      };
       return google.script.run
-      .withSuccessHandler<string>(gcpId => {
-        _this.gcpId = gcpId;
-        return _this.ready = true;
-      })
+      .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
       .getProperty('SETTING_GCP_ID');
     },

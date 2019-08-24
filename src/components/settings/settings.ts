@@ -23,41 +23,41 @@ const app = new Vue({
   methods: {
 
     getSettings () {
-      const _this = this;
+      const successHandler = settings => {
+        this.homepage = settings['SETTING_HOMEPAGE'];
+        this.gcpId = settings['SETTING_GCP_ID'];
+      };
       return google.script.run
-      .withSuccessHandler<any>(settings => {
-        _this.homepage = settings['SETTING_HOMEPAGE'];
-        _this.gcpId = settings['SETTING_GCP_ID'];
-      })
+      .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
       .getProperties();
     },
 
     getProjectInfo () {
-      const _this = this;
+      const successHandler = info => {
+        this.projectInfo = info;
+        return this.ready = true;
+      };
       return google.script.run
-      .withSuccessHandler<any>(info => {
-        _this.projectInfo = info;
-        return _this.ready = true;
-      })
+      .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
       .getProjectInfo();
     },
 
     saveSettings () {
-      const _this = this;
-      return google.script.run
-      .withSuccessHandler<void>(() => {
-        setTimeout(() => _this.settingsMsg = null, 3000);
-        return _this.settingsMsg = {
+      const successHandler = () => {
+        setTimeout(() => this.settingsMsg = null, 3000);
+        return this.settingsMsg = {
           type: 'success',
           message: 'Setting updated!',
         };
-      })
+      };
+      return google.script.run
+      .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
       .setProperties({
-        SETTING_HOMEPAGE: _this.homepage,
-        SETTING_GCP_ID: _this.gcpId,
+        SETTING_HOMEPAGE: this.homepage,
+        SETTING_GCP_ID: this.gcpId,
       });
     },
 

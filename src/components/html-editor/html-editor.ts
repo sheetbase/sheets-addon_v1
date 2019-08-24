@@ -41,30 +41,30 @@ const app = new Vue({
      */
 
     getDocId () {
-      const _this = this;
+      const successHandler = (docId: string) => {
+        this.docId = docId;
+        return this.loadDocContent();
+      };
       return google.script.run
-      .withSuccessHandler<string>(docId => {
-        _this.docId = docId;
-        return _this.loadDocContent();
-      })
+      .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
       .getData();
     },
 
     loadDocContent () {
-      const _this = this;
       // try to load from the active cell
       if (!this.docId) {
-        return _this.getDocId();
+        return this.getDocId();
       } else {
-        // load content
-        return google.script.run
-        .withSuccessHandler<string>(html => {
+        const successHandler = (html: string) => {
           if(!html) {
-            return errorAlert('Can not get the content, the Docs ID may be in wrong format');
+            return errorAlert('Can not get the Doc content!');
           }
           return tinymce.activeEditor.setContent(html);
-        })
+        };
+        // load content
+        return google.script.run
+        .withSuccessHandler(successHandler)
         .withFailureHandler(errorAlert)
         .getDocsContent(this.docId, this.docStyle);
       }
