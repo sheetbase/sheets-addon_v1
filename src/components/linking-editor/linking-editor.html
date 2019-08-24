@@ -62,12 +62,22 @@
 
       <div class="addon-body body">
 
+        <div class="items-header" v-if="!!crossedItems">Other items</div>
+        <ul class="items" v-if="!!crossedItems">
+          <li class="item"
+            v-for="item in getCrossedItemList()"
+            :class="{'active': !item.excluded}"
+            v-on:click="item.excluded=!item.excluded"
+          >{{ item.title || item.$key }}</li>
+        </ul>
+        
+        <div class="items-header" v-if="!!crossedItems">Items</div>
         <ul :class="['items', layout]">
           <li class="item"
             v-for="item in items"
             :class="{
               'active': !!selectedItems[item.$key],
-              'not-visible': !isVisible(item)
+              'not-visible': !isItemVisible(item)
             }"
             v-on:click="selectItem(item)"
           >

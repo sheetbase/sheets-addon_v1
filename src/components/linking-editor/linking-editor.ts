@@ -5,20 +5,34 @@ import { ErrorAlert, Google } from '../../types';
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
 
+interface Item {
+  [field: string]: any;
+}
+
+interface CrossedItem extends Item {
+  excluded?: boolean;
+}
+
+type LinkingValue = true | string | Item;
+
 // init vue app
 const app = new Vue({
   el: '#vue',
   data: {
     // data
-    linkingData: null, // original loaded data from the active cell
-    crossedItems: null, // items from different sources (multiple source linking)
+    linkingData: null as {
+      [$key: string]: LinkingValue;
+    }, // original loaded data from the active cell
+    crossedItems: null as {
+      [$key: string]: CrossedItem;
+    }, // items from different sources (multiple source linking)
     // source
-    sources: [],
-    selectedSource: null, // a name
+    sources: [] as string[],
+    selectedSource: null as string, // a name
     includingSource: false, // <key> or <source>:<key>
     // items
     items: [],
-    selectedItems: {}, // original selected items
+    selectedItems: {} as {[$key: string]: Item}, // original selected items
     // items filter
     filter: '',
     showSelectedOnly: false, // display only selected items
@@ -29,17 +43,17 @@ const app = new Vue({
   },
   methods: {
 
-    // TODO: display crossed item list for including/excluding in the result
-
     processLinkingData () {
+      // process linking data
+      const selectedItems: {[$key: string]: Item} = {};
+      const crossedItems: {[$key: string]: CrossedItem} = {};
       // only when linking data & selected source exists
       if (
         !!this.linkingData &&
         !!this.selectedSource
       ) {
-        // process linking data
-        const crossedItems = {};
         for (const linkingKey of Object.keys(this.linkingData)) {
+          const linkingValue = this.linkingData[linkingKey] as LinkingValue;
           // crossed items (multiple linking):
           // only <key> not exists in this source
           // or not this source
@@ -52,16 +66,30 @@ const app = new Vue({
               !this.items[linkingKey] // not in this source
             )
           ) {
-            crossedItems[linkingKey] = this.linkingData[linkingKey];
+            let crossedItem: CrossedItem;
+            if (linkingValue === true) {
+              crossedItem = { title: null }; // title = null; excluded = null
+            } else if (typeof linkingValue === 'string') {
+              crossedItem = { title: linkingValue };
+            } else {
+              crossedItem = linkingValue as CrossedItem;
+            }
+            crossedItems[linkingKey] = crossedItem;
           }
-          // TODO: from this source
+          // from this source
+          // add to selected items
           else {
-
+            const key = linkingKey.split(':').pop();
+            const item = this.items[key];
+            if (!!item) {
+              selectedItems[key] = item;
+            }
           }
         }
-        // save data
-        this.crossedItems = !Object.keys(crossedItems).length ? null : crossedItems;
       }
+      // save data
+      this.selectedItems = selectedItems;
+      this.crossedItems = !Object.keys(crossedItems).length ? null : crossedItems;
     },
 
     /**
@@ -98,8 +126,16 @@ const app = new Vue({
         this.selectedItems[item.$key] = item;
     },
 
-    isVisible (item: any): boolean {
+    isItemVisible (item: any): boolean {
       return (!this.showSelectedOnly || !!this.selectedItems[item.$key]);
+    },
+
+    getCrossedItemList (): CrossedItem[] {
+      const result: CrossedItem[] = [];
+      for (const key of Object.keys(this.crossedItems)) {
+        result.push(this.crossedItems[key]);
+      }
+      return result;
     },
 
     // final result
@@ -107,6 +143,7 @@ const app = new Vue({
       let result: any = {};
       // build result
       if (!!this.selectedCount()) {
+        // selected items
         for (const key of Object.keys(this.selectedItems)) {
           const selectedItem = this.selectedItems[key];
           const resultKey = !!this.includingSource ? (this.selectedSource + ':' + key) : key;
@@ -135,6 +172,15 @@ const app = new Vue({
             });
             // set custom item to result
             result[resultKey] = customItem;  // {...: {...}}
+          }
+        }
+      }
+      // crossed items
+      if (!!this.crossedItems) {
+        for (const crossedItemKey of Object.keys(this.crossedItems)) {
+          const crossedItem: CrossedItem = this.crossedItems[crossedItemKey];
+          if (!crossedItem.excluded) {
+            result[crossedItemKey] = crossedItem;
           }
         }
       }
