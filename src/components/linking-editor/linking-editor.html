@@ -24,11 +24,11 @@
           
           <div class="source">
   
-            <select class="select"
+            <select class="select" title="Select a linking source"
               v-model="selectedSource"
               @change="changeSource()"
             >
-              <option class="option" disabled>Linking source</option>
+              <option class="option" value="" disabled hidden>Select a source</option>
               <option class="option"
                 v-for="value in sources"
                 :value="value"
@@ -39,25 +39,31 @@
           </div>
   
           <div class="filter">
-            <input class="input" type="text" placeholder="Filter items ...">
-            <button class="only-selected"
+            <input class="input" type="text"
+              placeholder="Filter items ..."
+              v-model="filter"
+            >
+            <button class="button only-selected toggle"
+              title="Show selected items only"
               :class="{'active': !!showSelectedOnly}"
               v-on:click="showSelectedOnly=!showSelectedOnly"
             >
-              <img src="https://img.icons8.com/material-outlined/16/000000/checked-checkbox.png">
+              <img src="https://img.icons8.com/ios/16/000000/check-file.png">
             </button>
             <div class="layouts">
-              <button class="layout list"
+              <button class="button layout list toggle"
+                title="Display items with list layout"
                 :class="{'active': layout === 'list'}"
                 v-on:click="layout='list'"
               >
-                <img src="https://img.icons8.com/ios-glyphs/16/000000/list.png">
+                <img src="https://img.icons8.com/ios/16/000000/bulleted-list.png">
               </button>
-              <button class="layout thumbnail"
+              <button class="button layout thumbnail toggle"
+                title="Display items with thumbnail layout"
                 :class="{'active': layout === 'thumbnail'}"
                 v-on:click="layout='thumbnail'"
               >
-                <img src="https://img.icons8.com/material-outlined/16/000000/image.png">
+                <img src="https://img.icons8.com/ios/16/000000/image.png">
               </button>
             </div>
           </div>
@@ -72,7 +78,11 @@
               v-for="item in getCrossedItemList()"
               :class="{'active': !item.excluded}"
               v-on:click="item.excluded=!item.excluded"
-            >{{ item.title || item.$key }}</li>
+            >
+              <div class="info">
+                <h3 class="title">{{ item.title || item.$key }}</h3>
+              </div>
+            </li>
           </ul>
           
           <div class="items-header" v-if="!!crossedItems">Items</div>
@@ -87,7 +97,7 @@
             >
   
               <div class="thumbnail">
-                <img :src="item.thumbnail || item.avatar || 'https://via.placeholder.com/300?text=?'">
+                <img :src="item.thumbnail || item.avatar || 'https://via.placeholder.com/300/d9d9d9?text=?'">
               </div>
   
               <div class="info">
@@ -103,36 +113,43 @@
         <div class="foot">
   
           <div class="linking-modes">
+
             <div class="modes">
-              <button class="mode text"
+              <button class="button mode text toggle"
+                title="Use mode TEXT for linking data"
                 :class="{'active': mode === 'text'}"
                 v-on:click="mode='text'"
               >
-                <img src="https://img.icons8.com/material-sharp/16/000000/text-color.png">
+                <img src="https://img.icons8.com/ios/16/000000/text-color.png">
               </button>
-              <!-- | -->
-              <button class="mode key"
+              <button class="button mode key toggle"
+                title="Use mode KEY for linking data"
                 :class="{'active': mode === 'key'}"
                 v-on:click="mode='key'"
               >
-                <img src="https://img.icons8.com/material/16/000000/us-dollar--v1.png">
+                <img src="https://img.icons8.com/ios/16/000000/us-dollar--v1.png">
               </button>
-              <button class="mode title"
+              <button class="button mode title toggle"
+                title="Use mode TITLE for linking data"
                 :class="{'active': mode === 'title'}"
                 v-on:click="mode='title'"
               >
-                <img src="https://img.icons8.com/material/16/000000/header-1--v1.png">
+                <img src="https://img.icons8.com/ios/16/000000/header-1--v1.png">
               </button>
-              <button class="mode custom"
+              <button class="button mode custom toggle"
+                title="Use mode CUSTOM for linking data"
                 :class="{'active': mode === 'custom'}"
                 v-on:click="mode='custom'"
               >
-                <img src="https://img.icons8.com/ios-glyphs/16/000000/ellipsis.png">
+                <img src="https://img.icons8.com/ios/16/000000/ellipsis.png">
               </button>
             </div>
   
             <div class="custom-fields" v-if="mode==='custom'">
-              <input class="input" type="text" v-bind="customFields" placeholder="Field list, saperated by spaces ...">
+              <input class="input" type="text"
+                placeholder="Fields: field1 field2 ..."
+                v-bind="customFields"
+              >
             </div>
   
             <div class="extra">
@@ -141,11 +158,12 @@
                 <span>Including source</span>
               </label>
             </div>
+
           </div>
   
           <div class="status">
-            <span>{{ selectedCount() }} selected</span>
-            <span>{{ totalCount() }} total</span>
+            <span><strong>{{ selectedCount() }}</strong> selected</span>
+            <span><strong>{{ totalCount() }}</strong> total</span>
           </div>
   
         </div>

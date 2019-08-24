@@ -1,16 +1,213 @@
 @import '../../theming/index.scss';
 
+.loading {
+  height: 700px;
+}
+
 main {
 
   #linking-editor {
+
+    .head {
+      display: flex;
+
+      .source {
+        flex: 1;
+
+        select {
+          width: 10rem;
+          height: 1.75rem;
+        }
+      }
+
+      .filter {
+        display: flex;
+
+        input {
+          width: 10rem;
+          height: 1.75rem;
+        }
+
+        .only-selected {
+          margin-left: .5rem;
+        }
+        
+        .layouts {
+          display: flex;
+          margin-left: .5rem;
+          padding-left: .5rem;
+          border-left: 1px solid #{addon-color('light')};
+          height: 1.75rem;
+
+          .layout:last-child {
+            margin-left: .5rem;
+          }
+        }
+
+      }
+
+    }
   
     .body {
-      height: 500px;
-      padding: 1rem;
+      height: 420px;
+
+      .items-header {
+        padding: .5rem;
+        font-weight: bold;
+        background: addon-color('light');
+        text-transform: uppercase;
+        border-bottom: 1px solid #{addon-color('light')};
+      }
+
+      .items {
+        @include list;
+
+        .item {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          padding: .5rem;
+          border-bottom: 1px solid #{addon-color('light')};
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .thumbnail {
+            display: none;
+            width: 5rem;
+            margin-right: 1rem;
+
+            img {
+              display: block;
+              width: 100%;
+            }
+          }
+
+          .info {
+            flex: 1;
+
+            .title {
+              margin: 0;
+            }
+
+            .description {
+              display: none;
+              color: addon-color('medium');
+            }
+          }
+
+          &::after {
+            content: '';
+            display: block;
+            color: #ffffff;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 100%;
+            border: 1px solid #{addon-color('light')};
+          }
+
+        }
+
+        .item.active {
+          background: addon-color('light');
+
+          &::after {
+            content: '✓';
+            border: 1px solid #{addon-color('primary')};
+            background: addon-color('primary');
+            padding-left: .2rem;
+            width: .8rem;
+          }
+        }
+
+        &.thumbnail {
+
+          .item {
+            padding: 1rem;
+
+            .thumbnail {
+              display: block;
+            }
+  
+            .info {
+  
+              .description {
+                display: block;
+              }
+            }
+
+            &::after {
+              width: 1.5rem;
+              height: 1.5rem;
+            }
+          }
+
+          .item.active {
+
+            &::after {
+              padding-left: .4rem;
+              width: 1.1rem;
+              padding-top: .2rem;
+              height: 1.3rem;
+              font-size: 1rem;
+            }
+          }
+
+        }
+
+      }
     }
   
     .foot {
-      padding: 1rem;
+      padding: .5rem 1rem;
+      display: flex;
+      align-items: center;
+      
+      .linking-modes {
+        flex: 1;
+        display: flex;
+        
+        .modes {
+          display: flex;
+
+          .mode {
+            margin-left: 0;
+            margin-right: .5rem;
+          }
+        }
+        
+        .custom-fields {
+          margin-right: .5rem;
+          
+          input {
+            width: 10rem;
+            height: 1.75rem;
+          }
+        }
+
+        .extra {
+          flex: 1;
+          padding-top: .25rem;
+          border-left: 1px solid #{addon-color('light')};
+
+          .including-source {
+            padding-left: .5rem;
+          }
+        }
+
+      }
+
+      .status {
+        display: flex;
+        text-transform: uppercase;
+        color: addon-color('medium');
+        font-size: .75rem;
+
+        span {
+          margin-left: .5rem;
+        }
+      }
     }
 
   }

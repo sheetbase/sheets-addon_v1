@@ -29,7 +29,7 @@ const app = new Vue({
     }, // items from different sources (multiple source linking)
     // source
     sources: [] as string[],
-    selectedSource: null as string, // a name
+    selectedSource: '' as string, // a name
     includingSource: false, // <key> or <source>:<key>
     // items
     items: [],
@@ -125,9 +125,13 @@ const app = new Vue({
 
     // select/deselect an item
     selectItem (item: any) {
-      return !!this.selectedItems[item.$key] ?
-        delete this.selectedItems[item.$key] :
-        this.selectedItems[item.$key] = item;
+      const selectedItems = { ... this.selectedItems };
+      if (!!selectedItems[item.$key]) {
+        delete selectedItems[item.$key]; // remove
+      } else {
+        selectedItems[item.$key] = item; // add
+      }
+      return this.selectedItems = selectedItems;
     },
 
     isItemVisible (item: any): boolean {
