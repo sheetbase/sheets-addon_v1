@@ -41,6 +41,8 @@ main {
     .general {
   
       .project {
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #{addon-color('light')};
 
         .title {
           font-size: 2rem;
@@ -64,8 +66,6 @@ main {
       .services {
         @include list-flex;
         margin-top: 2rem;
-        padding-top: 2rem;
-        border-top: 1px solid #{addon-color('light')};
         
         .service {
           margin-right: 1rem;
