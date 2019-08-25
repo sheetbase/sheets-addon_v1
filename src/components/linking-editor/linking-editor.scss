@@ -32,17 +32,8 @@ main {
           margin-left: .5rem;
         }
         
-        .layouts {
-          display: flex;
+        .layout {
           margin-left: .5rem;
-          padding-left: .5rem;
-          border-left: 1px solid #{addon-color('light')};
-          height: 1.75rem;
-          justify-content: flex-end;      
-
-          .layout:last-child {
-            margin-left: .5rem;
-          }
         }
 
       }
@@ -55,7 +46,6 @@ main {
       .items-header {
         padding: .5rem;
         font-weight: bold;
-        background: addon-color('light');
         text-transform: uppercase;
         border-bottom: 1px solid #{addon-color('light')};
       }
@@ -120,6 +110,10 @@ main {
             padding-left: .2rem;
             width: .8rem;
           }
+        }
+
+        .item.not-visible {
+          display: none;
         }
 
         &.thumbnail {

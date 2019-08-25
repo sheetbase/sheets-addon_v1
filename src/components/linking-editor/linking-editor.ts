@@ -33,7 +33,8 @@ const app = new Vue({
     includingSource: false, // <key> or <source>:<key>
     // items
     items: [],
-    selectedItems: {} as {[$key: string]: Item}, // original selected items
+    objItems: {} as {[$key: string]: Item}, // cached items as object
+    selectedItems: {} as {[source_key: string]: Item}, // selected items
     // items filter
     filter: '',
     showSelectedOnly: false, // display only selected items
@@ -42,31 +43,47 @@ const app = new Vue({
     mode: 'key', // text | key | title | custom
     customFields: '',
   },
+
+  created () {
+    this.loadSources();
+    this.getData(false); // silently load data from active cell
+  },
+
   methods: {
 
     processLinkingData () {
       // process linking data
-      const selectedItems: {[$key: string]: Item} = {};
-      const crossedItems: {[$key: string]: CrossedItem} = {};
       // only when linking data & selected source exists
+      const crossedItems: {[$key: string]: CrossedItem} = {};
+      const selectedItems: {[$key: string]: Item} = {};
       if (
         !!this.linkingData &&
         !!this.selectedSource
       ) {
         for (const linkingKey of Object.keys(this.linkingData)) {
           const linkingValue = this.linkingData[linkingKey] as LinkingValue;
-          // crossed items (multiple linking):
-          // only <key> not exists in this source
-          // or not this source
+          // from this source
+          // add to selected items
           if (
-            // not this source
-            linkingKey.indexOf(this.selectedSource + ':') === -1 ||
-            // only <key> not exists in this source
+            // has <source>
+            linkingKey.indexOf(this.selectedSource + ':') !== -1 ||
+            // no <source> (only <key>)
+            // and assump item exists in this source
             (
-              linkingKey.indexOf(':') === -1 && // no source (<key> only)
-              !this.items[linkingKey] // not in this source
+              linkingKey.indexOf(':') === -1 &&
+              !!this.objItems[linkingKey]
             )
           ) {
+            const key = linkingKey.split(':').pop();
+            const item = this.objItems[key];
+            if (!!item) {
+              selectedItems[this.selectedKey(key)] = item;
+            }
+          }
+          // crossed items (multiple linking):
+          // not this source
+          // or only <key> & not exists in this source
+          else {
             let crossedItem: CrossedItem;
             if (linkingValue === true) {
               crossedItem = { title: null }; // title = null; excluded = null
@@ -77,20 +94,15 @@ const app = new Vue({
             }
             crossedItems[linkingKey] = crossedItem;
           }
-          // from this source
-          // add to selected items
-          else {
-            const key = linkingKey.split(':').pop();
-            const item = this.items[key];
-            if (!!item) {
-              selectedItems[key] = item;
-            }
-          }
         }
       }
-      // save data
-      this.selectedItems = selectedItems;
-      this.crossedItems = !Object.keys(crossedItems).length ? null : crossedItems;
+      // save crossed items
+      if (!!Object.keys(crossedItems).length) {
+        this.crossedItems = { ... crossedItems, ... this.crossedItems };
+        this.includingSource = true;
+      }
+      // save selected items
+      this.selectedItems = { ... selectedItems, ... this.selectedItems };
     },
 
     /**
@@ -116,94 +128,147 @@ const app = new Vue({
     },
 
     loadItems () {
-      const successHandler = (items: any[]) => this.items = items;
+      const successHandler = (items: Item[]) => {
+        const objItems = {};
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          objItems[item.$key] = item;
+        }
+        // save data
+        this.items = items; // []
+        this.objItems = objItems; // {}
+      };
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
       .getData(null, this.selectedSource + '!A1:ZZ', false, false);
     },
 
+    selectedKey (key: string) {
+      return this.selectedSource + ':' + key;
+    },
+
     // select/deselect an item
-    selectItem (item: any) {
+    selectItem (item: Item) {
+      const key = this.selectedKey(item.$key);
       const selectedItems = { ... this.selectedItems };
-      if (!!selectedItems[item.$key]) {
-        delete selectedItems[item.$key]; // remove
+      if (!!selectedItems[key]) {
+        delete selectedItems[key]; // remove
       } else {
-        selectedItems[item.$key] = item; // add
+        selectedItems[key] = item; // add
       }
       return this.selectedItems = selectedItems;
     },
 
-    isItemVisible (item: any): boolean {
-      return (!this.showSelectedOnly || !!this.selectedItems[item.$key]);
+    isItemMatchedFilter (item: Item) {
+      const cleanStr = (str: string) => {
+        return str.toLowerCase()
+        // a-z only
+        .replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a')
+        .replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e')
+        .replace(/ì|í|ị|ỉ|ĩ/g, 'i')
+        .replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o')
+        .replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u')
+        .replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y')
+        .replace(/đ/g, 'd')
+        // -_ to space
+        .replace(/\-|\_/g, ' ');
+      };
+      const s = cleanStr(this.filter);
+      const d = cleanStr(
+        item.$key + ' ' +
+        (item.description || item.excerpt || '') + ' ' +
+        (item.keywords || ''),
+      );
+      return (!this.filter || d.indexOf(s) !== -1);
+    },
+
+    isItemSelected(item: Item) {
+      return !!this.selectedItems[this.selectedKey(item.$key)];
+    },
+
+    isItemVisible (item: Item): boolean {
+      return !!this.isItemMatchedFilter(item) && (
+        !this.showSelectedOnly || !!this.isItemSelected(item)
+      );
     },
 
     getCrossedItemList (): CrossedItem[] {
       const result: CrossedItem[] = [];
       for (const key of Object.keys(this.crossedItems)) {
-        result.push(this.crossedItems[key]);
+        result.push({
+          ... this.crossedItems[key],
+          $key: key,
+        });
       }
       return result;
     },
 
+    selectCrossedItem (key: string) {
+      const crossedItems = { ... this.crossedItems };
+      crossedItems[key].excluded = !crossedItems[key].excluded;
+      return this.crossedItems = crossedItems;
+    },
+
+    buildLinkingValue (item: Item) {
+      let value: any;
+      if (this.mode === 'key') {
+        value = true; // {...: true}
+      } else if (
+        this.mode === 'text' ||
+        this.mode === 'title'
+      ) {
+        value = item.title;  // {...: '...'}
+      } else if (this.mode === 'custom') {
+        const customItem = {};
+        // build custom item value
+        (this.customFields as string)
+        .replace(/\,|\.|\||\/|\-|\_/g, ' ')
+        .split(' ')
+        .forEach(field => {
+          field = field.trim();
+          if (!!item[field]) {  // has value
+            customItem[field] = item[field];
+          }
+        });
+        // set custom item to result
+        value = customItem;  // {...: {...}}
+      }
+      return value;
+    },
+
     // final result
     getResult () {
-      let result: any = {};
+      const result: any = {};
       // build result
       if (!!this.selectedCount()) {
         // selected items
-        for (const key of Object.keys(this.selectedItems)) {
-          const selectedItem = this.selectedItems[key];
-          const resultKey = !!this.includingSource ? (this.selectedSource + ':' + key) : key;
+        for (let key of Object.keys(this.selectedItems)) {
+          const item = this.selectedItems[key];
           // save result object according to mode
-          if (this.mode === 'key' ) {
-            result[resultKey] = true; // {...: true}
-          } else if (
-            this.mode === 'text' ||
-            this.mode === 'title' ||
-            (
-              this.mode === 'custom' &&
-              !!this.customFields
-            )
-          ) {
-            result[resultKey] = selectedItem.title;  // {...: '...'}
-          } else if (this.mode === 'custom') {
-            const customItem = {};
-            // build custom item value
-            (this.customFields as string)
-            .replace(/\,|\.|\||\/|\-|\_/g, ' ')
-            .split(' ')
-            .forEach(field => {
-              field = field.trim();
-              return !selectedItem[field] ? false : // no value
-                customItem[field] = selectedItem[field]; // has value
-            });
-            // set custom item to result
-            result[resultKey] = customItem;  // {...: {...}}
-          }
+          key = !!this.includingSource ? key : key.split(':').pop();
+          result[key] = this.buildLinkingValue(item);
         }
       }
       // crossed items
       if (!!this.crossedItems) {
-        for (const crossedItemKey of Object.keys(this.crossedItems)) {
-          const crossedItem: CrossedItem = this.crossedItems[crossedItemKey];
-          if (!crossedItem.excluded) {
-            result[crossedItemKey] = crossedItem;
+        for (const key of Object.keys(this.crossedItems)) {
+          const item: CrossedItem = this.crossedItems[key];
+          if (!item.excluded) {
+            result[key] = this.buildLinkingValue(item);
           }
         }
       }
-      // finalize result
+      // final result
       if (this.mode === 'text') {
         const resultArr: string[] = [];
         for (const key of Object.keys(result)) {
           resultArr.push(result[key] as string);
         }
-        result = resultArr.join(', ');
+        return resultArr.join(', '); // string
+      } else {
+        return !!Object.keys(result).length ? result : null; // object | null
       }
-      // object or string or null
-      return (typeof result === 'string') ? result : ( // string
-        !!Object.keys(result).length ? result : null // object | null
-      );
     },
 
     getResultAsString (format = false): string {
@@ -258,11 +323,6 @@ const app = new Vue({
       }
     },
 
-  },
-
-  created () {
-    this.loadSources();
-    this.getData(false); // silently load data from active cell
   },
 
 });

@@ -50,34 +50,24 @@
             >
               <img src="https://img.icons8.com/ios/16/000000/check-file.png">
             </button>
-            <div class="layouts">
-              <button class="button layout list toggle"
-                title="Display items with list layout"
-                :class="{'active': layout === 'list'}"
-                v-on:click="layout='list'"
-              >
-                <img src="https://img.icons8.com/ios/16/000000/bulleted-list.png">
-              </button>
-              <button class="button layout thumbnail toggle"
-                title="Display items with thumbnail layout"
-                :class="{'active': layout === 'thumbnail'}"
-                v-on:click="layout='thumbnail'"
-              >
-                <img src="https://img.icons8.com/ios/16/000000/image.png">
-              </button>
-            </div>
+            <button :class="['button', 'layout', 'active', 'toggle', layout]"
+              title="Display items with list or thumbnail layout"
+              v-on:click="layout=(layout==='list' ? 'thumbnail' : 'list')"
+            >
+              <img :src="layout==='list' ? 'https://img.icons8.com/ios/16/000000/bulleted-list.png' : 'https://img.icons8.com/ios/16/000000/image.png'">
+            </button>
           </div>
   
         </div>
   
         <div class="body">
   
-          <div class="items-header" v-if="!!crossedItems">Other items</div>
+          <div class="items-header" v-if="!!crossedItems">Native</div>
           <ul class="items" v-if="!!crossedItems">
             <li class="item"
               v-for="item in getCrossedItemList()"
               :class="{'active': !item.excluded}"
-              v-on:click="item.excluded=!item.excluded"
+              v-on:click="selectCrossedItem(item.$key)"
             >
               <div class="info">
                 <h3 class="title">{{ item.title || item.$key }}</h3>
@@ -86,11 +76,14 @@
           </ul>
           
           <div class="items-header" v-if="!!crossedItems">Items</div>
-          <ul :class="['items', layout]">
+          <div class="padding secondary" v-if="!selectedSource">
+            Please select a source from the top left selection.
+          </div>
+          <ul :class="['items', layout]" v-else>
             <li class="item"
               v-for="item in items"
               :class="{
-                'active': !!selectedItems[item.$key],
+                'active': !!isItemSelected(item),
                 'not-visible': !isItemVisible(item)
               }"
               v-on:click="selectItem(item)"
@@ -147,8 +140,8 @@
   
             <div class="custom-fields" v-if="mode==='custom'">
               <input class="input" type="text"
-                placeholder="Fields: field1 field2 ..."
-                v-bind="customFields"
+                placeholder="field1 field2 ..."
+                v-model="customFields"
               >
             </div>
   
