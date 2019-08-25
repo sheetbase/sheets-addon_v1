@@ -3,6 +3,96 @@ main {
   #jsoneditor {
     width: 100%;
     height: 500px;
+
+    // context menu
+    .jsoneditor > .jsoneditor-menu .jsoneditor-anchor .jsoneditor-contextmenu {
+      left: -10px !important;
+
+      ul.jsoneditor-menu {
+        width: 90px;
+      }
+    }
+
+    // mode tree
+    .jsoneditor.jsoneditor-mode-tree {
+
+      & > .jsoneditor-menu {
+        height: 70px;
+  
+        .jsoneditor-search {
+          position: relative;
+          width: 100%;
+          
+          .jsoneditor-frame table {
+            width: 100%;
+            
+            input {
+              width: 98%;
+            }
+          }
+        }
+
+      }
+
+      .jsoneditor-outer {
+        height: calc(100% - 35px);
+      }
+
+    }
+
+    // mode code
+    .jsoneditor.jsoneditor-mode-code > .jsoneditor-menu .jsoneditor-poweredBy {
+      display: none;
+    }
+
+  }
+
+  @media (min-width: 576px) {
+
+    #jsoneditor {
+
+      // context menu
+      .jsoneditor > .jsoneditor-menu .jsoneditor-anchor .jsoneditor-contextmenu {
+        left: 0;
+  
+        ul.jsoneditor-menu {
+          width: 128px;
+        }
+      }
+      
+      // mode tree
+      .jsoneditor.jsoneditor-mode-tree {
+
+        & > .jsoneditor-menu {
+          height: 35px;
+    
+          .jsoneditor-search {
+            position: absolute;
+            width: auto;
+            
+            .jsoneditor-frame table {
+              width: auto;
+
+              input {
+                width: auto;
+              }
+            }
+          }
+        }
+
+        .jsoneditor-outer {
+          height: 100%;
+        }
+
+      }
+
+      // mode code
+      .jsoneditor.jsoneditor-mode-code > .jsoneditor-menu .jsoneditor-poweredBy {
+        display: inline;
+      }
+
+    }
+
   }
 
 }
