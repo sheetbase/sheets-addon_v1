@@ -37,7 +37,7 @@ const app = new Vue({
     // items filter
     filter: '',
     showSelectedOnly: false, // display only selected items
-    layout: 'list', // list | thumbnail
+    layout: 'thumbnail', // thumbnail | list
     // linking modes
     mode: 'key', // text | key | title | custom
     customFields: '',

@@ -9,22 +9,22 @@ main {
   #linking-editor {
 
     .head {
-      display: flex;
 
       .source {
-        flex: 1;
 
         select {
-          width: 10rem;
+          width: 100%;
           height: 1.75rem;
         }
       }
 
       .filter {
         display: flex;
+        margin-top: .5rem;
 
         input {
-          width: 10rem;
+          width: 100%;
+          max-width: 10rem;
           height: 1.75rem;
         }
 
@@ -38,6 +38,7 @@ main {
           padding-left: .5rem;
           border-left: 1px solid #{addon-color('light')};
           height: 1.75rem;
+          justify-content: flex-end;      
 
           .layout:last-child {
             margin-left: .5rem;
@@ -49,7 +50,7 @@ main {
     }
   
     .body {
-      height: 420px;
+      height: 380px;
 
       .items-header {
         padding: .5rem;
@@ -161,15 +162,15 @@ main {
   
     .foot {
       padding: .5rem 1rem;
-      display: flex;
       align-items: center;
       
       .linking-modes {
-        flex: 1;
         display: flex;
+        flex-wrap: wrap;
         
         .modes {
           display: flex;
+          width: 100%;
 
           .mode {
             margin-left: 0;
@@ -178,10 +179,11 @@ main {
         }
         
         .custom-fields {
-          margin-right: .5rem;
+          width: 100%;
+          margin-top: .5rem;
           
           input {
-            width: 10rem;
+            width: 100%;
             height: 1.75rem;
           }
         }
@@ -189,10 +191,14 @@ main {
         .extra {
           flex: 1;
           padding-top: .25rem;
-          border-left: 1px solid #{addon-color('light')};
 
           .including-source {
-            padding-left: .5rem;
+            display: flex;
+            white-space: nowrap;
+
+            input {
+              margin-right: .7rem;
+            }
           }
         }
 
@@ -203,9 +209,14 @@ main {
         text-transform: uppercase;
         color: addon-color('medium');
         font-size: .75rem;
+        margin-top: .5rem;
 
         span {
-          margin-left: .5rem;
+          width: 50%;
+
+          &:last-child {
+            text-align: right;
+          }
         }
       }
     }
@@ -220,6 +231,73 @@ main {
       .content pre {
         margin-top: 0;
       }  
+    }
+
+  }
+
+  // custom size
+  @media (min-width: 576px) {
+
+    #linking-editor {
+
+      .head {
+        display: flex;
+
+        .source {
+          flex: 1;
+
+          select {            
+            width: 10rem;
+          }
+        }
+
+        .filter {
+          margin-top: 0;
+        }
+
+      }
+
+      .foot {
+        display: flex;
+
+        .linking-modes {
+          flex: 1;
+          flex-wrap: nowrap;
+
+          .modes {
+            width: auto;
+          }
+
+          .custom-fields {
+            flex: 1;
+            margin-right: .5rem;
+            margin-top: 0;
+          }
+
+          .extra {
+            border-left: 1px solid #{addon-color('light')};
+
+            .including-source {
+              padding-left: .5rem;
+
+              input {
+                margin-right: .5rem;
+              }
+            }
+          }
+        }
+
+        .status {
+          margin-top: 0;
+
+          span {
+            width: auto;
+            margin-left: .5rem;
+          }
+        }
+
+      }
+
     }
 
   }
