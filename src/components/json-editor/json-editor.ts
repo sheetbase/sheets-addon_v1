@@ -19,9 +19,9 @@ const app = new Vue({
   el: '#vue',
   data: {
     // options
-    mode: 'data', // set mode: data | url (json:// url)
+    mode: 'raw', // set mode: raw | url | jsonx (json://...)
     // loader
-    loaderInput: '', // in-drive file id or normal url or json:// url
+    loaderInput: '', // in-drive file id or normal url or json://...
   },
 
   methods: {
@@ -30,8 +30,8 @@ const app = new Vue({
      * utils
      */
 
-    isJsonUrl (str: string) {
-      return str.substr(0, 7) === 'json://';
+    isJsonXUrl (str: string) {
+      return str.substr(0, 7) === 'json://'; // json://...
     },
 
     isUrl (str: string) {
@@ -47,7 +47,7 @@ const app = new Vue({
       let id: string = null;
       let url: string = null;
       // json:// url
-      if (!!this.isJsonUrl(value)) {
+      if (!!this.isJsonXUrl(value)) {
         // in-drive url
         if (value.indexOf('drive.google.com/uc') !== -1) {
           id = value.split('?id=').pop();
@@ -69,7 +69,7 @@ const app = new Vue({
       return { id, url };
     },
 
-    loadJsonContentByFileId (id: string) {
+    loadJsonContentById (id: string) {
       return google.script.run
       .withSuccessHandler(this.setJsonEditor)
       .withFailureHandler(errorAlert)
@@ -83,25 +83,25 @@ const app = new Vue({
       .loadJsonContentByUrl(url);
     },
 
-    loadJSON () {
+    loadContent () {
       const successHandler = (value: string) => {
         if (!!value) {
-
-          // not valid: possible a stringified json
+          // NOT VALID
+          // possibly a stringified json
           // set to the editor instead
           if (
             (value.substr(0, 1) === '{' && value.substr(-1) === '}') ||
             (value.substr(0, 1) === '[' && value.substr(-1) === ']')
           ) {
-            return editor.setText(value);
+            return this.setJsonEditor(value, 'raw');
           }
-
-          // not valid: possible a normal string
+          // NOT VALID
+          // possibly a normal string
           if (
             // not a normal url
             !this.isUrl(value) &&
             // not a json:// url
-            !this.isJsonUrl(value) &&
+            !this.isJsonXUrl(value) &&
             // not a valid id
             // usually an 33 characters id, and start with 1
             // example: 17wmkJn5wDY8o_91kYw72XLT_NdZS3u0W
@@ -116,14 +116,20 @@ const app = new Vue({
               'Invalid value',
             );
           }
-
-          // process loader input
+          // VALID
+          // set mode based on
+          if (!!this.isJsonXUrl(value)) {
+            this.mode = 'jsonx';
+          } else if (!!this.isUrl(value)) {
+            this.mode = 'url';
+          } else {
+            this.mode = 'raw';
+          }
+          // save loader input
           this.loaderInput = value;
-          // load the content
+          // load the content by id or url
           const { id, url } = this.parseLoaderInput(value);
-          return !!id ?
-            this.loadJsonContentByFileId(id) :
-            this.loadJsonContentByUrl(url);
+          return !!id ? this.loadJsonContentById(id) : this.loadJsonContentByUrl(url);
         }
       };
       return google.script.run
@@ -143,9 +149,10 @@ const app = new Vue({
      * editor
      */
 
-    setJsonEditor (jsonText: string) {
+    setJsonEditor (jsonText: string, mode?: string) {
       try {
         editor.setText(jsonText);
+        this.mode = mode || this.mode; // set mode if provided
       } catch (e) {
         return errorAlert('Look like your data is not a valid json value.', 'Bad JSON!');
       }
@@ -157,16 +164,17 @@ const app = new Vue({
 
     getJSON () {
       return google.script.run
-      .withSuccessHandler(this.setJsonEditor)
+      .withSuccessHandler(value => this.setJsonEditor(value, 'raw'))
       .withFailureHandler(errorAlert)
       .getData();
     },
 
     setJSON () {
       const jsonText = editor.getText();
+      const { id, url } = this.parseLoaderInput(this.loaderInput);
       return google.script.run
       .withFailureHandler(errorAlert)
-      .setData(jsonText);
+      .setJsonContent(jsonText, this.mode, url, id);
     },
 
   },

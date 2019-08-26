@@ -29,7 +29,9 @@
           <div class="margin-top">
             <button class="button" v-on:click="getJSON()">Get &rarr;</button>
             <button class="button" v-on:click="clearJSON()">Clear</button>
-            <button class="button action right" v-on:click="setJSON()">&larr; Set</button>
+            <button class="button action right" v-on:click="setJSON()">
+              {{ mode === 'raw' ? '&larr; Set' : '&#8630; Save' }}
+            </button>
           </div>
           
           <div class="extra-options">
@@ -37,14 +39,20 @@
             <div class="set-modes">
               <div class="as-raw">
                 <label class="label">
-                  <input class="input" type="radio" value="data" v-model="mode">
-                  <span>Set data</span>
+                  <input class="input" type="radio" v-model="mode" value="raw">
+                  <span>Set data only</span>
                 </label>
               </div>
               <div class="as-url">
                 <label class="label">
-                  <input class="input" type="radio" value="url" v-model="mode">
-                  <span>Save & set json://</span>
+                  <input class="input" type="radio" v-model="mode" value="url">
+                  <span>Save and set url</span>
+                </label>
+              </div>
+              <div class="as-jsonx">
+                <label class="label">
+                  <input class="input" type="radio" v-model="mode" value="jsonx">
+                  <span>Save and set json://...</span>
                 </label>
               </div>
             </div>
@@ -62,13 +70,13 @@
 
               <div class="inputs">
                 <input class="input" type="text"
-                  placeholder="File id or url or json:// url ..."
+                  placeholder="In-drive .json id | url | json://..."
                   v-model="loaderInput"
                 >
               </div>
 
               <div class="margin-top">
-                <button class="button action" v-on:click="loadJSON()">Load</button>
+                <button class="button action" v-on:click="loadContent()">Load</button>
                 <button class="button right" :disabled="!loaderInput" v-on:click="viewLoaderInput()">View</button>
               </div>
 
