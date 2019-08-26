@@ -10,11 +10,11 @@ main {
     .loader {
       margin-top: 1rem;
 
-      .form-group {
-        input[type="text"] {
+      .inputs {
+        input[type=text] {
           width: 100%;
         }
-        .meta {
+        .keep-style {
           margin-top: .5rem;
         }    
       }
