@@ -1,5 +1,7 @@
-import { getCacheRefresh } from '../../services/cache';
+import { getCache, setCache } from '../../services/cache';
 import {
+  FolderInfo,
+  FileInfo,
   getActiveFolder,
   getFolderByName,
   getFolderInfo,
@@ -7,8 +9,17 @@ import {
   getFileInfo,
 } from '../../services/drive';
 
+interface ProjectInfo {
+  project?: FolderInfo;
+  database?: FileInfo;
+  backend?: FileInfo;
+  upload?: FolderInfo;
+}
+
 export function getProjectInfo() {
-  const getInfo = () => {
+  const cacheKey = 'SETTINGS_PROJECT_INFO';
+  // get project info
+  const getInfo = (): ProjectInfo => {
     const projectFolder = getActiveFolder();
     // info
     const project = getFolderInfo(projectFolder);
@@ -24,5 +35,7 @@ export function getProjectInfo() {
     );
     return { project, database, backend, upload };
   };
-  return getCacheRefresh('SETTINGS_PROJECT_INFO', getInfo, 21600);
+  // get & set cache
+  const data = getCache<ProjectInfo>(cacheKey);
+  return data || setCache(cacheKey, getInfo(), 21600);
 }

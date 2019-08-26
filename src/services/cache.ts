@@ -1,29 +1,24 @@
 // https://developers.google.com/apps-script/reference/cache/cache
 
-export function getCacheRefresh<Data>(
-  key: string,
-  refresher: () => Data,
-  cacheTime = 60, // in seconds
-): Data {
-  const cache = CacheService.getDocumentCache();
-  // get data in cache
-  let result: any = cache.get(key);
-  // has cached data
-  if (!!result) {
-    try {
-      result = JSON.parse(result);
-    } catch (e) {
-      // not json or malform
-    }
-  }
-  // no cached
-  else {
-    result = refresher();
-    // stringify
-    result = (typeof result === 'string') ? result : JSON.stringify(result);
-    // save to cache
-    cache.put(key, result, cacheTime);
+export function getCache<Data>(key: string) {
+  let result: any = CacheService.getDocumentCache().get(key) as string;
+  // try to parse the json data
+  try {
+    result = JSON.parse(result);
+  } catch (e) {
+    // not json or malform
   }
   // final result
   return result as Data;
+}
+
+export function setCache<Data>(
+  key: string,
+  data: Data,
+  cacheTime = 60, // in seconds
+) {
+  const dataStr = (typeof data === 'string') ? data : JSON.stringify(data);
+  CacheService.getDocumentCache().put(key, dataStr, cacheTime);
+  // return original data
+  return data;
 }
