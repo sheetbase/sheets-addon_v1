@@ -3,7 +3,5 @@ function errorAlert(error, title) {
   // show in console
   console.error(error);
   // show in alert
-  return google.script.run
-    .withFailureHandler(errorAlert)
-    .displayError(error.message, title);
+  return google.script.run.displayError(error.message, title);
 }
