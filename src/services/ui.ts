@@ -1,6 +1,6 @@
 // https://developers.google.com/apps-script/reference/base/ui
 
-export function displayError(message: string, title = 'Oops, something wrong!') {
+export function displayError(message: string, title?: string) {
   const ui = SpreadsheetApp.getUi();
-  return ui.alert(title, message, ui.ButtonSet.OK);
+  return ui.alert(title || 'Oops!', message, ui.ButtonSet.OK);
 }

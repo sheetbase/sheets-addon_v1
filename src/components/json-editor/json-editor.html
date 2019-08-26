@@ -31,8 +31,49 @@
             <button class="button" v-on:click="clearJSON()">Clear</button>
             <button class="button action right" v-on:click="setJSON()">&larr; Set</button>
           </div>
+          
+          <div class="extra-options">
 
-          <!-- Save to .json file option ... -->
+            <div class="set-modes">
+              <div class="as-raw">
+                <label class="label">
+                  <input class="input" type="radio" value="data" v-model="mode">
+                  <span>Set data</span>
+                </label>
+              </div>
+              <div class="as-url">
+                <label class="label">
+                  <input class="input" type="radio" value="url" v-model="mode">
+                  <span>Save & set json://</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- 2nd -->
+        <section class="bravo">
+
+          <fieldset class="fieldset loader">
+            <legend class="legend">Content loader</legend>
+            <div class="content">
+
+              <div class="inputs">
+                <input class="input" type="text"
+                  placeholder="File id or url or json:// url ..."
+                  v-model="loaderInput"
+                >
+              </div>
+
+              <div class="margin-top">
+                <button class="button action" v-on:click="loadJSON()">Load</button>
+                <button class="button right" :disabled="!loaderInput" v-on:click="viewLoaderInput()">View</button>
+              </div>
+
+            </div>
+          </fieldset>
 
         </section>
 

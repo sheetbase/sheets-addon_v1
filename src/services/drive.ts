@@ -211,3 +211,11 @@ export function getFileInfo(file: GoogleAppsScript.Drive.File): FileInfo {
     downloadUrl,
   };
 }
+
+export function getFileContent(file: GoogleAppsScript.Drive.File) {
+  return file.getBlob().getDataAsString();
+}
+
+export function getFileContentById(id: string) {
+  return getFileContent(getFileById(id));
+}
