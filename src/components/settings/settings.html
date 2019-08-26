@@ -107,6 +107,13 @@
               >View</a>
             </div>
           </div>
+
+          <div class="form-group">
+            <label class="label">
+              <span>Editor hook</span>
+              <input class="input" type="text" v-model="editorHook" placeholder="JSON/HTML web hook ..." />
+            </label>
+          </div>
   
           <div class="submit">
             <button class="button action" v-on:click="saveSettings()">Save</button>

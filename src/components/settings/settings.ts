@@ -17,15 +17,23 @@ const app = new Vue({
     settingsMsg: null,
     homepage: '',
     gcpId: '',
+    editorHook: '',
     // page: info
     // ...
   },
+
+  created () {
+    this.getProjectInfo();
+    this.getSettings();
+  },
+
   methods: {
 
     getSettings () {
       const successHandler = settings => {
         this.homepage = settings['SETTING_HOMEPAGE'];
         this.gcpId = settings['SETTING_GCP_ID'];
+        this.editorHook = settings['SETTING_EDITOR_HOOK'];
       };
       return google.script.run
       .withSuccessHandler(successHandler)
@@ -58,14 +66,10 @@ const app = new Vue({
       .setProperties({
         SETTING_HOMEPAGE: this.homepage,
         SETTING_GCP_ID: this.gcpId,
+        SETTING_EDITOR_HOOK: this.editorHook,
       });
     },
 
-  },
-
-  created () {
-    this.getProjectInfo();
-    this.getSettings();
   },
 
 });
