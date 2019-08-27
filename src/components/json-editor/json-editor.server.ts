@@ -51,8 +51,8 @@ function setJsonContentInDrive_(
     const sheet = getSheet();
     const sheetName = sheet.getName();
     const currentCell = sheet.getActiveCell();
-    const key = sheet.getRange(currentCell.getRow(), 2).getValue();
-    const field = sheet.getRange(0, currentCell.getColumn()).getValue();
+    const key = sheet.getRange(currentCell.getRow(), 3).getValue();
+    const field = sheet.getRange(1, currentCell.getColumn()).getValue();
     // parent folder
     const folder = getFolderByName(
       sheetName.charAt(0).toUpperCase() + sheetName.slice(1), // folder by content type

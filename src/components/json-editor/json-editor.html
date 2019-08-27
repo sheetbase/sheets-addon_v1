@@ -31,31 +31,6 @@
             <button class="button" @click="clearJSON()">Clear</button>
             <button class="button action right" @click="setJSON()">&larr; Set</button>
           </div>
-          
-          <div class="extra-options margin-top">
-
-            <div class="set-modes">
-              <div class="mode raw">
-                <label class="label">
-                  <input class="input" type="radio" v-model="setMode" value="raw">
-                  <span>Set content only</span>
-                </label>
-              </div>
-              <div class="mode url">
-                <label class="label">
-                  <input class="input" type="radio" v-model="setMode" value="url">
-                  <span>Save content and set url</span>
-                </label>
-              </div>
-              <div class="mode jsonx">
-                <label class="label">
-                  <input class="input" type="radio" v-model="setMode" value="jsonx">
-                  <span>Save content and set auto-loaded url</span>
-                </label>
-              </div>
-            </div>
-
-          </div>
 
         </section>
 
@@ -78,9 +53,34 @@
                 >
               </div>
 
-              <div class="margin-top">
-                <button class="button action" @click="loadContent()">Load</button>
-                <button class="button right" :disabled="!loaderValue" @click="viewLoaderInput()">View</button>
+              <div class="extra-options margin-top">
+
+                <div class="set-modes">
+                  <div class="mode raw">
+                    <label class="label">
+                      <input class="input" type="radio" v-model="setMode" value="raw">
+                      <span>Set content only</span>
+                    </label>
+                  </div>
+                  <div class="mode url">
+                    <label class="label">
+                      <input class="input" type="radio" v-model="setMode" value="url">
+                      <span>Save content and set url</span>
+                    </label>
+                  </div>
+                  <div class="mode jsonx">
+                    <label class="label">
+                      <input class="input" type="radio" v-model="setMode" value="jsonx">
+                      <span>Save content and set auto-loaded url</span>
+                    </label>
+                  </div>
+                </div>
+    
+              </div>
+
+              <div class="buttons">
+                <button class="button" @click="loadContent()">Load</button>
+                <button class="button action right">Save</button>
               </div>
 
             </div>

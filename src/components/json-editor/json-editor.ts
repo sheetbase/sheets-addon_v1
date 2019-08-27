@@ -33,15 +33,6 @@ const app = new Vue({
      * loader
      */
 
-    parseLoaderValue (loaderValue: string) {
-      const url: string = (loaderValue || '').replace('json://', '');
-      const id: string = (
-        url.indexOf('drive.google.com') !== -1 ?
-        url.split('uc?id=').pop() : null
-      );
-      return { isExternal: (!!url && !id), value: id || url };
-    },
-
     loadJsonContent () {
       return google.script.run
       .withSuccessHandler(this.setJsonEditor)
@@ -93,23 +84,24 @@ const app = new Vue({
           this.setMode = 'url';
           value = 'https://drive.google.com/uc?id=' + value;
         }
-        // save loader input
-        // load the resource content
+        // save loader value
         this.loaderValue = value;
-        this.parsedLoaderValue = this.parseLoaderValue(value);
+        // parse save loader value
+        const url: string = (value || '').replace('json://', '');
+        const id: string = (
+          url.indexOf('drive.google.com') !== -1 ?
+          url.split('uc?id=').pop() : null
+        );
+        this.parsedLoaderValue = { isExternal: (!!url && !id), value: id || url };
+        // load content
         return this.loadJsonContent();
       };
-      return google.script.run
+      return !!this.loaderValue ?
+      successHandler(this.loaderValue) :
+      google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
       .getData();
-    },
-
-    viewLoaderInput () {
-      const { isExternal, value } = this.parsedLoaderValue;
-      return window.open(
-        !isExternal ? value : ('https://drive.google.com/file/d/' + isExternal + '/view'),
-      );
     },
 
     /**
@@ -137,9 +129,10 @@ const app = new Vue({
     },
 
     setJSON () {
+      const jsonText = editor.getText();
       return google.script.run
       .withFailureHandler(errorAlert)
-      .setJsonContent(editor.getText(), this.setMode, this.parsedLoaderValue);
+      .setData(jsonText);
     },
 
   },
