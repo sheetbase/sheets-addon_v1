@@ -43,6 +43,22 @@ main {
     .body {
       height: 380px;
 
+      .filter-warning {
+        display: flex;
+        background: rgb(255, 255, 200);
+        align-items: center;
+        padding: .5rem;
+
+        .msg {
+          flex: 1;
+        }
+
+        a {
+          text-transform: uppercase;
+          margin-left: 1rem;
+        }
+      }
+
       .items-header {
         padding: .5rem;
         font-weight: bold;
@@ -80,6 +96,7 @@ main {
 
             .title {
               margin: 0;
+              font-weight: normal;
             }
 
             .description {
@@ -126,6 +143,10 @@ main {
             }
   
             .info {
+
+              .title {
+                font-weight: bold;
+              }
   
               .description {
                 display: block;

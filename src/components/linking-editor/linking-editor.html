@@ -46,13 +46,13 @@
             <button class="button only-selected toggle"
               title="Show selected items only"
               :class="{'active': !!showSelectedOnly}"
-              v-on:click="showSelectedOnly=!showSelectedOnly"
+              @click="showSelectedOnly=!showSelectedOnly"
             >
               <img src="https://img.icons8.com/ios/16/000000/check-file.png">
             </button>
             <button :class="['button', 'layout', 'active', 'toggle', layout]"
               title="Display items with list or thumbnail layout"
-              v-on:click="layout=(layout==='list' ? 'thumbnail' : 'list')"
+              @click="layout=(layout==='list' ? 'thumbnail' : 'list')"
             >
               <img :src="layout==='list' ? 'https://img.icons8.com/ios/16/000000/bulleted-list.png' : 'https://img.icons8.com/ios/16/000000/image.png'">
             </button>
@@ -61,13 +61,18 @@
         </div>
   
         <div class="body">
+
+          <div class="filter-warning" v-if="!!showSelectedOnly || !!filter">
+            <div class="msg">Displayed item list is being filtered.</div>
+            <a href="#" @click.prevent="showSelectedOnly=false; filter='';">Clear</a>
+          </div>
   
           <div class="items-header" v-if="!!crossedItems">Native</div>
           <ul class="items" v-if="!!crossedItems">
             <li class="item"
               v-for="item in getCrossedItemList()"
               :class="{'active': !item.excluded}"
-              v-on:click="selectCrossedItem(item.$key)"
+              @click="selectCrossedItem(item.$key)"
             >
               <div class="info">
                 <h3 class="title">{{ item.title || item.$key }}</h3>
@@ -86,7 +91,7 @@
                 'active': !!isItemSelected(item),
                 'not-visible': !isItemVisible(item)
               }"
-              v-on:click="selectItem(item)"
+              @click="selectItem(item)"
             >
   
               <div class="thumbnail">
@@ -111,28 +116,28 @@
               <button class="button mode text toggle"
                 title="Use mode TEXT for linking data"
                 :class="{'active': mode === 'text'}"
-                v-on:click="mode='text'"
+                @click="mode='text'"
               >
                 <img src="https://img.icons8.com/ios/16/000000/text-color.png">
               </button>
               <button class="button mode key toggle"
                 title="Use mode KEY for linking data"
                 :class="{'active': mode === 'key'}"
-                v-on:click="mode='key'"
+                @click="mode='key'"
               >
                 <img src="https://img.icons8.com/ios/16/000000/us-dollar--v1.png">
               </button>
               <button class="button mode title toggle"
                 title="Use mode TITLE for linking data"
                 :class="{'active': mode === 'title'}"
-                v-on:click="mode='title'"
+                @click="mode='title'"
               >
                 <img src="https://img.icons8.com/ios/16/000000/header-1--v1.png">
               </button>
               <button class="button mode custom toggle"
                 title="Use mode CUSTOM for linking data"
                 :class="{'active': mode === 'custom'}"
-                v-on:click="mode='custom'"
+                @click="mode='custom'"
               >
                 <img src="https://img.icons8.com/ios/16/000000/ellipsis.png">
               </button>
@@ -167,9 +172,9 @@
       <section class="alpha">
   
         <div class="margin-top">
-          <button class="button" v-on:click="getData()">Get &rarr;</button>
-          <button class="button" v-on:click="clearData()">Clear</button>
-          <button class="button action right" v-on:click="setData()">&larr; Set</button>
+          <button class="button" @click="getData()">Get &rarr;</button>
+          <button class="button" @click="clearData()">Clear</button>
+          <button class="button action right" @click="setData()">&larr; Set</button>
         </div>
 
       </section>

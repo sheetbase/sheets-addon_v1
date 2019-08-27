@@ -85,9 +85,11 @@ const app = new Vue({
           // or only <key> & not exists in this source
           else {
             let crossedItem: CrossedItem;
-            if (linkingValue === true) {
-              crossedItem = { title: null }; // title = null; excluded = null
-            } else if (typeof linkingValue === 'string') {
+            if (!linkingValue || linkingValue === true) {
+              crossedItem = { title: null };
+            } else if (
+              !(linkingValue instanceof Object)
+            ) {
               crossedItem = { title: linkingValue };
             } else {
               crossedItem = linkingValue as CrossedItem;
