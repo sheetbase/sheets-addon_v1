@@ -27,11 +27,9 @@
         <section class="alpha">
 
           <div class="margin-top">
-            <button class="button" v-on:click="getJSON()">Get &rarr;</button>
-            <button class="button" v-on:click="clearJSON()">Clear</button>
-            <button class="button action right" v-on:click="setJSON()">
-              {{ mode === 'raw' ? '&larr; Set' : '&#8630; Save' }}
-            </button>
+            <button class="button" @click="getJSON()">Get &rarr;</button>
+            <button class="button" @click="clearJSON()">Clear</button>
+            <button class="button action right" @click="setJSON()">&larr; Set</button>
           </div>
           
           <div class="extra-options">
@@ -39,19 +37,19 @@
             <div class="set-modes">
               <div class="as-raw">
                 <label class="label">
-                  <input class="input" type="radio" v-model="mode" value="raw">
+                  <input class="input" type="radio" v-model="setMode" value="raw">
                   <span>Set data only</span>
                 </label>
               </div>
               <div class="as-url">
                 <label class="label">
-                  <input class="input" type="radio" v-model="mode" value="url">
+                  <input class="input" type="radio" v-model="setMode" value="url">
                   <span>Save and set url</span>
                 </label>
               </div>
               <div class="as-jsonx">
                 <label class="label">
-                  <input class="input" type="radio" v-model="mode" value="jsonx">
+                  <input class="input" type="radio" v-model="setMode" value="jsonx">
                   <span>Save and set json://...</span>
                 </label>
               </div>
@@ -64,24 +62,29 @@
         <!-- 2nd -->
         <section class="bravo">
 
-          <fieldset class="fieldset loader">
-            <legend class="legend">Content loader</legend>
-            <div class="content">
+          <div class="shell">
+            <div class="head">
+              <div class="title">Content loader</div>
+              <a class="toggler" href="#"
+                @click.prevent="showLoader=!showLoader"
+              >{{ !showLoader ? 'Show' : 'Hide' }}</a>
+            </div>
+            <div class="body" v-if="!!showLoader">
 
               <div class="inputs">
                 <input class="input" type="text"
-                  placeholder="In-drive .json id | url | json://..."
-                  v-model="loaderInput"
+                  placeholder="In-drive .json file id or an url or a json://..."
+                  v-model="loaderValue"
                 >
               </div>
 
               <div class="margin-top">
-                <button class="button action" v-on:click="loadContent()">Load</button>
-                <button class="button right" :disabled="!loaderInput" v-on:click="viewLoaderInput()">View</button>
+                <button class="button action" @click="loadContent()">Load</button>
+                <button class="button right" :disabled="!loaderValue" @click="viewLoaderInput()">View</button>
               </div>
 
             </div>
-          </fieldset>
+          </div>
 
         </section>
 

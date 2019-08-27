@@ -13,20 +13,16 @@ import { getProperty } from '../../services/properties';
 
 type SetMode = 'raw' | 'url' | 'jsonx';
 
-export function loadJsonContentByFileId(id: string) {
-  const cacheKey = 'JSONEDITOR_CONTENT_ID_' + id;
-  // get & set cache
-  const data = getCache<string>(cacheKey, true);
-  return data || setCache(cacheKey, getFileContentById(id), 21600);
+function parseLoaderValue_(loaderValue: string) {
+  const url: string = (loaderValue || '').replace('json://', '');
+  const id: string = (
+    url.indexOf('drive.google.com') !== -1 ?
+    url.split('uc?id=').pop() : null
+  );
+  return { isExternal: (!!url && !id), value: id || url };
 }
 
-export function loadJsonContentByUrl(url: string) {
-  const cacheKey = 'JSONEDITOR_CONTENT_URL_' + md5(url);
-  const data = getCache<string>(cacheKey, true);
-  return data || setCache(cacheKey, fetchGet(url).getContentText(), 21600);
-}
-
-function setJsonContentByUrl(
+function setJsonContentExternal_(
   jsonText: string,
   url?: string,
 ) {
@@ -39,44 +35,56 @@ function setJsonContentByUrl(
   // has hook, no url
   // create new content
   else if (!!webHookUrl && !url) {
-    const response = JSON.parse(
-      fetchPost(webHookUrl, {
+    let response: any = fetchPost(
+      webHookUrl,
+      {
         contentType: 'application/json',
-        payload: JSON.stringify({ data: jsonText }),
-      })
-      .getContentText(),
+        payload: JSON.stringify({
+          url: null,
+          service: 'jsoneditor',
+          data: JSON.parse(jsonText),
+        }),
+      },
     );
+    response = JSON.parse(response);
+    // return the url to the resource
     url = response.url;
   }
   // has hook, has url
   // update content
   else if (!!webHookUrl && !!url) {
-    fetchPost(webHookUrl, {
-      contentType: 'application/json',
-      payload: JSON.stringify({ url, data: jsonText }),
-    });
+    fetchPost(
+      webHookUrl,
+      {
+        contentType: 'application/json',
+        payload: JSON.stringify({
+          url,
+          service: 'jsoneditor',
+          data: JSON.parse(jsonText),
+        }),
+      },
+    );
   }
   // return the url
   return url;
 }
 
-function setJsonContentById(
+function setJsonContentInDrive_(
   jsonText: string,
   id?: string,
 ) {
   // no id
   // create new file
   if (!id) {
+    // TODO: item info
+    // parent folder
     const projectFolder = getActiveFolder();
     const projectName = projectFolder.getName().replace('Sheetbase: ', '');
     const folder = getFolderByPath(projectName + ' Content/JSON', projectFolder);
     // the file
-    const file = createFileJSON(
-      folder,
-      'file.json',
-      jsonText,
-      'PUBLIC',
-    );
+    const name = 'file.json';
+    const file = createFileJSON(folder, name, jsonText, 'PUBLIC');
+    // return the new file id
     id = file.getId();
   }
   // has id
@@ -89,27 +97,43 @@ function setJsonContentById(
   return ('https://drive.google.com/uc?id=' + id);
 }
 
+export function loadJsonContent(loaderValue: string) {
+  const { isExternal, value } = parseLoaderValue_(loaderValue);
+  const _loadJsonContent = () => (
+    isExternal ?
+    fetchGet(value).getContentText() :
+    getFileContentById(value)
+  );
+  const cacheKey = (
+    isExternal ?
+    ('JSONEDITOR_CONTENT_URL_' + md5(value)) :
+    ('JSONEDITOR_CONTENT_ID_' + value)
+  );
+  return (
+    getCache<string>(cacheKey, true) ||
+    setCache<string>(cacheKey, _loadJsonContent(), 3600)
+  );
+}
+
 export function setJsonContent(
   jsonText: string,
-  mode: SetMode,
-  url?: string,
-  id?: string,
+  setMode: SetMode,
+  loaderValue?: string,
 ) {
-  // mode raw
-  if (mode === 'raw') {
+  // raw
+  if (setMode === 'raw') {
     return setData(jsonText);
   }
-  // mode url & jsonx
-  if (
-    // no loader input => default to in-Drive
-    (!id && !url) ||
-    // in-Drive
-    !!id
-  ) {
-    url = setJsonContentById(jsonText, id);
-  } else if (!!url) { // external url
-    url = setJsonContentByUrl(jsonText, url);
+  // url & jsonx
+  else {
+    const { isExternal, value } = parseLoaderValue_(loaderValue);
+    // set data, return the resource url
+    const url = isExternal ?
+      setJsonContentExternal_(jsonText, value) :
+      setJsonContentInDrive_(jsonText, value);
+    // set active cell data
+    return setData(
+      (setMode === 'jsonx' ? 'json://' : '') + url,
+    );
   }
-  // set active cell data
-  return setData((mode === 'url' ? '' : 'json://') + url);
 }
