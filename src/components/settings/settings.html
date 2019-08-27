@@ -21,56 +21,62 @@
       <ul class="menu">
         <li class="general"
           :class="{'active': page==='general'}"
-          v-on:click="page='general'"
+          @click="page='general'"
         >General</li>
         <li class="settings"
           :class="{'active': page==='settings'}"
-          v-on:click="page='settings'"
+          @click="page='settings'"
         >Settings</li>
         <li class="about"
           :class="{'active': page==='about'}"
-          v-on:click="page='about'"
+          @click="page='about'"
         >About</li>
       </ul>
   
       <div class="pages">
   
-        <div class="page general" v-if="page==='general'">
+        <div class="page general"
+          v-if="page==='general' && !!projectInfo.PROJECT_ID"
+        >
   
-          <div class="project"
-            v-if="!!projectInfo.project"
-          >
-            <h1 class="title">{{ projectInfo.project.name }}</h1>
+          <div class="project">
+            <h1 class="title">{{ projectInfo.PROJECT_NAME }}</h1>
             <ul class="meta">
-              <li v-if="!!homepage">Homepage: <a :href="homepage">{{ homepage }}</a></li>
-              <li>Project ID: <a :href="'https://drive.google.com/drive/folders/' + projectInfo.project.id">{{ projectInfo.project.id }}</a></li>
-              <li v-if="!!gcpId">GCP: <a :href="'https://console.cloud.google.com/home/dashboard?project=' + gcpId">{{ gcpId }}</a></li>
+              <li>
+                Project ID: <a :href="'https://drive.google.com/drive/folders/' + projectInfo.PROJECT_ID">{{ projectInfo.PROJECT_ID }}</a>
+              </li>
+              <li v-if="!!projectInfo.HOMEPAGE">
+                Homepage: <a :href="projectInfo.HOMEPAGE">{{ projectInfo.HOMEPAGE }}</a>
+              </li>
+              <li v-if="!!projectInfo.GCP_ID">
+                GCP: <a :href="'https://console.cloud.google.com/home/dashboard?project=' + projectInfo.GCP_ID">{{ projectInfo.GCP_ID }}</a>
+              </li>
             </ul>
           </div>
   
           <ul class="services">
   
-            <li class="service database" v-if="!!projectInfo.database">
+            <li class="service database" v-if="!!projectInfo.DATABASE_ID">
               <a
-                :href="'https://docs.google.com/spreadsheets/d/' + projectInfo.database.id + '/edit'"
+                :href="'https://docs.google.com/spreadsheets/d/' + projectInfo.DATABASE_ID + '/edit'"
               >
                 <img src="https://img.icons8.com/dusk/32/000000/database.png">
                 <span>Database</span>
               </a>
             </li>
   
-            <li class="service backend" v-if="!!projectInfo.backend">
+            <li class="service backend" v-if="!!projectInfo.BACKEND_ID">
               <a
-                :href="'https://script.google.com/d/' + projectInfo.backend.id + '/edit'"
+                :href="'https://script.google.com/d/' + projectInfo.BACKEND_ID + '/edit'"
               >
                 <img src="https://img.icons8.com/color/32/000000/server.png">
                 <span>Backend</span>
               </a>
             </li>
   
-            <li class="service upload" v-if="!!projectInfo.upload">
+            <li class="service upload" v-if="!!projectInfo.UPLOAD_ID">
               <a
-                :href="'https://drive.google.com/drive/folders/' + projectInfo.upload.id"
+                :href="'https://drive.google.com/drive/folders/' + projectInfo.UPLOAD_ID"
               >
                 <img src="https://img.icons8.com/dusk/32/000000/upload.png">
                 <span>Upload</span>
@@ -78,6 +84,10 @@
             </li>
   
           </ul>
+
+          <div class="footer">
+            <button class="button" @click="getProjectInfo(true)">Refresh</button>
+          </div>
   
         </div>
   
@@ -87,37 +97,37 @@
   
           <div class="form-group">
             <label class="label">
-              <span>Homepage</span>
-              <input class="input" type="text" v-model="homepage" placeholder="App homepage ..." />
+              <span>Project homepage</span>
+              <input class="input" type="text" v-model="projectInfo.HOMEPAGE" placeholder="App homepage ..." />
             </label>
             <div class="actions">
-              <a :href="homepage || 'https://sheetbase.dev'">View</a>
+              <a :href="projectInfo.HOMEPAGE || 'https://sheetbase.dev'">View</a>
             </div>
           </div>
   
           <div class="form-group">
             <label class="label">
-              <span>Google project</span>
-              <input class="input" type="text" v-model="gcpId" placeholder="Google Cloud project ID ..." />
+              <span>Google project ID</span>
+              <input class="input" type="text" v-model="projectInfo.GCP_ID" placeholder="Google Cloud project ID ..." />
             </label>
             <div class="actions">
               <a
-                v-if="!!gcpId"
-                :href="'https://console.cloud.google.com/home/dashboard?project=' + gcpId"
+                v-if="!!projectInfo.GCP_ID"
+                :href="'https://console.cloud.google.com/home/dashboard?project=' + projectInfo.GCP_ID"
               >View</a>
             </div>
           </div>
 
           <div class="form-group">
             <label class="label">
-              <span>Editor hook</span>
-              <input class="input" type="text" v-model="editorHook" placeholder="JSON/HTML web hook ..." />
+              <span>Editor web hook</span>
+              <input class="input" type="text" v-model="projectInfo.EDITOR_HOOK" placeholder="JSON/HTML editor web hook ..." />
             </label>
             <div class="actions"></div>
           </div>
   
           <div class="submit">
-            <button class="button action" v-on:click="saveSettings()">Save</button>
+            <button class="button action" @click="saveSettings()">Save</button>
             <div :class="['message', settingsMsg.type]" v-if="!!settingsMsg">{{ settingsMsg.message }}</div>
           </div>
   

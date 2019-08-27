@@ -1,6 +1,7 @@
 import Vue from 'vue';
 
 import { ErrorAlert, Google } from '../../types';
+import { ProjectInfo, SettingActionMessage } from './settings.types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -11,45 +12,26 @@ const app = new Vue({
   data: {
     ready: false,
     page: 'general',
-    // page: general
-    projectInfo: null,
-    // page: settings
-    settingsMsg: null,
-    homepage: '',
-    gcpId: '',
-    editorHook: '',
-    // page: info
-    // ...
+    projectInfo: {} as ProjectInfo,
+    settingsMsg: null as SettingActionMessage,
   },
 
   created () {
     this.getProjectInfo();
-    this.getSettings();
   },
 
   methods: {
 
-    getSettings () {
-      const successHandler = settings => {
-        this.homepage = settings['SETTING_HOMEPAGE'];
-        this.gcpId = settings['SETTING_GCP_ID'];
-        this.editorHook = settings['SETTING_EDITOR_HOOK'];
-      };
-      return google.script.run
-      .withSuccessHandler(successHandler)
-      .withFailureHandler(errorAlert)
-      .getProperties();
-    },
-
-    getProjectInfo () {
-      const successHandler = info => {
-        this.projectInfo = info;
+    getProjectInfo (fresh = false) {
+      const successHandler = (props: ProjectInfo) => {
+        this.projectInfo = props;
         return this.ready = true;
       };
+      this.ready = !fresh;
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .getProjectInfo();
+      .getProjectInfo(fresh);
     },
 
     saveSettings () {
@@ -58,15 +40,15 @@ const app = new Vue({
         return this.settingsMsg = {
           type: 'success',
           message: 'Setting updated!',
-        };
+        } as SettingActionMessage;
       };
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
       .setProperties({
-        SETTING_HOMEPAGE: this.homepage,
-        SETTING_GCP_ID: this.gcpId,
-        SETTING_EDITOR_HOOK: this.editorHook,
+        HOMEPAGE: this.projectInfo['HOMEPAGE'],
+        GCP_ID: this.projectInfo['GCP_ID'],
+        EDITOR_HOOK: this.projectInfo['EDITOR_HOOK'],
       });
     },
 

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 
 import { ErrorAlert, Google } from '../../types';
+import { ProjectInfo } from '../settings/settings.types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -12,23 +13,24 @@ const app = new Vue({
     ready: false,
     gcpId: '',
   },
+
+  created () {
+    this.getGCPId();
+  },
+
   methods: {
 
     getGCPId () {
-      const successHandler = (gcpId: string) => {
-        this.gcpId = gcpId;
+      const successHandler = (projectInfo: ProjectInfo) => {
+        this.gcpId = projectInfo.GCP_ID;
         return this.ready = true;
       };
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .getProperty('SETTING_GCP_ID');
+      .getProjectInfo();
     },
 
-  },
-
-  created () {
-    this.getGCPId();
   },
 
 });
