@@ -17,9 +17,7 @@ interface ProjectInfo {
 }
 
 export function getProjectInfo() {
-  const cacheKey = 'SETTINGS_PROJECT_INFO';
-  // get project info
-  const getInfo = (): ProjectInfo => {
+  const _getProjectInfo = (): ProjectInfo => {
     const projectFolder = getActiveFolder();
     // info
     const project = getFolderInfo(projectFolder);
@@ -35,7 +33,10 @@ export function getProjectInfo() {
     );
     return { project, database, backend, upload };
   };
-  // get & set cache
-  const data = getCache<ProjectInfo>(cacheKey);
-  return data || setCache(cacheKey, getInfo(), 21600);
+  // get cache
+  const cacheKey = 'SETTINGS_PROJECT_INFO';
+  return (
+    getCache<ProjectInfo>(cacheKey) ||
+    setCache<ProjectInfo>(cacheKey, _getProjectInfo(), 21600)
+  );
 }
