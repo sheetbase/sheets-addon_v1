@@ -2,6 +2,7 @@ import Vue from 'vue';
 import JSONEditor from 'jsoneditor';
 
 import { ErrorAlert, Google } from '../../types';
+import { SetMode, ParsedLoaderValue } from './json-editor.types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -19,49 +20,33 @@ const app = new Vue({
   el: '#vue',
   data: {
     // options
-    setMode: 'raw', // raw | url | jsonx (json://...)
+    setMode: 'raw' as SetMode,
     // loader
     showLoader: false,
     loaderValue: '', // in-drive file id or normal url or json://...
+    parsedLoaderValue: {} as ParsedLoaderValue,
   },
 
   methods: {
 
     /**
-     * utils
-     */
-
-    isJsonXUrl (str: string) {
-      return str.substr(0, 7) === 'json://'; // json://...
-    },
-
-    isUrl (str: string) {
-      return str.indexOf('http') !== -1 && str.indexOf('://') !== -1;
-    },
-
-    isValidId (str: string) {
-      // usually an 33 characters id, and starts with 1
-      // example: 17wmkJn5wDY8o_91kYw72XLT_NdZS3u0W
-      return (str.substr(0, 1) === '1' && str.length > 30 && str.length < 35);
-    },
-
-    isJsonString (str: string) {
-      // possibly a stringified json
-      return (
-        (str.substr(0, 1) === '{' && str.substr(-1) === '}') ||
-        (str.substr(0, 1) === '[' && str.substr(-1) === ']')
-      );
-    },
-
-    /**
      * loader
      */
+
+    parseLoaderValue (loaderValue: string) {
+      const url: string = (loaderValue || '').replace('json://', '');
+      const id: string = (
+        url.indexOf('drive.google.com') !== -1 ?
+        url.split('uc?id=').pop() : null
+      );
+      return { isExternal: (!!url && !id), value: id || url };
+    },
 
     loadJsonContent () {
       return google.script.run
       .withSuccessHandler(this.setJsonEditor)
       .withFailureHandler(errorAlert)
-      .loadJsonContent(this.loaderValue);
+      .loadJsonContent(this.parsedLoaderValue);
     },
 
     loadContent () {
@@ -69,13 +54,28 @@ const app = new Vue({
         if (!value) {
           return errorAlert('No input value.');
         }
-        const isUrl = this.isUrl(value);
-        const isJsonXUrl = this.isJsonXUrl(value);
-        const isValidId = this.isValidId(value);
-        // if a json string, set to the editor instead
-        if (!!this.isJsonString(value)) {
+        // possibly a stringified json
+        // set to the editor instead
+        if (
+          (value.substr(0, 1) === '{' && value.substr(-1) === '}') ||
+          (value.substr(0, 1) === '[' && value.substr(-1) === ']')
+        ) {
           return this.setJsonEditor(value, 'raw');
         }
+        const isUrl = (
+          value.indexOf('http') !== -1 &&
+          value.indexOf('://') !== -1
+        );
+        const isJsonXUrl = (
+          value.substr(0, 7) === 'json://'
+        );
+        const isValidId = (
+          // usually an 33 characters id, and starts with 1
+          // example: 17wmkJn5wDY8o_91kYw72XLT_NdZS3u0W
+          value.substr(0, 1) === '1' &&
+          value.length > 30 &&
+          value.length < 35
+        );
         // error, possibly a normal string
         if (!isUrl && !isJsonXUrl && !isValidId) {
           return errorAlert('Invalid loader value.');
@@ -94,8 +94,9 @@ const app = new Vue({
           value = 'https://drive.google.com/uc?id=' + value;
         }
         // save loader input
-        this.loaderValue = value;
         // load the resource content
+        this.loaderValue = value;
+        this.parsedLoaderValue = this.parseLoaderValue(value);
         return this.loadJsonContent();
       };
       return google.script.run
@@ -105,10 +106,9 @@ const app = new Vue({
     },
 
     viewLoaderInput () {
-      const url: string = this.loaderValue.replace('json://', '');
-      const id: string = url.split('uc?id=').pop();
+      const { isExternal, value } = this.parsedLoaderValue;
       return window.open(
-        !id ? url : ('https://drive.google.com/file/d/' + id + '/view'),
+        !isExternal ? value : ('https://drive.google.com/file/d/' + isExternal + '/view'),
       );
     },
 
@@ -116,7 +116,7 @@ const app = new Vue({
      * editor
      */
 
-    setJsonEditor (jsonText: string, setMode?: string) {
+    setJsonEditor (jsonText: string, setMode?: SetMode) {
       try {
         editor.setText(jsonText);
         this.setMode = setMode || this.setMode; // set mode if provided
@@ -139,7 +139,7 @@ const app = new Vue({
     setJSON () {
       return google.script.run
       .withFailureHandler(errorAlert)
-      .setJsonContent(editor.getText(), this.setMode, this.loaderValue);
+      .setJsonContent(editor.getText(), this.setMode, this.parsedLoaderValue);
     },
 
   },

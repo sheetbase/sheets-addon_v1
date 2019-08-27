@@ -32,25 +32,25 @@
             <button class="button action right" @click="setJSON()">&larr; Set</button>
           </div>
           
-          <div class="extra-options">
+          <div class="extra-options margin-top">
 
             <div class="set-modes">
-              <div class="as-raw">
+              <div class="mode raw">
                 <label class="label">
                   <input class="input" type="radio" v-model="setMode" value="raw">
-                  <span>Set data only</span>
+                  <span>Set content only</span>
                 </label>
               </div>
-              <div class="as-url">
+              <div class="mode url">
                 <label class="label">
                   <input class="input" type="radio" v-model="setMode" value="url">
-                  <span>Save and set url</span>
+                  <span>Save content and set url</span>
                 </label>
               </div>
-              <div class="as-jsonx">
+              <div class="mode jsonx">
                 <label class="label">
                   <input class="input" type="radio" v-model="setMode" value="jsonx">
-                  <span>Save and set json://...</span>
+                  <span>Save content and set auto-loaded url</span>
                 </label>
               </div>
             </div>
@@ -62,7 +62,7 @@
         <!-- 2nd -->
         <section class="bravo">
 
-          <div class="shell">
+          <div class="shell loader">
             <div class="head">
               <div class="title">Content loader</div>
               <a class="toggler" href="#"

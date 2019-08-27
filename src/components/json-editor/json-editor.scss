@@ -47,6 +47,37 @@ main {
 
   }
 
+  section.bravo {
+
+    .loader {
+      margin-top: 2rem;
+
+      .head {
+        display: flex;
+
+        .title {
+          flex: 1;
+        }
+
+        a {
+          text-transform: uppercase;
+          margin-left: 1rem;
+        }
+      }
+
+      .body {
+        padding: 1rem;
+
+        .inputs input {
+          width: 100%;
+        }
+
+      }
+
+    }
+
+  }
+
   @media (min-width: 576px) {
 
     #jsoneditor {

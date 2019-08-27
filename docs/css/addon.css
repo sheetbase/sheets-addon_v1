@@ -152,7 +152,7 @@
 }
 .shell .body {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .shell .foot {
   padding: 0.1rem 1rem;

@@ -66,15 +66,15 @@ const app = new Vue({
           // add to selected items
           if (
             // has <source>
-            linkingKey.indexOf(this.selectedSource + ':') !== -1 ||
+            linkingKey.indexOf(this.selectedSource + '/') !== -1 ||
             // no <source> (only <key>)
             // and assump item exists in this source
             (
-              linkingKey.indexOf(':') === -1 &&
+              linkingKey.indexOf('/') === -1 &&
               !!this.objItems[linkingKey]
             )
           ) {
-            const key = linkingKey.split(':').pop();
+            const key = linkingKey.split('/').pop();
             const item = this.objItems[key];
             if (!!item) {
               selectedItems[this.selectedKey(key)] = item;
@@ -147,10 +147,9 @@ const app = new Vue({
     },
 
     selectedKey (key: string) {
-      return this.selectedSource + ':' + key;
+      return this.selectedSource + '/' + key;
     },
 
-    // select/deselect an item
     selectItem (item: Item) {
       const key = this.selectedKey(item.$key);
       const selectedItems = { ... this.selectedItems };
@@ -239,7 +238,6 @@ const app = new Vue({
       return value;
     },
 
-    // final result
     getResult () {
       const result: any = {};
       // build result
@@ -248,7 +246,7 @@ const app = new Vue({
         for (let key of Object.keys(this.selectedItems)) {
           const item = this.selectedItems[key];
           // save result object according to mode
-          key = !!this.includingSource ? key : key.split(':').pop();
+          key = !!this.includingSource ? key : key.split('/').pop();
           result[key] = this.buildLinkingValue(item);
         }
       }

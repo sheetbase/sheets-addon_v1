@@ -27,7 +27,7 @@ const app = new Vue({
         this.projectInfo = props;
         return this.ready = true;
       };
-      this.ready = !fresh;
+      this.ready = false; // reset ready status
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)

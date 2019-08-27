@@ -1,7 +1,7 @@
 import { getCache, setCache } from '../../services/cache';
 import {
-  getActiveFolder,
-  getFolderByPath,
+  getFolderById,
+  getFolderByName,
   getFileById,
   getFileContentById,
   createFileJSON,
@@ -9,56 +9,32 @@ import {
 import { fetchGet, fetchPost } from '../../services/fetch';
 import { md5 } from '../../services/md5';
 import { getSheet, setData } from '../../services/sheets';
-import { getProperty } from '../../services/properties';
+import { getProjectInfo } from '../settings/settings.server';
 
-type SetMode = 'raw' | 'url' | 'jsonx';
-
-function parseLoaderValue_(loaderValue: string) {
-  const url: string = (loaderValue || '').replace('json://', '');
-  const id: string = (
-    url.indexOf('drive.google.com') !== -1 ?
-    url.split('uc?id=').pop() : null
-  );
-  return { isExternal: (!!url && !id), value: id || url };
-}
+import { SetMode, ParsedLoaderValue } from './json-editor.types';
 
 function setJsonContentExternal_(
   jsonText: string,
-  webHookUrl?: string,
+  webhookUrl: string,
   url?: string,
 ) {
-  // has hook, no url
+  // send request
+  const response = fetchPost(
+    webhookUrl,
+    {
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        event: 'jsoneditor',
+        resource: url || null,
+        data: JSON.parse(jsonText),
+      }),
+    },
+  );
+  // no url
   // create new content
-  if (!!webHookUrl && !url) {
-    let response: any = fetchPost(
-      webHookUrl,
-      {
-        contentType: 'application/json',
-        payload: JSON.stringify({
-          url: null,
-          service: 'jsoneditor',
-          data: JSON.parse(jsonText),
-        }),
-      },
-    );
-    response = JSON.parse(response);
-    // return the url to the resource
-    url = response.url;
-  }
-  // has hook, has url
-  // update content
-  else if (!!webHookUrl && !!url) {
-    fetchPost(
-      webHookUrl,
-      {
-        contentType: 'application/json',
-        payload: JSON.stringify({
-          url,
-          service: 'jsoneditor',
-          data: JSON.parse(jsonText),
-        }),
-      },
-    );
+  if (!url) {
+    const responseJson = JSON.parse(response.getContentText());
+    url = responseJson.url; // new content url
   }
   // return the url
   return url;
@@ -66,28 +42,21 @@ function setJsonContentExternal_(
 
 function setJsonContentInDrive_(
   jsonText: string,
+  folderId: string,
   id?: string,
 ) {
-  // no id
   // create new file
   if (!id) {
     // item info
-    // sheet name + item $key + current field
     const sheet = getSheet();
     const sheetName = sheet.getName();
     const currentCell = sheet.getActiveCell();
     const key = sheet.getRange(currentCell.getRow(), 2).getValue();
     const field = sheet.getRange(0, currentCell.getColumn()).getValue();
     // parent folder
-    const projectFolder = getActiveFolder();
-    const projectName = projectFolder.getName().replace('Sheetbase: ', '');
-    const contentType = sheetName.charAt(0).toUpperCase() + sheetName.slice(1);
-    const folder = getFolderByPath(
-      (
-        projectName + ' Content/' + // content folder
-        contentType // folder by content type
-      ),
-      projectFolder,
+    const folder = getFolderByName(
+      sheetName.charAt(0).toUpperCase() + sheetName.slice(1), // folder by content type
+      getFolderById(folderId),
     );
     // the file
     const fileName = key + '_' + field + '.json';
@@ -95,8 +64,7 @@ function setJsonContentInDrive_(
     // return the new file id
     id = file.getId();
   }
-  // has id
-  // update the content
+  // update the file content
   else {
     const file = getFileById(id);
     file.setContent(jsonText);
@@ -105,8 +73,8 @@ function setJsonContentInDrive_(
   return ('https://drive.google.com/uc?id=' + id);
 }
 
-export function loadJsonContent(loaderValue: string) {
-  const { isExternal, value } = parseLoaderValue_(loaderValue);
+export function loadJsonContent(parsedLoaderValue: ParsedLoaderValue) {
+  const { isExternal, value } = parsedLoaderValue;
   const _loadJsonContent = () => (
     isExternal ?
     fetchGet(value).getContentText() :
@@ -126,7 +94,7 @@ export function loadJsonContent(loaderValue: string) {
 export function setJsonContent(
   jsonText: string,
   setMode: SetMode,
-  loaderValue?: string,
+  parsedLoaderValue?: ParsedLoaderValue,
 ) {
   // raw
   if (setMode === 'raw') {
@@ -134,30 +102,34 @@ export function setJsonContent(
   }
   // url & jsonx
   else {
-    const { isExternal, value } = parseLoaderValue_(loaderValue);
-    // set data, return the resource url
-    let resourceUrl: string;
-    if (isExternal) {
-      const webHookUrl = getProperty('SETTING_EDITOR_HOOK');
-      if (!webHookUrl) {
-        throw new Error('No web hook for "url" mode.');
-      }
-      resourceUrl = setJsonContentExternal_(jsonText, webHookUrl, value);
-    } else {
-      if (!value) {
-        const ui = SpreadsheetApp.getUi();
-        const result = ui.alert(
-          'New content',
-          'Create new file and save the content?',
-          ui.ButtonSet.YES_NO,
-        );
-        // Process the user's response.
-        if (result !== ui.Button.YES) return;
-      }
-      resourceUrl = setJsonContentInDrive_(jsonText, value);
+    const { isExternal, value } = parsedLoaderValue;
+    const { EDITOR_HOOK, CONTENT_ID } = getProjectInfo();
+    // no web hook for external resource
+    if (isExternal && !EDITOR_HOOK) {
+      throw new Error('No web hook for "url" mode.');
+    }
+    // ask for creating new file in Drive
+    if (!isExternal && !value) {
+      const ui = SpreadsheetApp.getUi();
+      const result = ui.alert(
+        'New content',
+        'Create new file and save the content?',
+        ui.ButtonSet.YES_NO,
+      );
+      // Process the user's response.
+      if (result !== ui.Button.YES) return;
+    }
+    // set data & get the resource url
+    const resourceUrl = (
+      isExternal ?
+      setJsonContentExternal_(jsonText, EDITOR_HOOK, value) :
+      setJsonContentInDrive_(jsonText, CONTENT_ID, value)
+    );
+    if (!resourceUrl) {
+      throw new Error('Error updating json content.');
     }
     // set active cell data
-    return !resourceUrl ? false : setData(
+    return setData(
       (setMode === 'jsonx' ? 'json://' : '') + resourceUrl,
     );
   }
