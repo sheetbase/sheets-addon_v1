@@ -1,3 +1,5 @@
+import { getCache, setCache } from './cache';
+
 // https://developers.google.com/apps-script/reference/drive/drive-app
 
 interface DriveItemInfo {
@@ -80,10 +82,6 @@ export function getActiveFolder() {
   return DriveApp.getFileById(id).getParents().next();
 }
 
-export function getActiveFolderInfo(): FolderInfo {
-  return getDriveItemInfo(getActiveFolder());
-}
-
 /**
  *
  * folder
@@ -125,7 +123,13 @@ export function getFolderByPath(
 }
 
 export function getFolderInfo(folder: GoogleAppsScript.Drive.Folder): FolderInfo {
-  return getDriveItemInfo(folder);
+  const _getFolderInfo = () => getDriveItemInfo(folder);
+  // get & cache
+  const cacheKey = 'DRIVE_FOLDER_INFO_' + folder.getId();
+  return (
+    getCache<FolderInfo>(cacheKey) ||
+    setCache<FolderInfo>(cacheKey, _getFolderInfo(), 3600)
+  );
 }
 
 /**
@@ -200,16 +204,24 @@ export function createFileHTML(
 }
 
 export function getFileInfo(file: GoogleAppsScript.Drive.File): FileInfo {
-  const fileInfo = getDriveItemInfo(file);
-  const mimeType = file.getMimeType();
-  const url = 'https://drive.google.com/uc?id=' + fileInfo.id;
-  const downloadUrl = url + '&export=download';
-  return {
-    ... fileInfo,
-    mimeType,
-    url,
-    downloadUrl,
+  const _getFileInfo = () => {
+    const fileInfo = getDriveItemInfo(file);
+    const mimeType = file.getMimeType();
+    const url = 'https://drive.google.com/uc?id=' + fileInfo.id;
+    const downloadUrl = url + '&export=download';
+    return {
+      ... fileInfo,
+      mimeType,
+      url,
+      downloadUrl,
+    };
   };
+  // get & cache
+  const cacheKey = 'DRIVE_FILE_INFO_' + file.getId();
+  return (
+    getCache<FileInfo>(cacheKey) ||
+    setCache<FileInfo>(cacheKey, _getFileInfo(), 3600)
+  );
 }
 
 export function getFileContent(file: GoogleAppsScript.Drive.File) {

@@ -14,13 +14,16 @@ export function getCache<Data>(key: string, raw = false) {
   return result as Data;
 }
 
-export function setCache<Data>(
-  key: string,
-  data: Data,
-  cacheTime = 60, // in seconds
-) {
-  const dataStr = (typeof data === 'string') ? data : JSON.stringify(data);
-  CacheService.getDocumentCache().put(key, dataStr, cacheTime);
-  // return original data
-  return data;
+export function setCache<Data>(key: string, data: Data, /* seconds */ cacheTime = 60) {
+  CacheService.getDocumentCache()
+  .put(key, (typeof data === 'string') ? data : JSON.stringify(data), cacheTime);
+  return data; // return original data
+}
+
+export function clearCache(key: string) {
+  return CacheService.getDocumentCache().remove(key);
+}
+
+export function clearCacheAll(keys: string[]) {
+  return CacheService.getDocumentCache().removeAll(keys);
 }
