@@ -2,6 +2,30 @@ import { displayError } from './ui';
 
 // https://developers.google.com/apps-script/reference/spreadsheet/spreadsheet-app
 
+export function getSpreadsheet(spreadsheetId?: string) {
+  return !!spreadsheetId ?
+  SpreadsheetApp.openById(spreadsheetId) :
+  SpreadsheetApp.getActiveSpreadsheet();
+}
+
+export function getAllSheets(spreadsheetId?: string) {
+  const spreadsheet = !!spreadsheetId ?
+  SpreadsheetApp.openById(spreadsheetId) :
+  SpreadsheetApp.getActiveSpreadsheet();
+  return spreadsheet.getSheets();
+}
+
+export function getAllSheetNames(spreadsheetId?: string) {
+  const names: string[] = [];
+  getAllSheets(spreadsheetId).forEach(sheet => names.push(sheet.getName()));
+  return names;
+}
+
+export function getSheet(spreadsheetId?: string, name?: string) {
+  const spreadsheet = getSpreadsheet(spreadsheetId);
+  return !!name ? spreadsheet.getSheetByName(name) : spreadsheet.getActiveSheet();
+}
+
 export function getData(
   spreadsheetId?: string,
   rangeA1?: string,
@@ -105,17 +129,4 @@ function transformValue_(values: any[], noHeaders = false) {
   }
   // result
   return items;
-}
-
-export function getAllSheets(spreadsheetId?: string) {
-  const spreadsheet = !!spreadsheetId ?
-  SpreadsheetApp.openById(spreadsheetId) :
-  SpreadsheetApp.getActiveSpreadsheet();
-  return spreadsheet.getSheets();
-}
-
-export function getAllSheetNames(spreadsheetId?: string) {
-  const names: string[] = [];
-  getAllSheets(spreadsheetId).forEach(sheet => names.push(sheet.getName()));
-  return names;
 }

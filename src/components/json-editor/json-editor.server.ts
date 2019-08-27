@@ -8,7 +8,7 @@ import {
 } from '../../services/drive';
 import { fetchGet, fetchPost } from '../../services/fetch';
 import { md5 } from '../../services/md5';
-import { setData } from '../../services/sheets';
+import { getSheet, setData } from '../../services/sheets';
 import { getProperty } from '../../services/properties';
 
 type SetMode = 'raw' | 'url' | 'jsonx';
@@ -24,17 +24,12 @@ function parseLoaderValue_(loaderValue: string) {
 
 function setJsonContentExternal_(
   jsonText: string,
+  webHookUrl?: string,
   url?: string,
 ) {
-  const webHookUrl = getProperty('SETTING_EDITOR_HOOK');
-  // no hook
-  // error for this mode
-  if (!webHookUrl) {
-    throw new Error('No web hook for "url" mode.');
-  }
   // has hook, no url
   // create new content
-  else if (!!webHookUrl && !url) {
+  if (!!webHookUrl && !url) {
     let response: any = fetchPost(
       webHookUrl,
       {
@@ -76,14 +71,27 @@ function setJsonContentInDrive_(
   // no id
   // create new file
   if (!id) {
-    // TODO: item info
+    // item info
+    // sheet name + item $key + current field
+    const sheet = getSheet();
+    const sheetName = sheet.getName();
+    const currentCell = sheet.getActiveCell();
+    const key = sheet.getRange(currentCell.getRow(), 2).getValue();
+    const field = sheet.getRange(0, currentCell.getColumn()).getValue();
     // parent folder
     const projectFolder = getActiveFolder();
     const projectName = projectFolder.getName().replace('Sheetbase: ', '');
-    const folder = getFolderByPath(projectName + ' Content/JSON', projectFolder);
+    const contentType = sheetName.charAt(0).toUpperCase() + sheetName.slice(1);
+    const folder = getFolderByPath(
+      (
+        projectName + ' Content/' + // content folder
+        contentType // folder by content type
+      ),
+      projectFolder,
+    );
     // the file
-    const name = 'file.json';
-    const file = createFileJSON(folder, name, jsonText, 'PUBLIC');
+    const fileName = key + '_' + field + '.json';
+    const file = createFileJSON(folder, fileName, jsonText, 'PUBLIC');
     // return the new file id
     id = file.getId();
   }
@@ -128,12 +136,29 @@ export function setJsonContent(
   else {
     const { isExternal, value } = parseLoaderValue_(loaderValue);
     // set data, return the resource url
-    const url = isExternal ?
-      setJsonContentExternal_(jsonText, value) :
-      setJsonContentInDrive_(jsonText, value);
+    let resourceUrl: string;
+    if (isExternal) {
+      const webHookUrl = getProperty('SETTING_EDITOR_HOOK');
+      if (!webHookUrl) {
+        throw new Error('No web hook for "url" mode.');
+      }
+      resourceUrl = setJsonContentExternal_(jsonText, webHookUrl, value);
+    } else {
+      if (!value) {
+        const ui = SpreadsheetApp.getUi();
+        const result = ui.alert(
+          'New content',
+          'Create new file and save the content?',
+          ui.ButtonSet.YES_NO,
+        );
+        // Process the user's response.
+        if (result !== ui.Button.YES) return;
+      }
+      resourceUrl = setJsonContentInDrive_(jsonText, value);
+    }
     // set active cell data
-    return setData(
-      (setMode === 'jsonx' ? 'json://' : '') + url,
+    return !resourceUrl ? false : setData(
+      (setMode === 'jsonx' ? 'json://' : '') + resourceUrl,
     );
   }
 }
