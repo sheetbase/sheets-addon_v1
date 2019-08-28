@@ -20,16 +20,66 @@
     <main>
 
       <section id="jsoneditor"></section>
-  
-      <div id="vue">
+
+      <div id="vue" v-cloak>
 
         <!-- 1st -->
         <section class="alpha">
 
+          <div class="advanced">
+
+            <div class="settings">
+
+              <div class="set-modes">
+                <button class="button toggle mode by-source"
+                  title="Save to current source"
+                  :class="{'active': setMode==='BY_SOURCE'}"
+                  @click="setMode='BY_SOURCE'"
+                >
+                  <img src="https://img.icons8.com/ios/16/000000/check-file.png">
+                </button>
+                <button class="button toggle mode new-internal"
+                  title="Save to new file on Drive"
+                  :class="{'active': setMode==='NEW_INTERNAL'}"
+                  @click="setMode='NEW_INTERNAL'"
+                >
+                  <img src="https://img.icons8.com/ios/16/000000/check-file.png">
+                </button>
+                <button class="button toggle mode new-external"
+                  title="Save to new file externaly"
+                  :class="{'active': setMode==='NEW_EXTERNAL'}"
+                  @click="setMode='NEW_EXTERNAL'"
+                >
+                  <img src="https://img.icons8.com/ios/16/000000/check-file.png">
+                </button>
+              </div>
+  
+              <div class="auto-loaded" v-if="setMode!=='RAW'">
+                <label class="label">
+                  <input class="input" type="checkbox" v-model="autoLoaded">
+                  <span>Auto-loaded</span>
+                </label>
+              </div>
+
+            </div>
+
+            <div class="preview" v-if="setMode!=='RAW'">
+              <code>xxx...</code>
+            </div>
+              
+          </div>
+
           <div class="margin-top">
             <button class="button" @click="getJSON()">Get &rarr;</button>
             <button class="button" @click="clearJSON()">Clear</button>
-            <button class="button action right" @click="setJSON()">&larr; Set</button>
+            <button class="button action right"
+              v-if="setMode==='RAW'"
+              @click="setJSON()"
+            >&larr; Set</button>
+            <button class="button action right"
+              v-if="setMode!=='RAW'"
+              @click="saveJSON()"
+            >Save</button>
           </div>
 
         </section>
@@ -37,10 +87,14 @@
         <!-- 2nd -->
         <section class="bravo">
 
-          <div class="shell loader">
+          <div class="shell loader" :class="{'collapsed': !showLoader}">
             <div class="head">
-              <div class="title">Content loader</div>
+              <div class="title"
+                title="Click to expand/collapse the view"
+                @click="showLoader=!showLoader"
+              >Content loader</div>
               <a class="toggler" href="#"
+                title="Click to expand/collapse the view"
                 @click.prevent="showLoader=!showLoader"
               >{{ !showLoader ? 'Show' : 'Hide' }}</a>
             </div>
@@ -49,38 +103,15 @@
               <div class="inputs">
                 <input class="input" type="text"
                   placeholder="In-drive .json file id or an url or a json://..."
-                  v-model="loaderValue"
+                  v-model="rawSource"
+                  @change="processSource()"
                 >
               </div>
 
-              <div class="extra-options margin-top">
-
-                <div class="set-modes">
-                  <div class="mode raw">
-                    <label class="label">
-                      <input class="input" type="radio" v-model="setMode" value="raw">
-                      <span>Set content only</span>
-                    </label>
-                  </div>
-                  <div class="mode url">
-                    <label class="label">
-                      <input class="input" type="radio" v-model="setMode" value="url">
-                      <span>Save content and set url</span>
-                    </label>
-                  </div>
-                  <div class="mode jsonx">
-                    <label class="label">
-                      <input class="input" type="radio" v-model="setMode" value="jsonx">
-                      <span>Save content and set auto-loaded url</span>
-                    </label>
-                  </div>
-                </div>
-    
-              </div>
-
               <div class="buttons">
-                <button class="button" @click="loadContent()">Load</button>
-                <button class="button action right">Save</button>
+                <button class="button" @click="!source ? getSource() : resetSource()">{{ !source ? 'Retrieve' : 'Reset' }}</button>
+                <button class="button action right" :disabled="!source" @click="loadSource()">Load</button>
+                <button class="button right" :disabled="!source" @click="viewSource()">View</button>
               </div>
 
             </div>

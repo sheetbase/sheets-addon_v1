@@ -1,3 +1,5 @@
+@import '../../theming/index.scss';
+
 main {
 
   #jsoneditor {
@@ -47,10 +49,51 @@ main {
 
   }
 
+  section.alpha {
+
+    .advanced {
+      margin-top: -1px;
+      padding: .5rem;
+      border: 1px solid #3883fa;
+
+      .settings {
+        display: flex;
+        
+        .set-modes {
+          display: flex;
+
+          .mode {
+            margin-left: .5rem;
+            
+            &:first-child {
+              margin-left: 0;
+            }
+          }
+
+        }
+
+        .auto-loaded {
+          flex: 1;
+          padding-top: .25rem;
+          margin-left: .5rem;
+          padding-left: .5rem;
+          border-left: 1px solid #{addon-color('light')};
+        }
+
+      }
+
+      .preview {
+        margin-top: .5rem;
+      }
+
+    }
+
+  }
+
   section.bravo {
 
     .loader {
-      margin-top: 2rem;
+      margin-top: 1rem;
 
       .head {
         display: flex;
@@ -58,6 +101,7 @@ main {
         .title {
           flex: 1;
           font-weight: bold;
+          cursor: pointer;
         }
 
         a {
@@ -68,15 +112,15 @@ main {
 
       .body {
         padding: 1rem;
-
+        
         .inputs input {
           width: 100%;
         }
-
+  
         .buttons {
           margin-top: 1rem;
         }
-
+  
       }
 
     }

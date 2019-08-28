@@ -11,7 +11,7 @@ import { md5 } from '../../services/md5';
 import { getSheet, setData } from '../../services/sheets';
 import { getProjectInfo } from '../settings/settings.server';
 
-import { SetMode, ParsedLoaderValue } from './json-editor.types';
+import { SetMode, Source } from './json-editor.types';
 
 function setJsonContentExternal_(
   jsonText: string,
@@ -73,8 +73,8 @@ function setJsonContentInDrive_(
   return ('https://drive.google.com/uc?id=' + id);
 }
 
-export function loadJsonContent(parsedLoaderValue: ParsedLoaderValue) {
-  const { isExternal, value } = parsedLoaderValue;
+export function loadJsonContent(source: Source) {
+  const { isExternal, value } = source;
   const _loadJsonContent = () => (
     isExternal ?
     fetchGet(value).getContentText() :
@@ -94,43 +94,36 @@ export function loadJsonContent(parsedLoaderValue: ParsedLoaderValue) {
 export function setJsonContent(
   jsonText: string,
   setMode: SetMode,
-  parsedLoaderValue?: ParsedLoaderValue,
+  source?: Source,
 ) {
-  // raw
-  if (setMode === 'raw') {
-    return setData(jsonText);
+  const { isExternal, value } = source;
+  const { EDITOR_HOOK, CONTENT_ID } = getProjectInfo();
+  // no web hook for external resource
+  if (isExternal && !EDITOR_HOOK) {
+    throw new Error('No web hook for "url" mode.');
   }
-  // url & jsonx
-  else {
-    const { isExternal, value } = parsedLoaderValue;
-    const { EDITOR_HOOK, CONTENT_ID } = getProjectInfo();
-    // no web hook for external resource
-    if (isExternal && !EDITOR_HOOK) {
-      throw new Error('No web hook for "url" mode.');
-    }
-    // ask for creating new file in Drive
-    if (!isExternal && !value) {
-      const ui = SpreadsheetApp.getUi();
-      const result = ui.alert(
-        'New content',
-        'Create new file and save the content?',
-        ui.ButtonSet.YES_NO,
-      );
-      // Process the user's response.
-      if (result !== ui.Button.YES) return;
-    }
-    // set data & get the resource url
-    const resourceUrl = (
-      isExternal ?
-      setJsonContentExternal_(jsonText, EDITOR_HOOK, value) :
-      setJsonContentInDrive_(jsonText, CONTENT_ID, value)
+  // ask for creating new file in Drive
+  if (!isExternal && !value) {
+    const ui = SpreadsheetApp.getUi();
+    const result = ui.alert(
+      'New content',
+      'Create new file and save the content?',
+      ui.ButtonSet.YES_NO,
     );
-    if (!resourceUrl) {
-      throw new Error('Error updating json content.');
-    }
-    // set active cell data
-    return setData(
-      (setMode === 'jsonx' ? 'json://' : '') + resourceUrl,
-    );
+    // Process the user's response.
+    if (result !== ui.Button.YES) return;
   }
+  // set data & get the resource url
+  const resourceUrl = (
+    isExternal ?
+    setJsonContentExternal_(jsonText, EDITOR_HOOK, value) :
+    setJsonContentInDrive_(jsonText, CONTENT_ID, value)
+  );
+  if (!resourceUrl) {
+    throw new Error('Error updating json content.');
+  }
+  // set active cell data
+  return setData('',
+    // (setMode === 'jsonx' ? 'json://' : '') + resourceUrl,
+  );
 }
