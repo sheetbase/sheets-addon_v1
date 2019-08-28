@@ -137,6 +137,14 @@ export function getFolderInfo(folder: GoogleAppsScript.Drive.Folder): FolderInfo
  * file
  */
 
+export function buildFileUCUrl(id: string) {
+  return 'https://drive.google.com/uc?id=' + id;
+}
+
+export function extractFileIdFromUCUrl(ucUrl: string) {
+  return ucUrl.split('id=').pop().split('&').shift();
+}
+
 export function getFileById(id: string) {
   return DriveApp.getFileById(id);
 }
@@ -207,7 +215,7 @@ export function getFileInfo(file: GoogleAppsScript.Drive.File): FileInfo {
   const _getFileInfo = () => {
     const fileInfo = getDriveItemInfo(file);
     const mimeType = file.getMimeType();
-    const url = 'https://drive.google.com/uc?id=' + fileInfo.id;
+    const url = buildFileUCUrl(fileInfo.id);
     const downloadUrl = url + '&export=download';
     return {
       ... fileInfo,

@@ -1,7 +1,13 @@
-export interface Source {
-  raw?: string;
+export type SetMode = 'RAW' | 'CURRENT' | 'NEW_INTERNAL' | 'NEW_EXTERNAL';
+
+export interface SourceData {
   isExternal?: boolean;
-  value?: string;
+  id?: string;
+  url?: string;
 }
 
-export type SetMode = 'RAW' | 'BY_SOURCE' | 'NEW_INTERNAL' | 'NEW_EXTERNAL';
+export interface LoadResult {
+  source?: string;
+  autoLoaded?: boolean;
+  jsonText?: string;
+}

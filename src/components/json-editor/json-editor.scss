@@ -4,7 +4,7 @@ main {
 
   #jsoneditor {
     width: 100%;
-    height: 420px;
+    height: 500px;
 
     // context menu
     .jsoneditor > .jsoneditor-menu .jsoneditor-anchor .jsoneditor-contextmenu {
@@ -57,72 +57,75 @@ main {
       border: 1px solid #3883fa;
 
       .settings {
-        display: flex;
         
         .set-modes {
           display: flex;
 
           .mode {
             margin-left: .5rem;
-            
-            &:first-child {
+
+            &.raw {
               margin-left: 0;
+              margin-right: .5rem;
+              position: relative;
+
+              &::after {
+                content: '';
+                display: block;
+                width: 1px;
+                height: 1.75rem;
+                background: addon-color('light');
+                position: absolute;
+                left: 2.45rem;
+              }
             }
           }
 
         }
 
         .auto-loaded {
-          flex: 1;
-          padding-top: .25rem;
-          margin-left: .5rem;
-          padding-left: .5rem;
-          border-left: 1px solid #{addon-color('light')};
+          width: 100px;
+          margin-top: .5rem;
         }
 
       }
 
-      .preview {
+      .source {
+        display: flex;
+        align-items: center;
         margin-top: .5rem;
+        background: #f1f1f1;
+        padding: .25rem .5rem;
+        overflow: hidden;
+
+        code {
+          flex: 1;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        .clear {
+          color: addon-color('medium');
+          padding: 0 0 0 .5rem;
+          text-decoration: none;
+          font-size: 1.5rem;
+          
+          &:hover {
+            color: addon-color('dark');
+          }
+        }
       }
 
     }
 
-  }
-
-  section.bravo {
-
-    .loader {
+    .buttons {
       margin-top: 1rem;
 
-      .head {
-        display: flex;
-
-        .title {
-          flex: 1;
-          font-weight: bold;
-          cursor: pointer;
-        }
-
-        a {
-          text-transform: uppercase;
-          margin-left: 1rem;
-        }
+      .button.action {
+        padding-left: .5rem;
+        padding-right: .5rem;
       }
-
-      .body {
-        padding: 1rem;
-        
-        .inputs input {
-          width: 100%;
-        }
-  
-        .buttons {
-          margin-top: 1rem;
-        }
-  
-      }
-
     }
 
   }
@@ -169,6 +172,33 @@ main {
       // mode code
       .jsoneditor.jsoneditor-mode-code > .jsoneditor-menu .jsoneditor-poweredBy {
         display: inline;
+      }
+
+    }
+
+    section.alpha {
+
+      .advanced {
+        display: flex;
+
+        .settings {
+          flex: 1;
+          display: flex;
+
+          .auto-loaded {
+            flex: 1;
+            margin-top: 0;            
+            padding-top: .25rem;
+            margin-left: .5rem;
+            padding-left: .5rem;
+            border-left: 1px solid #{addon-color('light')};
+          }
+        }
+
+        .source {
+          margin-left: 1rem;
+          margin-top: 0;
+        }
       }
 
     }

@@ -31,26 +31,36 @@
             <div class="settings">
 
               <div class="set-modes">
-                <button class="button toggle mode by-source"
-                  title="Save to current source"
-                  :class="{'active': setMode==='BY_SOURCE'}"
-                  @click="setMode='BY_SOURCE'"
+                <button class="button toggle mode raw"
+                  title="Set as json string"
+                  :class="{'active': setMode==='RAW'}"
+                  :disabled="!!source && !!isModeCurrentAvailable()"
+                  @click="setMode='RAW'"
                 >
-                  <img src="https://img.icons8.com/ios/16/000000/check-file.png">
+                  <img src="https://img.icons8.com/small/16/000000/json.png">
+                </button>
+                <button class="button toggle mode current"
+                  title="Save to current source"
+                  :class="{'active': setMode==='CURRENT'}"
+                  :disabled="!isModeCurrentAvailable()"
+                  @click="setMode='CURRENT'"
+                >
+                  <img src="https://img.icons8.com/ios/16/000000/star.png">
                 </button>
                 <button class="button toggle mode new-internal"
                   title="Save to new file on Drive"
                   :class="{'active': setMode==='NEW_INTERNAL'}"
                   @click="setMode='NEW_INTERNAL'"
                 >
-                  <img src="https://img.icons8.com/ios/16/000000/check-file.png">
+                  <img src="https://img.icons8.com/ios/16/000000/google-drive.png">
                 </button>
                 <button class="button toggle mode new-external"
                   title="Save to new file externaly"
                   :class="{'active': setMode==='NEW_EXTERNAL'}"
+                  :disabled="!hasEditorHook"
                   @click="setMode='NEW_EXTERNAL'"
                 >
-                  <img src="https://img.icons8.com/ios/16/000000/check-file.png">
+                  <img src="https://img.icons8.com/small/16/000000/network-drive.png">
                 </button>
               </div>
   
@@ -63,58 +73,23 @@
 
             </div>
 
-            <div class="preview" v-if="setMode!=='RAW'">
-              <code>xxx...</code>
+            <div class="source" v-if="!!source">
+              <code :title="source">{{ source }}</code>
+              <a class="clear" href="#"
+                title="Remove the source"
+                @click.prevent="source=''; setMode='RAW';"
+              >&times;</a>
             </div>
               
           </div>
 
-          <div class="margin-top">
+          <div class="buttons">
             <button class="button" @click="getJSON()">Get &rarr;</button>
             <button class="button" @click="clearJSON()">Clear</button>
             <button class="button action right"
-              v-if="setMode==='RAW'"
+              :disabled="actionDisabled"
               @click="setJSON()"
-            >&larr; Set</button>
-            <button class="button action right"
-              v-if="setMode!=='RAW'"
-              @click="saveJSON()"
-            >Save</button>
-          </div>
-
-        </section>
-
-        <!-- 2nd -->
-        <section class="bravo">
-
-          <div class="shell loader" :class="{'collapsed': !showLoader}">
-            <div class="head">
-              <div class="title"
-                title="Click to expand/collapse the view"
-                @click="showLoader=!showLoader"
-              >Content loader</div>
-              <a class="toggler" href="#"
-                title="Click to expand/collapse the view"
-                @click.prevent="showLoader=!showLoader"
-              >{{ !showLoader ? 'Show' : 'Hide' }}</a>
-            </div>
-            <div class="body" v-if="!!showLoader">
-
-              <div class="inputs">
-                <input class="input" type="text"
-                  placeholder="In-drive .json file id or an url or a json://..."
-                  v-model="rawSource"
-                  @change="processSource()"
-                >
-              </div>
-
-              <div class="buttons">
-                <button class="button" @click="!source ? getSource() : resetSource()">{{ !source ? 'Retrieve' : 'Reset' }}</button>
-                <button class="button action right" :disabled="!source" @click="loadSource()">Load</button>
-                <button class="button right" :disabled="!source" @click="viewSource()">View</button>
-              </div>
-
-            </div>
+            >{{ setMode === 'RAW' ? '&larr; Set' : actionText() }}</button>
           </div>
 
         </section>
