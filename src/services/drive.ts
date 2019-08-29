@@ -141,8 +141,15 @@ export function buildFileUCUrl(id: string) {
   return 'https://drive.google.com/uc?id=' + id;
 }
 
-export function extractFileIdFromUCUrl(ucUrl: string) {
-  return ucUrl.split('id=').pop().split('&').shift();
+export function extractFileIdFromUrl(url: string) {
+  // share/edit/view (https://drive.google.com/file/d/<id>/...)
+  // open id (https://drive.google.com/open?id=<id>[&...])
+  // uc id (https://drive.google.com/uc?id=<id>[&...])
+  return url
+    .replace('https://drive.google.com/file/d/', '')
+    .split('/').shift()
+    .split('id=').pop()
+    .split('&').shift();
 }
 
 export function getFileById(id: string) {

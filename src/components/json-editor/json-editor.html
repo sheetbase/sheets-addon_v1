@@ -34,7 +34,7 @@
                 <button class="button toggle mode raw"
                   title="Set as json string"
                   :class="{'active': setMode==='RAW'}"
-                  :disabled="!!source && !!isModeCurrentAvailable()"
+                  :disabled="!!source && !modeCurrentDisabled"
                   @click="setMode='RAW'"
                 >
                   <img src="https://img.icons8.com/small/16/000000/json.png">
@@ -42,7 +42,7 @@
                 <button class="button toggle mode current"
                   title="Save to current source"
                   :class="{'active': setMode==='CURRENT'}"
-                  :disabled="!isModeCurrentAvailable()"
+                  :disabled="modeCurrentDisabled"
                   @click="setMode='CURRENT'"
                 >
                   <img src="https://img.icons8.com/ios/16/000000/star.png">
@@ -74,10 +74,10 @@
             </div>
 
             <div class="source" v-if="!!source">
-              <code :title="source">{{ source }}</code>
+              <code><a :href="sourceUrl" :title="sourceUrl">{{ source }}</a></code>
               <a class="clear" href="#"
                 title="Remove the source"
-                @click.prevent="source=''; setMode='RAW';"
+                @click.prevent="setEditorData({}, true)"
               >&times;</a>
             </div>
               

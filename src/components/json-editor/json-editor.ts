@@ -3,7 +3,7 @@ import JSONEditor from 'jsoneditor';
 
 import { ErrorAlert, Google } from '../../types';
 import { ProjectInfo } from '../settings/settings.types';
-import { SetMode, LoadResult } from './json-editor.types';
+import { SetMode, EditorData } from './json-editor.types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -21,12 +21,13 @@ const app = new Vue({
   el: '#vue',
   data: {
     hasEditorHook: false,
-    // editor
     actionDisabled: false,
+    modeCurrentDisabled: true,
     // settings
-    source: '',
-    setMode: 'RAW' as SetMode,
+    source: '', // id or url
+    sourceUrl: '', // url
     autoLoaded: false,
+    setMode: 'RAW' as SetMode,
   },
 
   created () {
@@ -45,22 +46,6 @@ const app = new Vue({
       .getProjectInfo();
     },
 
-    setJsonEditor (jsonText: string) {
-      return editor.setText(jsonText);
-    },
-
-    changeSettings (mode: SetMode, autoLoaded = false) {
-      this.autoLoaded = autoLoaded;
-      return this.setMode = mode;
-    },
-
-    isModeCurrentAvailable () {
-      return !!this.source && (
-        this.source.indexOf('drive.google.com') !== -1 ||
-        !!this.hasEditorHook
-      );
-    },
-
     actionText () {
       if (this.setMode === 'NEW_INTERNAL') {
         return 'New on Drive';
@@ -69,6 +54,38 @@ const app = new Vue({
       } else {
         return 'Save current';
       }
+    },
+
+    setEditorData (data: EditorData = {}, keepData = false) {
+      const {
+        source = '',
+        sourceUrl = '',
+        autoLoaded = false,
+        jsonText = '{}',
+      } = data;
+      // update values
+      this.source = source;
+      this.sourceUrl = sourceUrl;
+      this.autoLoaded = autoLoaded;
+      // set mode
+      if (
+        // has source
+        !!source &&
+        !!sourceUrl &&
+        // in drive or has editor hook
+        (
+          sourceUrl.indexOf('drive.google.com') !== -1 ||
+          !!this.hasEditorHook
+        )
+      ) {
+        this.modeCurrentDisabled = false;
+        this.setMode = 'CURRENT';
+      } else {
+        this.modeCurrentDisabled = true;
+        this.setMode = 'RAW';
+      }
+      // data
+      return !keepData ? editor.setText(jsonText) : true;
     },
 
     /**
@@ -80,46 +97,30 @@ const app = new Vue({
     },
 
     getJSON () {
-      const successHandler = (result: LoadResult) => {
-        const { source, autoLoaded, jsonText } = result;
-        // a stringified json
-        if (!source) {
-          this.source = '';
-          this.changeSettings('RAW');
-        } else {
-          this.source = source;
-          this.changeSettings(
-            !!this.isModeCurrentAvailable() ? 'CURRENT' : 'RAW',
-            autoLoaded,
-          );
-        }
-        return this.setJsonEditor(jsonText);
-      };
       return google.script.run
-      .withSuccessHandler(successHandler)
+      .withSuccessHandler(this.setEditorData)
       .withFailureHandler(errorAlert)
       .loadJsonContent();
     },
 
     setJSON () {
-      const successHandler = (resourceUrl: string) => {
-        // remove action button disbled
-        this.actionDisabled = false;
-        // change settings and update source
-        if (!!resourceUrl) {
-          this.source = resourceUrl;
-          this.changeSettings('CURRENT', this.autoLoaded);
-        }
-      };
       // disable button until success or for 5 seconds
       this.actionDisabled = true;
       setTimeout(() => this.actionDisabled = false, 5000);
+      // success handler
+      const successHandler = (result: EditorData) => {
+        this.actionDisabled = false;
+        // change data
+        return this.setEditorData(
+          { ... result, autoLoaded: this.autoLoaded } as EditorData,
+          true,
+        );
+      };
       // send request
-      const jsonText = editor.getText();
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .saveJsonContent(jsonText, this.source, this.setMode, this.autoLoaded);
+      .saveJsonContent(editor.getText(), this.setMode, this.source, this.autoLoaded);
     },
 
   },

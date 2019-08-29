@@ -6,14 +6,14 @@ import {
   getFileContentById,
   createFileJSON,
   buildFileUCUrl,
-  extractFileIdFromUCUrl,
+  extractFileIdFromUrl,
 } from '../../services/drive';
 import { fetchGet, fetchPost } from '../../services/fetch';
 import { md5 } from '../../services/md5';
 import { getSheet, getData, setData } from '../../services/sheets';
 import { getProjectInfo } from '../settings/settings.server';
 
-import { SetMode, SourceData, LoadResult } from './json-editor.types';
+import { SetMode, SourceInfo, EditorData } from './json-editor.types';
 
 export const AUTO_LOADED_JSON_SCHEME = 'json://';
 
@@ -57,13 +57,14 @@ function isSourceOnDrive_(value: string) {
   return value.indexOf('drive.google.com') !== -1;
 }
 
-export function parseJsonEditorSource(source: string): SourceData {
-  const id = !!isSourceOnDrive_(source) ? extractFileIdFromUCUrl(source) : null;
+export function parseJsonEditorSource(source: string): SourceInfo {
+  const isExternal = !isDriveFileId_(source);
+  const id = !isExternal ? source : null;
   const url = !id ? source : null;
-  return { id, url, isExternal: !!url };
+  return { isExternal, id, url };
 }
 
-export function loadJsonContent(): LoadResult {
+export function loadJsonContent(): EditorData {
   let value = getData();
   // invalid source value
   if (!isValidSource_(value)) {
@@ -76,16 +77,20 @@ export function loadJsonContent(): LoadResult {
     );
   }
   // get result
-  let result: LoadResult;
+  let result: EditorData;
   // a stringified json
   if (!!isJsonText_(value)) {
     result = { jsonText: value };
   } else {
-    // turn file id to url
-    value = !isDriveFileId_(value) ? value : buildFileUCUrl(value);
-    // sum-up data
-    const source = value.replace(AUTO_LOADED_JSON_SCHEME, '');
+    // save auto-loaded status
     const autoLoaded = (value.substr(0, 7) === AUTO_LOADED_JSON_SCHEME);
+    // remove auto-loaded scheme
+    value = value.replace(AUTO_LOADED_JSON_SCHEME, '');
+    // extract value from drive url
+    value = !!isSourceOnDrive_(value) ? extractFileIdFromUrl(value) : value;
+    // result source
+    const source = value; // id or url
+    const sourceUrl = !!isDriveFileId_(value) ? buildFileUCUrl(value) : value; // url
     // load content
     const { isExternal, id, url } = parseJsonEditorSource(source);
     const cacheKey = buildCacheKey_(id || url, !!isExternal ? 'URL' : 'ID');
@@ -97,9 +102,10 @@ export function loadJsonContent(): LoadResult {
         3600,
       )
     );
-    // final source
-    result = { source, autoLoaded, jsonText };
+    // final result
+    result = { source, sourceUrl, autoLoaded, jsonText };
   }
+  // return data
   return result;
 }
 
@@ -143,13 +149,13 @@ function createFileOnDrive_(
   const fileName = key + '_' + field + '.json';
   const file = createFileJSON(folder, fileName, jsonText, 'PUBLIC');
   // return the resource url
-  return buildFileUCUrl(file.getId());
+  return file.getId();
 }
 
 export function saveJsonContent(
   jsonText: string,
-  source: string,
   setMode: SetMode,
+  source: string, // id or url
   autoLoaded?: boolean,
 ) {
   // set json string
@@ -160,17 +166,16 @@ export function saveJsonContent(
   // other modes
   // save content and set data by mode
   // retrieve the resource url
-  let resourceUrl: string;
   const { EDITOR_HOOK, CONTENT_ID } = getProjectInfo();
   // new file on Drive
   // NEW_INTERNAL
   if (setMode === 'NEW_INTERNAL') {
-    resourceUrl = createFileOnDrive_(jsonText, CONTENT_ID);
+    source = createFileOnDrive_(jsonText, CONTENT_ID);
   }
   // new file externaly
   // NEW_EXTERNAL
   else if (setMode === 'NEW_EXTERNAL') {
-    resourceUrl = setContentExternal_(jsonText, EDITOR_HOOK);
+    source = setContentExternal_(jsonText, EDITOR_HOOK);
   }
   // update current
   // CURRENT
@@ -182,20 +187,25 @@ export function saveJsonContent(
     }
     // update file externally
     if (!!isExternal && !!EDITOR_HOOK) {
-      resourceUrl = setContentExternal_(jsonText, EDITOR_HOOK, url);
-      // clear cache
-      clearCache(buildCacheKey_(resourceUrl, 'URL'));
+      source = url;
+      // update content & clear cache
+      setContentExternal_(jsonText, EDITOR_HOOK, url);
+      clearCache(buildCacheKey_(source, 'URL'));
     }
     // update file on Drive
     else if (!isExternal) {
-      getFileById(id).setContent(jsonText); // update content
-      resourceUrl = buildFileUCUrl(id);
-      // clear cache
+      source = id;
+      // update content & clear cache
+      getFileById(id).setContent(jsonText);
       clearCache(buildCacheKey_(id, 'ID'));
     }
   }
   // set data to active cell
-  setData((!!autoLoaded ? AUTO_LOADED_JSON_SCHEME : '') + resourceUrl);
-  // return to the client the resource url
-  return resourceUrl;
+  const sourceUrl = !!isDriveFileId_(source) ? buildFileUCUrl(source) : source;
+  setData(
+    (!!autoLoaded ? AUTO_LOADED_JSON_SCHEME : '') +
+    ((!autoLoaded && !!isDriveFileId_(source)) ? sourceUrl : source),
+  );
+  // return to the client the data
+  return { source, sourceUrl } as EditorData;
 }
