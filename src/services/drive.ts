@@ -15,7 +15,7 @@ import {
  * static
  */
 
-const SHARING_PRESETS: { [preset: string]: DriveSharingValue } = {
+export const SHARING_PRESETS: { [preset: string]: DriveSharingValue } = {
   PUBLIC: {
     access: 'ANYONE_WITH_LINK',
     permission: 'VIEW',
