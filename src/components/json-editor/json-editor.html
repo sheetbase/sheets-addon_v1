@@ -74,7 +74,7 @@
             </div>
 
             <div class="source" v-if="!!source">
-              <code><a :href="sourceUrl" :title="sourceUrl">{{ source }}</a></code>
+              <code><a :href="viewUrl" :title="sourceUrl">{{ source }}</a></code>
               <a class="clear" href="#"
                 title="Remove the source"
                 @click.prevent="setEditorData({}, true)"

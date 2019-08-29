@@ -146,7 +146,8 @@ export function extractFileIdFromUrl(url: string) {
   // open id (https://drive.google.com/open?id=<id>[&...])
   // uc id (https://drive.google.com/uc?id=<id>[&...])
   return url
-    .replace('https://drive.google.com/file/d/', '')
+    .replace('https://drive.google.com/', '')
+    .replace('file/d/', '')
     .split('/').shift()
     .split('id=').pop()
     .split('&').shift();

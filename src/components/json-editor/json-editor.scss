@@ -103,6 +103,10 @@ main {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
+
+          a {
+            color: addon-color('dark');
+          }
         }
 
         .clear {

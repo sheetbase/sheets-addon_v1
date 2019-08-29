@@ -28,6 +28,8 @@ const app = new Vue({
     sourceUrl: '', // url
     autoLoaded: false,
     setMode: 'RAW' as SetMode,
+    // misc
+    viewUrl: '',
   },
 
   created () {
@@ -63,6 +65,7 @@ const app = new Vue({
         autoLoaded = false,
         jsonText = '{}',
       } = data;
+      const isSourceOnDrive = (sourceUrl.indexOf('drive.google.com') !== -1);
       // update values
       this.source = source;
       this.sourceUrl = sourceUrl;
@@ -73,16 +76,19 @@ const app = new Vue({
         !!source &&
         !!sourceUrl &&
         // in drive or has editor hook
-        (
-          sourceUrl.indexOf('drive.google.com') !== -1 ||
-          !!this.hasEditorHook
-        )
+        (!!isSourceOnDrive || !!this.hasEditorHook)
       ) {
         this.modeCurrentDisabled = false;
         this.setMode = 'CURRENT';
       } else {
         this.modeCurrentDisabled = true;
         this.setMode = 'RAW';
+      }
+      // view url
+      if (!!isSourceOnDrive) {
+        this.viewUrl = 'https://drive.google.com/file/d/' + source + '/view';
+      } else {
+        this.viewUrl = sourceUrl;
       }
       // data
       return !keepData ? editor.setText(jsonText) : true;

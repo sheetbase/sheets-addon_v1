@@ -45,11 +45,17 @@ function isDriveFileId_(value: string) {
   );
 }
 
+function isAutoLoadedJson_(value: string) {
+  // json://<id|url>
+  return (value.substr(0, 7) === AUTO_LOADED_JSON_SCHEME);
+}
+
 function isValidSource_(value: string) {
   return !!value && (
     !!isJsonText_(value) ||
+    !!isDriveFileId_(value) ||
     !!isUrl_(value) ||
-    !!isDriveFileId_(value)
+    !!isAutoLoadedJson_(value)
   );
 }
 
@@ -73,7 +79,7 @@ export function loadJsonContent(): EditorData {
       '+ A json string\n' +
       '+ An on-Drive json file ID\n' +
       '+ An url to a json content\n' +
-      '+ A json://... url\n',
+      '+ A json://<id|url> value\n',
     );
   }
   // get result
@@ -83,7 +89,7 @@ export function loadJsonContent(): EditorData {
     result = { jsonText: value };
   } else {
     // save auto-loaded status
-    const autoLoaded = (value.substr(0, 7) === AUTO_LOADED_JSON_SCHEME);
+    const autoLoaded = isAutoLoadedJson_(value);
     // remove auto-loaded scheme
     value = value.replace(AUTO_LOADED_JSON_SCHEME, '');
     // extract value from drive url
