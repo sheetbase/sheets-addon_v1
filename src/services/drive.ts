@@ -1,5 +1,3 @@
-import { getCache, setCache } from './cache';
-
 import {
   DriveSharingValue,
   DriveSharing,
@@ -12,10 +10,12 @@ import {
 
 /**
  *
- * static
+ * general
  */
 
-export const SHARING_PRESETS: { [preset: string]: DriveSharingValue } = {
+ export const DRIVE_URL = 'https://drive.google.com';
+
+export const DRIVE_SHARING_PRESETS = {
   PUBLIC: {
     access: 'ANYONE_WITH_LINK',
     permission: 'VIEW',
@@ -24,12 +24,53 @@ export const SHARING_PRESETS: { [preset: string]: DriveSharingValue } = {
     access: 'PRIVATE',
     permission: 'NONE',
   },
+} as {
+  [preset: string]: DriveSharingValue;
 };
 
-/**
- *
- * drive general
- */
+export function isDriveFileId(id: string) {
+  // example: 17wmkJn5wDY8o_91kYw72XLT_NdZS3u0W
+  // usually an 33 characters id, and starts with 1
+  return (
+    id.substr(0, 1) === '1' &&
+    id.length > 30 &&
+    id.length < 35
+  );
+}
+
+export function isDriveFileUrl(url: string) {
+  return url.substr(0, DRIVE_URL.length) === DRIVE_URL;
+}
+
+export function buildDriveFileUrl(
+  id: string,
+  type: 'view' | 'edit' | 'uc',
+) {
+  return DRIVE_URL + '/' + (type === 'uc' ? `uc?id=${id}` : `file/d/${id}/${type}`);
+}
+export function buildDriveFileViewUrl(id: string) {
+  return buildDriveFileUrl(id, 'view');
+}
+
+export function buildDriveFileEditUrl(id: string) {
+  return buildDriveFileUrl(id, 'edit');
+}
+
+export function buildDriveFileUCUrl(id: string) {
+  return buildDriveFileUrl(id, 'uc');
+}
+
+export function extractDriveFileId(url: string) {
+  // share/edit/view (<DRIVE_URL>/file/d/<id>/...)
+  // open id (<DRIVE_URL>/open?id=<id>[&...])
+  // uc id (<DRIVE_URL>/uc?id=<id>[&...])
+  return url
+    .replace(DRIVE_URL + '/', '')
+    .replace('file/d/', '')
+    .split('/').shift()
+    .split('id=').pop()
+    .split('&').shift();
+}
 
 export function getDriveItemInfo(
   item: GoogleAppsScript.Drive.File | GoogleAppsScript.Drive.Folder,
@@ -57,18 +98,13 @@ export function getDriveItemInfo(
 
 /**
  *
- * project folder
+ * folder
  */
 
 export function getActiveFolder() {
   const id = SpreadsheetApp.getActiveSpreadsheet().getId();
   return DriveApp.getFileById(id).getParents().next();
 }
-
-/**
- *
- * folder
- */
 
 export function getFolderById(id: string) {
   return DriveApp.getFolderById(id);
@@ -106,35 +142,13 @@ export function getFolderByPath(
 }
 
 export function getFolderInfo(folder: GoogleAppsScript.Drive.Folder): DriveFolderInfo {
-  const _getFolderInfo = () => getDriveItemInfo(folder);
-  // get & cache
-  const cacheKey = 'DRIVE_FOLDER_INFO_' + folder.getId();
-  return (
-    getCache<DriveFolderInfo>(cacheKey) ||
-    setCache<DriveFolderInfo>(cacheKey, _getFolderInfo(), 3600)
-  );
+  return getDriveItemInfo(folder);
 }
 
 /**
  *
  * file
  */
-
-export function buildFileUCUrl(id: string) {
-  return 'https://drive.google.com/uc?id=' + id;
-}
-
-export function extractFileIdFromUrl(url: string) {
-  // share/edit/view (https://drive.google.com/file/d/<id>/...)
-  // open id (https://drive.google.com/open?id=<id>[&...])
-  // uc id (https://drive.google.com/uc?id=<id>[&...])
-  return url
-    .replace('https://drive.google.com/', '')
-    .replace('file/d/', '')
-    .split('/').shift()
-    .split('id=').pop()
-    .split('&').shift();
-}
 
 export function getFileById(id: string) {
   return DriveApp.getFileById(id);
@@ -153,7 +167,7 @@ export function createFile(
   blob: GoogleAppsScript.Base.Blob,
   sharing: DriveSharing = 'PUBLIC',
 ) {
-  const share = (typeof sharing === 'string') ? SHARING_PRESETS[sharing] : sharing;
+  const share = (typeof sharing === 'string') ? DRIVE_SHARING_PRESETS[sharing] : sharing;
   // create file
   return parentFolder
   .createFile(blob)
@@ -203,24 +217,16 @@ export function createFileHTML(
 }
 
 export function getFileInfo(file: GoogleAppsScript.Drive.File): DriveFileInfo {
-  const _getFileInfo = () => {
-    const fileInfo = getDriveItemInfo(file);
-    const mimeType = file.getMimeType();
-    const url = buildFileUCUrl(fileInfo.id);
-    const downloadUrl = url + '&export=download';
-    return {
-      ... fileInfo,
-      mimeType,
-      url,
-      downloadUrl,
-    };
+  const fileInfo = getDriveItemInfo(file);
+  const mimeType = file.getMimeType();
+  const url = buildDriveFileUCUrl(fileInfo.id);
+  const downloadUrl = url + '&export=download';
+  return {
+    ... fileInfo,
+    mimeType,
+    url,
+    downloadUrl,
   };
-  // get & cache
-  const cacheKey = 'DRIVE_FILE_INFO_' + file.getId();
-  return (
-    getCache<DriveFileInfo>(cacheKey) ||
-    setCache<DriveFileInfo>(cacheKey, _getFileInfo(), 3600)
-  );
 }
 
 export function getFileContent(file: GoogleAppsScript.Drive.File) {

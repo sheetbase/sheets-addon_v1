@@ -35,19 +35,26 @@ export interface Google {
  * editor
  */
 
+export type EditorType = 'json' | 'html';
+
 export type EditorSetMode = 'RAW' | 'CURRENT' | 'NEW_INTERNAL' | 'NEW_EXTERNAL';
 
-export interface EditorSourceInfo {
-  isExternal?: boolean;
-  id?: string;
-  url?: string;
-}
-
 export interface EditorData {
-  source?: string;
+  source?: string; // id or url
   sourceUrl?: string;
   autoLoaded?: boolean;
   content?: string;
+  viewUrl?: string;
+  onDrive?: boolean;
+}
+
+export interface EditorConfig {
+  autoloadedScheme: string;
+  webhookEvent: string;
+  mimeType: string;
+  fileExt: string;
+  cachePrefix: string;
+  invalidSourceHandler: (value: string) => string;
 }
 
 /**
@@ -67,7 +74,7 @@ export interface ProjectBuiltinInfo {
 export interface ProjectCustomInfo {
   HOMEPAGE?: string;
   GCP_ID?: string;
-  EDITOR_HOOK?: string;
+  WEBHOOK_URL?: string;
 }
 
 export interface ProjectInfo extends ProjectBuiltinInfo, ProjectCustomInfo {}

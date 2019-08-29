@@ -1,4 +1,11 @@
+import { md5 } from './md5';
+import { isUrl } from './utils';
+
 // https://developers.google.com/apps-script/reference/cache/cache
+
+export function buildCacheKey(value: string, prefix = 'CACHED') {
+  return prefix + '_' + (!!isUrl(value) ? md5(value) : value);
+}
 
 export function getCache<Data>(key: string, raw = false) {
   let result: any = CacheService.getDocumentCache().get(key) as string;

@@ -1,7 +1,7 @@
 import { getActiveFolder, getFolderByName, getFileByName } from '../../services/drive';
 import { getProperties, setProperties } from '../../services/properties';
 
-import { ProjectBuiltinInfo, ProjectInfo } from '../../types';
+import { ProjectBuiltinInfo, ProjectCustomInfo, ProjectInfo } from '../../types';
 
 export function setProjectBuiltinInfo() {
   const projectFolder = getActiveFolder();
@@ -13,7 +13,7 @@ export function setProjectBuiltinInfo() {
   const content = getFolderByName(projectName + ' Content', projectFolder);
   const storage = getFolderByName(projectName + ' Storage', projectFolder);
   // set all properties
-  return setProperties<ProjectBuiltinInfo>({
+  return setProperties({
     PROJECT_ID: projectId,
     PROJECT_NAME: projectName,
     DATABASE_ID: database.getId(),
@@ -21,15 +21,19 @@ export function setProjectBuiltinInfo() {
     UPLOAD_ID: upload.getId(),
     CONTENT_ID: content.getId(),
     STORAGE_ID: storage.getId(),
-  });
+  } as ProjectBuiltinInfo);
+}
+
+export function setProjectCustomInfo(info: ProjectCustomInfo) {
+  return setProperties(info);
 }
 
 export function getProjectInfo(fresh = false) {
-  // all or just custom
   let properties: ProjectInfo = getProperties();
   // get built-in info, when fresh or not exist
   if (!!fresh || !properties.PROJECT_ID) {
-    properties = { ... getProperties(), ... setProjectBuiltinInfo() };
+    const builtinInfo = setProjectBuiltinInfo();
+    properties = { ... properties, ... builtinInfo };
   }
   // all info
   return properties;

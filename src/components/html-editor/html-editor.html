@@ -23,12 +23,70 @@
         <!-- 1st -->
         <section class="alpha">
 
-          
+          <div class="advanced">
+
+            <div class="settings">
+
+              <div class="set-modes">
+                <button class="button toggle mode raw"
+                  title="Set as json string"
+                  :class="{'active': setMode==='RAW'}"
+                  :disabled="!!source && !modeCurrentDisabled"
+                  @click="setMode='RAW'"
+                >
+                  <img src="https://img.icons8.com/small/16/000000/json.png">
+                </button>
+                <button class="button toggle mode current"
+                  title="Save to current source"
+                  :class="{'active': setMode==='CURRENT'}"
+                  :disabled="modeCurrentDisabled"
+                  @click="setMode='CURRENT'"
+                >
+                  <img src="https://img.icons8.com/ios/16/000000/star.png">
+                </button>
+                <button class="button toggle mode new-internal"
+                  title="Save to new file on Drive"
+                  :class="{'active': setMode==='NEW_INTERNAL'}"
+                  @click="setMode='NEW_INTERNAL'"
+                >
+                  <img src="https://img.icons8.com/ios/16/000000/google-drive.png">
+                </button>
+                <button class="button toggle mode new-external"
+                  title="Save to new file externaly"
+                  :class="{'active': setMode==='NEW_EXTERNAL'}"
+                  :disabled="!hasWebHook"
+                  @click="setMode='NEW_EXTERNAL'"
+                >
+                  <img src="https://img.icons8.com/small/16/000000/network-drive.png">
+                </button>
+              </div>
   
-          <div class="buttons margin-top">
-            <button class="button" v-on:click="getHTML()">Get &rarr;</button>    
-            <button class="button" v-on:click="clearHTML()">Clear</button>
-            <button class="button action right" v-on:click="setHTML()">&larr; Set</button>
+              <div class="auto-loaded" v-if="setMode!=='RAW'">
+                <label class="label">
+                  <input class="input" type="checkbox" v-model="autoLoaded">
+                  <span>Auto-loaded</span>
+                </label>
+              </div>
+
+            </div>
+
+            <div class="source" v-if="!!source">
+              <code><a :href="viewUrl" :title="sourceUrl">{{ source }}</a></code>
+              <a class="clear" href="#"
+                title="Remove the source"
+                @click.prevent="setEditorData({}, true)"
+              >&times;</a>
+            </div>
+              
+          </div>
+  
+          <div class="buttons">
+            <button class="button" @click="getHTML()">Get &rarr;</button>
+            <button class="button" @click="clearHTML()">Clear</button>
+            <button class="button action right"
+              :disabled="actionDisabled"
+              @click="setHTML()"
+            >{{ setMode === 'RAW' ? '&larr; Set' : actionText() }}</button>
           </div>
   
         </section>

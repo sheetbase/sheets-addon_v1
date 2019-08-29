@@ -3,8 +3,9 @@ import Vue from 'vue';
 import {
   ErrorAlert,
   Google,
-  ProjectInfo,
   ActionMessage,
+  ProjectInfo,
+  ProjectCustomInfo,
 } from '../../types';
 
 declare const google: Google;
@@ -49,11 +50,11 @@ const app = new Vue({
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .setProperties({
+      .setProjectCustomInfo({
         HOMEPAGE: this.projectInfo['HOMEPAGE'],
         GCP_ID: this.projectInfo['GCP_ID'],
-        EDITOR_HOOK: this.projectInfo['EDITOR_HOOK'],
-      });
+        WEBHOOK_URL: this.projectInfo['WEBHOOK_URL'],
+      } as ProjectCustomInfo);
     },
 
   },

@@ -6,8 +6,6 @@ import {
   ErrorAlert,
   Google,
   EditorSetMode,
-  EditorSourceInfo,
-  EditorData,
 } from '../../types';
 
 declare const google: Google;
@@ -38,20 +36,18 @@ tinymce.init({
 const app = new Vue({
   el: '#vue',
   data: {
-    // doc loader
-    docId: '',
-    docStyle: false,
-    // editor
-    hasEditorHook: false,
+    hasWebHook: false,
     actionDisabled: false,
     modeCurrentDisabled: true,
     // settings
+    setMode: 'RAW' as EditorSetMode,
     source: '', // id or url
     sourceUrl: '', // url
-    autoLoaded: false,
-    setMode: 'RAW' as EditorSetMode,
-    // misc
     viewUrl: '',
+    autoLoaded: false,
+    // doc loader
+    docId: '',
+    docStyle: false,
   },
   methods: {
 

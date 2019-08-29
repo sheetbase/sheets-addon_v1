@@ -24,16 +24,15 @@ const editor = new JSONEditor(
 const app = new Vue({
   el: '#vue',
   data: {
-    hasEditorHook: false,
+    hasWebHook: false,
     actionDisabled: false,
     modeCurrentDisabled: true,
     // settings
+    setMode: 'RAW' as EditorSetMode,
     source: '', // id or url
     sourceUrl: '', // url
-    autoLoaded: false,
-    setMode: 'RAW' as EditorSetMode,
-    // misc
     viewUrl: '',
+    autoLoaded: false,
   },
 
   created () {
@@ -44,7 +43,7 @@ const app = new Vue({
 
     getProjectInfo () {
       const successHandler = (info: ProjectInfo) => (
-        this.hasEditorHook = !!info.EDITOR_HOOK
+        this.hasWebHook = !!info.WEBHOOK_URL
       );
       return google.script.run
       .withSuccessHandler(successHandler)
@@ -66,33 +65,26 @@ const app = new Vue({
       const {
         source = '',
         sourceUrl = '',
+        viewUrl = '',
         autoLoaded = false,
         content = '{}',
+        onDrive = false,
       } = data;
-      const isSourceOnDrive = (sourceUrl.indexOf('drive.google.com') !== -1);
       // update values
       this.source = source;
       this.sourceUrl = sourceUrl;
+      this.viewUrl = viewUrl;
       this.autoLoaded = autoLoaded;
       // set mode
       if (
-        // has source
-        !!source &&
-        !!sourceUrl &&
-        // in drive or has editor hook
-        (!!isSourceOnDrive || !!this.hasEditorHook)
+        !!source && // has source
+        (!!onDrive || !!this.hasWebHook) // in drive or has editor hook
       ) {
         this.modeCurrentDisabled = false;
         this.setMode = 'CURRENT';
       } else {
         this.modeCurrentDisabled = true;
         this.setMode = 'RAW';
-      }
-      // view url
-      if (!!isSourceOnDrive) {
-        this.viewUrl = 'https://drive.google.com/file/d/' + source + '/view';
-      } else {
-        this.viewUrl = sourceUrl;
       }
       // content
       return !keepData ? editor.setText(content) : true;
@@ -130,7 +122,7 @@ const app = new Vue({
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .saveJsonContent(editor.getText(), this.setMode, this.source, this.autoLoaded);
+      .saveJsonContent(editor.getText(), this.setMode, 'json');
     },
 
   },

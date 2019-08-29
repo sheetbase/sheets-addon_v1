@@ -1,4 +1,4 @@
-import { displayError } from './ui';
+import { confirmAlert } from './ui';
 
 // https://developers.google.com/apps-script/reference/spreadsheet/spreadsheet-app
 
@@ -47,7 +47,6 @@ export function setData(
   rangeA1?: string, // set: Sheet1!A:A | append: Sheet1
   isAppended = false,
 ) {
-  if(!data) return displayError('No data to save!');
   // spreadsheet
   const spreadsheet = !!spreadsheetId ?
     SpreadsheetApp.openById(spreadsheetId) : SpreadsheetApp.getActiveSpreadsheet();
@@ -62,23 +61,14 @@ export function setData(
   } else {
     range = !!rangeA1 ? spreadsheet.getRange(rangeA1) : SpreadsheetApp.getActiveRange();
   }
-  // check if data exists
-  if(
-    !spreadsheetId &&
-    !!getData()
-  ) {
-    const ui = SpreadsheetApp.getUi();
-    const result = ui.alert(
-      'Overwrite data',
-      'Data exists, overwrite anyway?',
-      ui.ButtonSet.YES_NO,
-    );
-    // Process the user's response.
-    if (result !== ui.Button.YES) return;
-  }
   // set the data
-  return (range.getWidth() <= 1 && range.getHeight() <= 1) ?
-    range.setValue(data) : range.setValues(data);
+  return (
+    !getData() ||
+    !!confirmAlert('Overwrite existing data?', 'Overwrite?')
+  ) ? (
+    (range.getWidth() <= 1 && range.getHeight() <= 1) ?
+    range.setValue(data) : range.setValues(data)
+  ) : false;
 }
 
 function transformValue_(values: any[], noHeaders = false) {

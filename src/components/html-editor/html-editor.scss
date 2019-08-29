@@ -5,19 +5,138 @@ main {
     border-color: #ffffff; // hide border before tinymce fully loaded
   }
 
+  section.alpha {
+
+    .advanced {
+      margin-top: -1px;
+      padding: .5rem;
+      border: 1px solid #3883fa;
+
+      .settings {
+        
+        .set-modes {
+          display: flex;
+
+          .mode {
+            margin-left: .5rem;
+
+            &.raw {
+              margin-left: 0;
+              margin-right: .5rem;
+              position: relative;
+
+              &::after {
+                content: '';
+                display: block;
+                width: 1px;
+                height: 1.75rem;
+                background: addon-color('light');
+                position: absolute;
+                left: 2.45rem;
+              }
+            }
+          }
+
+        }
+
+        .auto-loaded {
+          width: 100px;
+          margin-top: .5rem;
+        }
+
+      }
+
+      .source {
+        display: flex;
+        align-items: center;
+        margin-top: .5rem;
+        background: #f1f1f1;
+        padding: .25rem .5rem;
+        overflow: hidden;
+
+        code {
+          flex: 1;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+
+          a {
+            color: addon-color('dark');
+          }
+        }
+
+        .clear {
+          color: addon-color('medium');
+          padding: 0 0 0 .5rem;
+          text-decoration: none;
+          font-size: 1.5rem;
+          
+          &:hover {
+            color: addon-color('dark');
+          }
+        }
+      }
+
+    }
+
+    .buttons {
+      margin-top: 1rem;
+
+      .button.action {
+        padding-left: .5rem;
+        padding-right: .5rem;
+      }
+    }
+
+  }
+
   section.bravo {
 
     .loader {
       margin-top: 1rem;
 
       .inputs {
-        input[type=text] {
+
+        input {
           width: 100%;
         }
+
         .keep-style {
           margin-top: .5rem;
-        }    
+        }
+
       }
+    }
+
+  }
+
+  @media (min-width: 576px) {
+
+    section.alpha {
+
+      .advanced {
+        display: flex;
+
+        .settings {
+          flex: 1;
+          display: flex;
+
+          .auto-loaded {
+            flex: 1;
+            margin-top: 0;            
+            padding-top: .25rem;
+            margin-left: .5rem;
+            padding-left: .5rem;
+            border-left: 1px solid #{addon-color('light')};
+          }
+        }
+
+        .source {
+          margin-left: 1rem;
+          margin-top: 0;
+        }
+      }
+
     }
 
   }
