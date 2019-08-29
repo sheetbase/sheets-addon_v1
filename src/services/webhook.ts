@@ -1,10 +1,8 @@
 import { fetchPost } from './fetch';
 import { getProperty } from './properties';
 
-export const WEBHOOK_URL_KEY = 'WEBHOOK_URL';
-
 export function getWebhookUrl() {
-  return getProperty(WEBHOOK_URL_KEY);
+  return getProperty('WEBHOOK_URL');
 }
 
 export function emitWebhookEvent(event: string, data: any, resourceUrl = '') {

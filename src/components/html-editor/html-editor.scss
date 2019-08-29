@@ -1,3 +1,5 @@
+@import '../../theming/index.scss';
+
 main {
 
   #tinymce {
@@ -10,7 +12,7 @@ main {
     .advanced {
       margin-top: -1px;
       padding: .5rem;
-      border: 1px solid #3883fa;
+      border: 1px solid #ccc;
 
       .settings {
         
@@ -93,19 +95,37 @@ main {
   section.bravo {
 
     .loader {
-      margin-top: 1rem;
+      margin-top: 2rem;
 
-      .inputs {
+      .head {
+        display: flex;
 
-        input {
-          width: 100%;
+        .title {
+          flex: 1;
+          font-weight: bold;
         }
 
-        .keep-style {
-          margin-top: .5rem;
+        a {
+          text-transform: uppercase;
+          margin-left: 1rem;
+        }
+      }
+
+      .body {
+        padding: 1rem;
+
+        .inputs {
+
+          input[type=text] {
+            width: 100%;
+          }
+          .keep-style {
+            margin-top: .5rem;
+          }
         }
 
       }
+
     }
 
   }

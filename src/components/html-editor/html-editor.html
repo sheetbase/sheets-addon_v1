@@ -18,7 +18,7 @@
 
       <textarea class="master" id="tinymce"></textarea>
 
-      <div id="vue">
+      <div id="vue" v-cloak>
 
         <!-- 1st -->
         <section class="alpha">
@@ -34,7 +34,7 @@
                   :disabled="!!source && !modeCurrentDisabled"
                   @click="setMode='RAW'"
                 >
-                  <img src="https://img.icons8.com/small/16/000000/json.png">
+                  <img src="https://img.icons8.com/small/16/000000/html-filetype.png">
                 </button>
                 <button class="button toggle mode current"
                   title="Save to current source"
@@ -93,13 +93,18 @@
         
         <!-- 2nd -->
         <section class="bravo">
-          
-          <fieldset class="fieldset loader">
-            <legend class="legend">Load content from Google Docs:</legend>
-            <div class="content">
-        
+
+          <div class="shell loader" :class="{'collapsed': !showLoader}">
+            <div class="head">
+              <div class="title">Content loader</div>
+              <a class="toggler" href="#"
+                @click.prevent="showLoader=!showLoader"
+              >{{ !showLoader ? 'Show' : 'Hide' }}</a>
+            </div>
+            <div class="body" v-if="!!showLoader">
+
               <div class="inputs">
-        
+      
                 <input class="input" type="text" placeholder="A Google Docs document id ..." v-model="docId">
       
                 <div class="keep-style">
@@ -112,12 +117,12 @@
               </div>
         
               <div class="margin-top">
-                <button class="button action" v-on:click="loadDocContent()">Load</button>
+                <button class="button action" :disabled="!docId" v-on:click="loadDocContent()">Load</button>
                 <button class="button right" :disabled="!docId" v-on:click="viewDoc()">View</button>
               </div>
-        
-            </div>  
-          </fieldset>
+
+            </div>
+          </div>
   
         </section>
 

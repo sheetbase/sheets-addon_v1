@@ -1,6 +1,4 @@
 // shared functions
-export { getDocsContent } from './services/docs';
-export { getData } from './services/sheets';
 export { displayError } from './services/ui';
 
 // tool specific functions

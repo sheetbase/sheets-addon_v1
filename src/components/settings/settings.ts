@@ -1,12 +1,6 @@
 import Vue from 'vue';
 
-import {
-  ErrorAlert,
-  Google,
-  ActionMessage,
-  ProjectInfo,
-  ProjectCustomInfo,
-} from '../../types';
+import { ErrorAlert, Google, ActionMessage, ProjectInfo, ProjectCustomInfo } from '../../types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -28,8 +22,8 @@ const app = new Vue({
   methods: {
 
     getProjectInfo (fresh = false) {
-      const successHandler = (props: ProjectInfo) => {
-        this.projectInfo = props;
+      const successHandler = (info: ProjectInfo) => {
+        this.projectInfo = info;
         return this.ready = true;
       };
       this.ready = false; // reset ready status

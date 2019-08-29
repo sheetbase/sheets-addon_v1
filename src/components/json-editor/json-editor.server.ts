@@ -6,6 +6,6 @@ export function loadJsonContent(): EditorData {
   return loadContent('json');
 }
 
-export function saveJsonContent(data: EditorData, setMode: EditorSetMode) {
-  return saveContent(data, setMode, 'json');
+export function saveJsonContent(setMode: EditorSetMode, data: EditorData) {
+  return saveContent('json', setMode, data);
 }

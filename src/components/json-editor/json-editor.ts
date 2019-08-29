@@ -1,13 +1,7 @@
 import Vue from 'vue';
 import JSONEditor from 'jsoneditor';
 
-import {
-  ErrorAlert,
-  Google,
-  ProjectInfo,
-  EditorSetMode,
-  EditorData,
-} from '../../types';
+import { ErrorAlert, Google, ProjectInfo, EditorSetMode, EditorData } from '../../types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -33,6 +27,7 @@ const app = new Vue({
     sourceUrl: '', // url
     viewUrl: '',
     autoLoaded: false,
+    onDrive: false,
   },
 
   created () {
@@ -51,14 +46,27 @@ const app = new Vue({
       .getProjectInfo();
     },
 
-    actionText () {
-      if (this.setMode === 'NEW_INTERNAL') {
-        return 'New on Drive';
-      } else if (this.setMode === 'NEW_EXTERNAL') {
-        return 'New remotely';
-      } else {
-        return 'Save current';
-      }
+    /**
+     * editor
+     */
+
+    getEditorContent () {
+      return editor.getText();
+    },
+
+    setEditorContent (content: string) {
+      return editor.setText(content);
+    },
+
+    getEditorData () {
+      return {
+        source: this.source,
+        sourceUrl: this.sourceUrl,
+        viewUrl: this.viewUrl,
+        autoLoaded: this.autoLoaded,
+        onDrive: this.onDrive,
+        content: this.getEditorContent(),
+      } as EditorData;
     },
 
     setEditorData (data: EditorData = {}, keepData = false) {
@@ -67,14 +75,15 @@ const app = new Vue({
         sourceUrl = '',
         viewUrl = '',
         autoLoaded = false,
-        content = '{}',
         onDrive = false,
+        content = '{}',
       } = data;
       // update values
       this.source = source;
       this.sourceUrl = sourceUrl;
       this.viewUrl = viewUrl;
       this.autoLoaded = autoLoaded;
+      this.onDrive = onDrive;
       // set mode
       if (
         !!source && // has source
@@ -87,15 +96,25 @@ const app = new Vue({
         this.setMode = 'RAW';
       }
       // content
-      return !keepData ? editor.setText(content) : true;
+      return !keepData ? this.setEditorContent(content) : null;
     },
 
     /**
-     * editor
+     * buttons
      */
 
+    actionText () {
+      if (this.setMode === 'NEW_INTERNAL') {
+        return 'New on Drive';
+      } else if (this.setMode === 'NEW_EXTERNAL') {
+        return 'New remotely';
+      } else {
+        return 'Save current';
+      }
+    },
+
     clearJSON () {
-      return editor.set({});
+      return this.setEditorContent('{}');
     },
 
     getJSON () {
@@ -112,17 +131,13 @@ const app = new Vue({
       // success handler
       const successHandler = (result: EditorData) => {
         this.actionDisabled = false;
-        // change data
-        return this.setEditorData(
-          { ... result, autoLoaded: this.autoLoaded } as EditorData,
-          true,
-        );
+        return !!result ? this.setEditorData(result, true) : false;
       };
       // send request
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .saveJsonContent(editor.getText(), this.setMode, 'json');
+      .saveJsonContent(this.setMode, this.getEditorData());
     },
 
   },

@@ -2,11 +2,7 @@
 import Vue from 'vue';
 import tinymce from 'tinymce';
 
-import {
-  ErrorAlert,
-  Google,
-  EditorSetMode,
-} from '../../types';
+import { ErrorAlert, Google, ProjectInfo, EditorSetMode, EditorData } from '../../types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -45,44 +41,42 @@ const app = new Vue({
     sourceUrl: '', // url
     viewUrl: '',
     autoLoaded: false,
+    onDrive: false,
     // doc loader
+    showLoader: false,
     docId: '',
     docStyle: false,
   },
+
+  created () {
+    this.getProjectInfo(); // check if there is the editor hook
+  },
+
   methods: {
+
+    getProjectInfo () {
+      const successHandler = (info: ProjectInfo) => (
+        this.hasWebHook = !!info.WEBHOOK_URL
+      );
+      return google.script.run
+      .withSuccessHandler(successHandler)
+      .withFailureHandler(errorAlert)
+      .getProjectInfo();
+    },
 
     /**
      * loader
      */
 
-    getDocId () {
-      const successHandler = (docId: string) => {
-        this.docId = docId;
-        return this.loadDocContent();
+    loadDocContent () {
+      const successHandler = (html: string) => {
+        this.showLoader = false;
+        return this.setEditorContent(html);
       };
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .getData();
-    },
-
-    loadDocContent () {
-      // try to load from the active cell
-      if (!this.docId) {
-        return this.getDocId();
-      } else {
-        const successHandler = (html: string) => {
-          if(!html) {
-            return errorAlert('Can not get the Doc content!');
-          }
-          return tinymce.activeEditor.setContent(html);
-        };
-        // load content
-        return google.script.run
-        .withSuccessHandler(successHandler)
-        .withFailureHandler(errorAlert)
-        .getDocsContent(this.docId, !this.docStyle);
-      }
+      .loadDocContent(this.docId, this.docStyle);
     },
 
     viewDoc() {
@@ -93,28 +87,98 @@ const app = new Vue({
      * editor
      */
 
+    getEditorContent () {
+      return tinymce.activeEditor.getContent({ format: 'html' })
+      .replace(/\\n/g,'')
+      .replace(/\n/g,'')
+      .replace('<!DOCTYPE html><html><head></head><body>','')
+      .replace('</body></html>','');
+    },
+
+    setEditorContent (content: string) {
+      return tinymce.activeEditor.setContent(content);
+    },
+
+    getEditorData () {
+      return {
+        source: this.source,
+        sourceUrl: this.sourceUrl,
+        viewUrl: this.viewUrl,
+        autoLoaded: this.autoLoaded,
+        onDrive: this.onDrive,
+        content: this.getEditorContent(),
+      } as EditorData;
+    },
+
+    setEditorData (data: EditorData = {}, keepData = false) {
+      const {
+        source = '',
+        sourceUrl = '',
+        viewUrl = '',
+        autoLoaded = false,
+        onDrive = false,
+        content = '',
+      } = data;
+      // update values
+      this.source = source;
+      this.sourceUrl = sourceUrl;
+      this.viewUrl = viewUrl;
+      this.autoLoaded = autoLoaded;
+      this.onDrive = onDrive;
+      // set mode
+      if (
+        !!source && // has source
+        (!!onDrive || !!this.hasWebHook) // in drive or has editor hook
+      ) {
+        this.modeCurrentDisabled = false;
+        this.setMode = 'CURRENT';
+      } else {
+        this.modeCurrentDisabled = true;
+        this.setMode = 'RAW';
+      }
+      // content
+      return !keepData ? this.setEditorContent(content) : null;
+    },
+
+    /**
+     * editor
+     */
+
+    actionText () {
+      if (this.setMode === 'NEW_INTERNAL') {
+        return 'New on Drive';
+      } else if (this.setMode === 'NEW_EXTERNAL') {
+        return 'New remotely';
+      } else {
+        return 'Save current';
+      }
+    },
+
     clearHTML () {
-      return tinymce.activeEditor.setContent('');
+      return this.setEditorContent('');
     },
 
     getHTML () {
       return google.script.run
-      .withSuccessHandler<string>(data => {
-        return tinymce.activeEditor.setContent(data);
-      })
+      .withSuccessHandler(this.setEditorData)
       .withFailureHandler(errorAlert)
-      .getData();
+      .loadHtmlContent();
     },
 
     setHTML () {
-      const html = tinymce.activeEditor.getContent({ format: 'html' })
-        .replace(/\\n/g,'')
-        .replace(/\n/g,'')
-        .replace('<!DOCTYPE html><html><head></head><body>','')
-        .replace('</body></html>','');
+      // disable button until success or for 5 seconds
+      this.actionDisabled = true;
+      setTimeout(() => this.actionDisabled = false, 5000);
+      // success handler
+      const successHandler = (result: EditorData) => {
+        this.actionDisabled = false;
+        return !!result ? this.setEditorData(result, true) : false;
+      };
+      // send request
       return google.script.run
+      .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .setData(html);
+      .saveHtmlContent(this.setMode, this.getEditorData());
     },
 
   },

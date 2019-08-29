@@ -54,7 +54,7 @@ export interface EditorConfig {
   mimeType: string;
   fileExt: string;
   cachePrefix: string;
-  invalidSourceHandler: (value: string) => string;
+  valueHandler: (value: string) => string;
 }
 
 /**

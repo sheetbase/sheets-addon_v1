@@ -14,7 +14,7 @@ import {
 import { fetchGet } from './fetch';
 import { getProperty } from './properties';
 import { getSheet, getData, setData } from './sheets';
-import { isUrl } from './utils';
+import { isUrl, isJsonString } from './utils';
 import { emitWebhookEvent } from './webhook';
 
 import {
@@ -34,7 +34,9 @@ export const EDITOR_CONFIGS = {
     mimeType: 'application/json',
     fileExt: 'json',
     cachePrefix: 'JSON_CONTENT',
-    invalidSourceHandler: value => JSON.stringify(!!value ? { value } : {}),
+    valueHandler: value => (
+      !value ? '{}' : (isJsonString(value) ? value : JSON.stringify({ value }))
+    ),
   },
   // html editor
   html: {
@@ -43,7 +45,7 @@ export const EDITOR_CONFIGS = {
     mimeType: 'text/html',
     fileExt: 'html',
     cachePrefix: 'HTML_CONTENT',
-    invalidSourceHandler: value => '',
+    valueHandler: value => (value || ''),
   },
 } as {
   [editor: string]: EditorConfig;
@@ -53,7 +55,7 @@ export function loadContent(editor: EditorType): EditorData {
   const { // load config
     autoloadedScheme,
     cachePrefix,
-    invalidSourceHandler,
+    valueHandler,
   } = EDITOR_CONFIGS[editor];
   let value = getData(); // get current data
   const autoLoaded = ( // save auto-loaded status
@@ -62,7 +64,7 @@ export function loadContent(editor: EditorType): EditorData {
   // no value
   // or a normal string (not a valid hosted source)
   if (!value || !(isDriveFileId(value) || isUrl(value) || !!autoLoaded)) {
-    return { content: invalidSourceHandler(value) };
+    return { content: valueHandler(value) };
   } else {
     // remove auto-loaded scheme
     value = value.replace(autoloadedScheme, '');
@@ -101,69 +103,78 @@ export function loadContent(editor: EditorType): EditorData {
 }
 
 export function saveContent(
-  data: EditorData,
-  setMode: EditorSetMode,
   editor: EditorType,
+  setMode: EditorSetMode,
+  data: EditorData,
 ) {
-  const { content, autoLoaded, onDrive } = data;
-  let { source, sourceUrl, viewUrl } = data;
-  const {
-    autoloadedScheme,
-    webhookEvent,
-    mimeType,
-    fileExt,
-    cachePrefix,
-  } = EDITOR_CONFIGS[editor];
   // RAW
   if (setMode === 'RAW') {
-    return setData(content);
-  }
-  // save content and set data by mode
-  // NEW_INTERNAL
-  if (setMode === 'NEW_INTERNAL') {
-    const contentFolderId = getProperty('CONTENT_ID');
-    // load current cell associated info
-    const sheet = getSheet();
-    const sheetName = sheet.getName();
-    const currentCell = sheet.getActiveCell();
-    const key = sheet.getRange(currentCell.getRow(), 3).getValue();
-    const field = sheet.getRange(1, currentCell.getColumn()).getValue();
-    // parent folder
-    const folder = getFolderByName(
-      sheetName.charAt(0).toUpperCase() + sheetName.slice(1), // folder by content type
-      getFolderById(contentFolderId),
-    );
-    // save the file
-    const fileName = key + '_' + field + '.' + fileExt;
-    const file = createFileFromString(folder, fileName, mimeType, content, 'PUBLIC');
-    // return the resource url
-    source = file.getId();
-    sourceUrl = buildDriveFileUCUrl(source);
-    viewUrl = buildDriveFileViewUrl(source);
-  }
-  // NEW_EXTERNAL
-  else if (setMode === 'NEW_EXTERNAL') {
-    source = emitWebhookEvent(webhookEvent, content);
-    sourceUrl = source;
-    viewUrl = source;
-  }
-  // CURRENT
-  else {
-    if (!onDrive) { // update file on Drive
-      getFileById(source).setContent(content);
-    } else { // update file externally
-      emitWebhookEvent(webhookEvent, content, source);
+    return setData(data.content);
+  } else {
+    // inputs
+    const { content, autoLoaded } = data; // unchangable
+    let { source, sourceUrl, viewUrl, onDrive } = data; // changable
+    // configs
+    const {
+      autoloadedScheme,
+      webhookEvent,
+      mimeType,
+      fileExt,
+      cachePrefix,
+    } = EDITOR_CONFIGS[editor];
+    // save content and set data by mode
+    // NEW_INTERNAL
+    if (setMode === 'NEW_INTERNAL') {
+      const contentFolderId = getProperty('CONTENT_ID');
+      // load current cell associated info
+      const sheet = getSheet();
+      const sheetName = sheet.getName();
+      const activeCell = sheet.getActiveCell();
+      const key = sheet.getRange(activeCell.getRow(), 3).getValue();
+      const field = sheet.getRange(1, activeCell.getColumn()).getValue();
+      // parent folder
+      const folder = getFolderByName(
+        sheetName.charAt(0).toUpperCase() + sheetName.slice(1), // folder by content type
+        getFolderById(contentFolderId),
+      );
+      // save the file
+      const fileName = key + '--' + field + '.' + fileExt;
+      const file = createFileFromString(folder, fileName, mimeType, content, 'PUBLIC');
+      // return the resource url
+      source = file.getId();
+      sourceUrl = buildDriveFileUCUrl(source);
+      viewUrl = buildDriveFileViewUrl(source);
     }
-    // clear cache
-    clearCache(
-      buildCacheKey(source, cachePrefix),
+    // NEW_EXTERNAL
+    else if (setMode === 'NEW_EXTERNAL') {
+      source = emitWebhookEvent(webhookEvent, content);
+      sourceUrl = source;
+      viewUrl = source;
+    }
+    // CURRENT
+    else {
+      if (!!onDrive) { // update file on Drive
+        getFileById(source).setContent(content);
+      } else { // update file externally
+        emitWebhookEvent(webhookEvent, content, source);
+      }
+      // clear cache
+      clearCache(
+        buildCacheKey(source, cachePrefix),
+      );
+    }
+    // re-evaluate values
+    onDrive = isDriveFileId(source);
+    // set data to active cell
+    const updateValue = (
+      (!!autoLoaded ? autoloadedScheme : '') +
+      ((!autoLoaded && !!onDrive) ? sourceUrl : source)
     );
+    const currentValue = getData();
+    if (!currentValue || currentValue !== updateValue) {
+      setData(updateValue);
+    }
+    // return to the client the data
+    return { source, sourceUrl, viewUrl, autoLoaded, onDrive } as EditorData;
   }
-  // set data to active cell
-  setData(
-    (!!autoLoaded ? autoloadedScheme : '') +
-    ((!autoLoaded && !!onDrive) ? sourceUrl : source),
-  );
-  // return to the client the data
-  return { source, sourceUrl, viewUrl } as EditorData;
 }

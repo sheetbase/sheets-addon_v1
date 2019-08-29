@@ -35,6 +35,5 @@ export function getProjectInfo(fresh = false) {
     const builtinInfo = setProjectBuiltinInfo();
     properties = { ... properties, ... builtinInfo };
   }
-  // all info
   return properties;
 }
