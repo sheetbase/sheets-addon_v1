@@ -1,7 +1,7 @@
 import { getActiveFolder, getFolderByName, getFileByName } from '../../services/drive';
 import { getProperties, setProperties } from '../../services/properties';
 
-import { ProjectBuiltinInfo, ProjectInfo } from './settings.types';
+import { ProjectBuiltinInfo, ProjectInfo } from '../../types';
 
 export function setProjectBuiltinInfo() {
   const projectFolder = getActiveFolder();

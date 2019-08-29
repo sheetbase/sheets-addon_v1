@@ -1,38 +1,21 @@
 import { getCache, setCache } from './cache';
 
+import {
+  DriveSharingValue,
+  DriveSharing,
+  DriveItemInfo,
+  DriveFolderInfo,
+  DriveFileInfo,
+} from '../types';
+
 // https://developers.google.com/apps-script/reference/drive/drive-app
-
-interface DriveItemInfo {
-  id: string;
-  name: string;
-  description: string;
-  created: string;
-  updated: string;
-  link: string;
-  size: number;
-  sharing: DriveSharing;
-}
-
-type FileSharing = SharingPreset | DriveSharing;
-type SharingPreset = 'PUBLIC' | 'PRIVATE';
-interface DriveSharing {
-  access?: string;
-  permission?: string;
-}
-
-export interface FolderInfo extends DriveItemInfo {}
-export interface FileInfo extends DriveItemInfo {
-  mimeType: string;
-  url: string;
-  downloadUrl: string;
-}
 
 /**
  *
  * static
  */
 
-const SHARING_PRESETS: { [preset: string]: DriveSharing } = {
+const SHARING_PRESETS: { [preset: string]: DriveSharingValue } = {
   PUBLIC: {
     access: 'ANYONE_WITH_LINK',
     permission: 'VIEW',
@@ -122,13 +105,13 @@ export function getFolderByPath(
   return folder;
 }
 
-export function getFolderInfo(folder: GoogleAppsScript.Drive.Folder): FolderInfo {
+export function getFolderInfo(folder: GoogleAppsScript.Drive.Folder): DriveFolderInfo {
   const _getFolderInfo = () => getDriveItemInfo(folder);
   // get & cache
   const cacheKey = 'DRIVE_FOLDER_INFO_' + folder.getId();
   return (
-    getCache<FolderInfo>(cacheKey) ||
-    setCache<FolderInfo>(cacheKey, _getFolderInfo(), 3600)
+    getCache<DriveFolderInfo>(cacheKey) ||
+    setCache<DriveFolderInfo>(cacheKey, _getFolderInfo(), 3600)
   );
 }
 
@@ -168,7 +151,7 @@ export function getFileByName(
 export function createFile(
   parentFolder: GoogleAppsScript.Drive.Folder,
   blob: GoogleAppsScript.Base.Blob,
-  sharing: FileSharing = 'PUBLIC',
+  sharing: DriveSharing = 'PUBLIC',
 ) {
   const share = (typeof sharing === 'string') ? SHARING_PRESETS[sharing] : sharing;
   // create file
@@ -185,7 +168,7 @@ export function createFileFromString(
   name: string,
   mimeType: string,
   content: string,
-  sharing: FileSharing = 'PUBLIC',
+  sharing: DriveSharing = 'PUBLIC',
 ) {
   // create file
   const blob = Utilities.newBlob(content, mimeType, name);
@@ -196,7 +179,7 @@ export function createFileText(
   parentFolder: GoogleAppsScript.Drive.Folder,
   name: string,
   content: string,
-  sharing: FileSharing = 'PUBLIC',
+  sharing: DriveSharing = 'PUBLIC',
 ) {
   return createFileFromString(parentFolder, name, 'text/plain', content, sharing);
 }
@@ -205,7 +188,7 @@ export function createFileJSON(
   parentFolder: GoogleAppsScript.Drive.Folder,
   name: string,
   content: string,
-  sharing: FileSharing = 'PUBLIC',
+  sharing: DriveSharing = 'PUBLIC',
 ) {
   return createFileFromString(parentFolder, name, 'application/json', content, sharing);
 }
@@ -214,12 +197,12 @@ export function createFileHTML(
   parentFolder: GoogleAppsScript.Drive.Folder,
   name: string,
   content: string,
-  sharing: FileSharing = 'PUBLIC',
+  sharing: DriveSharing = 'PUBLIC',
 ) {
   return createFileFromString(parentFolder, name, 'text/html', content, sharing);
 }
 
-export function getFileInfo(file: GoogleAppsScript.Drive.File): FileInfo {
+export function getFileInfo(file: GoogleAppsScript.Drive.File): DriveFileInfo {
   const _getFileInfo = () => {
     const fileInfo = getDriveItemInfo(file);
     const mimeType = file.getMimeType();
@@ -235,8 +218,8 @@ export function getFileInfo(file: GoogleAppsScript.Drive.File): FileInfo {
   // get & cache
   const cacheKey = 'DRIVE_FILE_INFO_' + file.getId();
   return (
-    getCache<FileInfo>(cacheKey) ||
-    setCache<FileInfo>(cacheKey, _getFileInfo(), 3600)
+    getCache<DriveFileInfo>(cacheKey) ||
+    setCache<DriveFileInfo>(cacheKey, _getFileInfo(), 3600)
   );
 }
 

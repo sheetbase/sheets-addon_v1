@@ -1,7 +1,11 @@
 import Vue from 'vue';
 
-import { ErrorAlert, Google } from '../../types';
-import { ProjectInfo, SettingActionMessage } from './settings.types';
+import {
+  ErrorAlert,
+  Google,
+  ProjectInfo,
+  ActionMessage,
+} from '../../types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -13,7 +17,7 @@ const app = new Vue({
     ready: false,
     page: 'general',
     projectInfo: {} as ProjectInfo,
-    settingsMsg: null as SettingActionMessage,
+    settingsMsg: null as ActionMessage,
   },
 
   created () {
@@ -40,7 +44,7 @@ const app = new Vue({
         return this.settingsMsg = {
           type: 'success',
           message: 'Setting updated!',
-        } as SettingActionMessage;
+        } as ActionMessage;
       };
       return google.script.run
       .withSuccessHandler(successHandler)

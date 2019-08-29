@@ -2,7 +2,13 @@
 import Vue from 'vue';
 import tinymce from 'tinymce';
 
-import { ErrorAlert, Google } from '../../types';
+import {
+  ErrorAlert,
+  Google,
+  EditorSetMode,
+  EditorSourceInfo,
+  EditorData,
+} from '../../types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -32,8 +38,20 @@ tinymce.init({
 const app = new Vue({
   el: '#vue',
   data: {
+    // doc loader
     docId: '',
     docStyle: false,
+    // editor
+    hasEditorHook: false,
+    actionDisabled: false,
+    modeCurrentDisabled: true,
+    // settings
+    source: '', // id or url
+    sourceUrl: '', // url
+    autoLoaded: false,
+    setMode: 'RAW' as EditorSetMode,
+    // misc
+    viewUrl: '',
   },
   methods: {
 

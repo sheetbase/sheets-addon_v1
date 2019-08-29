@@ -1,6 +1,6 @@
-// https://developers.google.com/apps-script/reference/url-fetch/url-fetch-app
+import { FetchMethod } from '../types';
 
-type FetchMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
+// https://developers.google.com/apps-script/reference/url-fetch/url-fetch-app
 
 export function fetch(
   method: FetchMethod,

@@ -13,7 +13,7 @@ import { md5 } from '../../services/md5';
 import { getSheet, getData, setData } from '../../services/sheets';
 import { getProjectInfo } from '../settings/settings.server';
 
-import { SetMode, SourceInfo, EditorData } from './json-editor.types';
+import { EditorSetMode, EditorSourceInfo, EditorData } from '../../types';
 
 export const AUTO_LOADED_JSON_SCHEME = 'json://';
 
@@ -63,7 +63,7 @@ function isSourceOnDrive_(value: string) {
   return value.indexOf('drive.google.com') !== -1;
 }
 
-export function parseJsonEditorSource(source: string): SourceInfo {
+export function parseJsonEditorSource(source: string): EditorSourceInfo {
   const isExternal = !isDriveFileId_(source);
   const id = !isExternal ? source : null;
   const url = !id ? source : null;
@@ -86,7 +86,7 @@ export function loadJsonContent(): EditorData {
   let result: EditorData;
   // a stringified json
   if (!!isJsonText_(value)) {
-    result = { jsonText: value };
+    result = { content: value };
   } else {
     // save auto-loaded status
     const autoLoaded = isAutoLoadedJson_(value);
@@ -100,7 +100,7 @@ export function loadJsonContent(): EditorData {
     // load content
     const { isExternal, id, url } = parseJsonEditorSource(source);
     const cacheKey = buildCacheKey_(id || url, !!isExternal ? 'URL' : 'ID');
-    const jsonText = (
+    const content = (
       getCache<string>(cacheKey, true) ||
       setCache<string>(
         cacheKey,
@@ -109,7 +109,7 @@ export function loadJsonContent(): EditorData {
       )
     );
     // final result
-    result = { source, sourceUrl, autoLoaded, jsonText };
+    result = { source, sourceUrl, autoLoaded, content };
   }
   // return data
   return result;
@@ -160,7 +160,7 @@ function createFileOnDrive_(
 
 export function saveJsonContent(
   jsonText: string,
-  setMode: SetMode,
+  setMode: EditorSetMode,
   source: string, // id or url
   autoLoaded?: boolean,
 ) {

@@ -1,9 +1,13 @@
 import Vue from 'vue';
 import JSONEditor from 'jsoneditor';
 
-import { ErrorAlert, Google } from '../../types';
-import { ProjectInfo } from '../settings/settings.types';
-import { SetMode, EditorData } from './json-editor.types';
+import {
+  ErrorAlert,
+  Google,
+  ProjectInfo,
+  EditorSetMode,
+  EditorData,
+} from '../../types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -27,7 +31,7 @@ const app = new Vue({
     source: '', // id or url
     sourceUrl: '', // url
     autoLoaded: false,
-    setMode: 'RAW' as SetMode,
+    setMode: 'RAW' as EditorSetMode,
     // misc
     viewUrl: '',
   },
@@ -63,7 +67,7 @@ const app = new Vue({
         source = '',
         sourceUrl = '',
         autoLoaded = false,
-        jsonText = '{}',
+        content = '{}',
       } = data;
       const isSourceOnDrive = (sourceUrl.indexOf('drive.google.com') !== -1);
       // update values
@@ -90,8 +94,8 @@ const app = new Vue({
       } else {
         this.viewUrl = sourceUrl;
       }
-      // data
-      return !keepData ? editor.setText(jsonText) : true;
+      // content
+      return !keepData ? editor.setText(content) : true;
     },
 
     /**
