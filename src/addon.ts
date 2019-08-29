@@ -25,15 +25,6 @@ function linkingEditorSidebar() {
   );
 }
 
-// Logs & Errors
-function logsErrorsDialog() {
-  return SpreadsheetApp.getUi().showModalDialog(
-    HtmlService
-    .createHtmlOutputFromFile('LogsErrors').setWidth(720).setHeight(480),
-    'Project monitoring',
-  );
-}
-
 // Settings
 function settingsDialog() {
   return SpreadsheetApp.getUi().showModalDialog(
@@ -50,7 +41,6 @@ function onOpen(e) {
   .addItem('HTML Editor', 'htmlEditorSidebar')
   .addItem('Linking Editor', 'linkingEditorSidebar')
   .addSeparator()
-  .addItem('Logs & Errors', 'logsErrorsDialog')
   .addItem('Settings', 'settingsDialog')
   .addToUi();
 }

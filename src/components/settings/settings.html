@@ -27,6 +27,10 @@
           :class="{'active': page==='settings'}"
           @click="page='settings'"
         >Settings</li>
+        <li class="monitoring"
+          :class="{'active': page==='monitoring'}"
+          @click="page='monitoring'"
+        >Monitoring</li>
         <li class="about"
           :class="{'active': page==='about'}"
           @click="page='about'"
@@ -133,6 +137,31 @@
   
         </div>
   
+        <div class="page monitoring" v-if="page==='monitoring'">
+
+          <h2>Monitoring</h2>
+
+          <div class="no-items" v-if="!projectInfo.GCP_ID">
+            Please set the <em>Google Cloud Project ID</em> in the <strong>Settings</strong> section.
+          </div>
+        
+          <ul class="items" v-else>
+            <li class="item">
+              <a :href="'https://console.cloud.google.com/logs/viewer?resource=app_script_function&project=' + projectInfo.GCP_ID">
+                <img src="https://img.icons8.com/nolan/32/000000/log.png">
+                <span>View logs</span>
+              </a>
+            </li>
+            <li class="item">
+              <a :href="'https://console.cloud.google.com/errors?time=P7D&order=COUNT_DESC&resolution=OPEN&resolution=ACKNOWLEDGED&project=' + projectInfo.GCP_ID">
+                <img src="https://img.icons8.com/flat_round/32/000000/error--v3.png">
+                <span>View errors</span>
+              </a>
+            </li>
+          </ul>
+
+        </div>
+
         <div class="page about" v-if="page==='about'">
   
           <h2>About</h2>
