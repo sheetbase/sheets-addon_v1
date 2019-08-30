@@ -40,47 +40,47 @@
       <div class="pages">
   
         <div class="page general"
-          v-if="page==='general' && !!projectInfo.PROJECT_ID"
+          v-if="page==='general' && !!settings.PROJECT_ID"
         >
   
           <div class="project">
-            <h1 class="title">{{ projectInfo.PROJECT_NAME }}</h1>
+            <h1 class="title">{{ settings.PROJECT_NAME }}</h1>
             <ul class="meta">
               <li>
-                Project ID: <a :href="'https://drive.google.com/drive/folders/' + projectInfo.PROJECT_ID">{{ projectInfo.PROJECT_ID }}</a>
+                Project ID: <a :href="'https://drive.google.com/drive/folders/' + settings.PROJECT_ID">{{ settings.PROJECT_ID }}</a>
               </li>
-              <li v-if="!!projectInfo.HOMEPAGE">
-                Homepage: <a :href="projectInfo.HOMEPAGE">{{ projectInfo.HOMEPAGE }}</a>
+              <li v-if="!!settings.HOMEPAGE">
+                Homepage: <a :href="settings.HOMEPAGE">{{ settings.HOMEPAGE }}</a>
               </li>
-              <li v-if="!!projectInfo.GCP_ID">
-                GCP: <a :href="'https://console.cloud.google.com/home/dashboard?project=' + projectInfo.GCP_ID">{{ projectInfo.GCP_ID }}</a>
+              <li v-if="!!settings.GCP_ID">
+                GCP: <a :href="'https://console.cloud.google.com/home/dashboard?project=' + settings.GCP_ID">{{ settings.GCP_ID }}</a>
               </li>
             </ul>
           </div>
   
           <ul class="services">
   
-            <li class="service database" v-if="!!projectInfo.DATABASE_ID">
+            <li class="service database" v-if="!!settings.DATABASE_ID">
               <a
-                :href="'https://docs.google.com/spreadsheets/d/' + projectInfo.DATABASE_ID + '/edit'"
+                :href="'https://docs.google.com/spreadsheets/d/' + settings.DATABASE_ID + '/edit'"
               >
                 <img src="https://img.icons8.com/dusk/32/000000/database.png">
                 <span>Database</span>
               </a>
             </li>
   
-            <li class="service backend" v-if="!!projectInfo.BACKEND_ID">
+            <li class="service backend" v-if="!!settings.BACKEND_ID">
               <a
-                :href="'https://script.google.com/d/' + projectInfo.BACKEND_ID + '/edit'"
+                :href="'https://script.google.com/d/' + settings.BACKEND_ID + '/edit'"
               >
                 <img src="https://img.icons8.com/color/32/000000/server.png">
                 <span>Backend</span>
               </a>
             </li>
   
-            <li class="service upload" v-if="!!projectInfo.UPLOAD_ID">
+            <li class="service upload" v-if="!!settings.UPLOAD_ID">
               <a
-                :href="'https://drive.google.com/drive/folders/' + projectInfo.UPLOAD_ID"
+                :href="'https://drive.google.com/drive/folders/' + settings.UPLOAD_ID"
               >
                 <img src="https://img.icons8.com/dusk/32/000000/upload.png">
                 <span>Upload</span>
@@ -102,22 +102,22 @@
           <div class="form-group">
             <label class="label">
               <span>Project homepage</span>
-              <input class="input" type="text" v-model="projectInfo.HOMEPAGE" placeholder="App homepage ..." />
+              <input class="input" type="text" v-model="settings.HOMEPAGE" placeholder="App homepage ..." />
             </label>
             <div class="actions">
-              <a :href="projectInfo.HOMEPAGE || 'https://sheetbase.dev'">View</a>
+              <a :href="settings.HOMEPAGE || 'https://sheetbase.dev'">View</a>
             </div>
           </div>
   
           <div class="form-group">
             <label class="label">
               <span>Google project ID</span>
-              <input class="input" type="text" v-model="projectInfo.GCP_ID" placeholder="Google Cloud project ID ..." />
+              <input class="input" type="text" v-model="settings.GCP_ID" placeholder="Google Cloud project ID ..." />
             </label>
             <div class="actions">
               <a
-                v-if="!!projectInfo.GCP_ID"
-                :href="'https://console.cloud.google.com/home/dashboard?project=' + projectInfo.GCP_ID"
+                v-if="!!settings.GCP_ID"
+                :href="'https://console.cloud.google.com/home/dashboard?project=' + settings.GCP_ID"
               >View</a>
             </div>
           </div>
@@ -125,14 +125,14 @@
           <div class="form-group">
             <label class="label">
               <span>Editor webhook</span>
-              <input class="input" type="text" v-model="projectInfo.WEBHOOK_URL" placeholder="Webhook url for JSON/HTML editor ..." />
+              <input class="input" type="text" v-model="settings.WEBHOOK_URL" placeholder="Webhook url for JSON/HTML editor ..." />
             </label>
             <div class="actions"></div>
           </div>
   
           <div class="submit">
             <button class="button action" @click="setSettings()">Save</button>
-            <div :class="['message', settingsMsg.type]" v-if="!!settingsMsg">{{ settingsMsg.message }}</div>
+            <div :class="['message', actionMessage.type]" v-if="!!actionMessage">{{ actionMessage.message }}</div>
           </div>
   
         </div>
@@ -141,19 +141,19 @@
 
           <h2>Monitoring</h2>
 
-          <div class="no-items" v-if="!projectInfo.GCP_ID">
+          <div class="no-items" v-if="!settings.GCP_ID">
             Please set the <em>Google Cloud Project ID</em> in the <strong>Settings</strong> section.
           </div>
         
           <ul class="items" v-else>
             <li class="item">
-              <a :href="'https://console.cloud.google.com/logs/viewer?resource=app_script_function&project=' + projectInfo.GCP_ID">
+              <a :href="'https://console.cloud.google.com/logs/viewer?resource=app_script_function&project=' + settings.GCP_ID">
                 <img src="https://img.icons8.com/nolan/32/000000/log.png">
                 <span>View logs</span>
               </a>
             </li>
             <li class="item">
-              <a :href="'https://console.cloud.google.com/errors?time=P7D&order=COUNT_DESC&resolution=OPEN&resolution=ACKNOWLEDGED&project=' + projectInfo.GCP_ID">
+              <a :href="'https://console.cloud.google.com/errors?time=P7D&order=COUNT_DESC&resolution=OPEN&resolution=ACKNOWLEDGED&project=' + settings.GCP_ID">
                 <img src="https://img.icons8.com/flat_round/32/000000/error--v3.png">
                 <span>View errors</span>
               </a>

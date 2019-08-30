@@ -11,8 +11,8 @@ const app = new Vue({
   data: {
     ready: false,
     page: 'general',
-    projectSettings: {} as ProjectSettings,
-    settingsMsg: null as ActionMessage,
+    settings: {} as ProjectSettings,
+    actionMessage: null as ActionMessage,
   },
 
   created () {
@@ -23,7 +23,7 @@ const app = new Vue({
 
     getSettings (fresh = false) {
       const successHandler = (settings: ProjectSettings) => {
-        this.projectSettings = settings;
+        this.settings = settings;
         return this.ready = true;
       };
       this.ready = false; // reset ready status
@@ -35,8 +35,8 @@ const app = new Vue({
 
     setSettings () {
       const successHandler = () => {
-        setTimeout(() => this.settingsMsg = null, 3000);
-        return this.settingsMsg = {
+        setTimeout(() => this.actionMessage = null, 3000);
+        return this.actionMessage = {
           type: 'success',
           message: 'Setting updated!',
         } as ActionMessage;
@@ -44,7 +44,7 @@ const app = new Vue({
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .setProjectSettings(this.projectSettings);
+      .setProjectSettings(this.settings);
     },
 
   },
