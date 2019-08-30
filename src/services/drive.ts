@@ -96,6 +96,16 @@ export function getDriveItemInfo(
   };
 }
 
+export function base64Parser(base64Value: string) {
+  const [ header, body ] = base64Value.split(';base64,');
+  const mimeType = header.replace('data:', '');
+  if (!mimeType || !body) {
+    throw new Error('Malform base64 data.');
+  }
+  const size = body.replace(/\=/g, '').length * 0.75; // bytes
+  return { mimeType, size, base64Body: body };
+}
+
 /**
  *
  * folder
@@ -177,6 +187,28 @@ export function createFile(
   );
 }
 
+export function createFileFromBase64Body(
+  parentFolder: GoogleAppsScript.Drive.Folder,
+  name: string,
+  mimeType: string,
+  base64Body: string,
+  sharing: DriveSharing = 'PUBLIC',
+) {
+  const data = Utilities.base64Decode(base64Body, Utilities.Charset.UTF_8);
+  const blob = Utilities.newBlob(data, mimeType, name);
+  return createFile(parentFolder, blob, sharing);
+}
+
+export function createFileFromBase64(
+  parentFolder: GoogleAppsScript.Drive.Folder,
+  name: string,
+  base64: string,
+  sharing: DriveSharing = 'PUBLIC',
+) {
+  const { mimeType, base64Body } = base64Parser(base64);
+  return createFileFromBase64Body(parentFolder, name, mimeType, base64Body, sharing);
+}
+
 export function createFileFromString(
   parentFolder: GoogleAppsScript.Drive.Folder,
   name: string,
@@ -184,7 +216,6 @@ export function createFileFromString(
   content: string,
   sharing: DriveSharing = 'PUBLIC',
 ) {
-  // create file
   const blob = Utilities.newBlob(content, mimeType, name);
   return createFile(parentFolder, blob, sharing);
 }

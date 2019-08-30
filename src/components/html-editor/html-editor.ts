@@ -30,10 +30,16 @@ tinymce.init({
   selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
   // methods
   save_onsavecallback () {
-    return app.tinymceOnSaveCallback();
+    return app.setHTML();
   },
   images_upload_handler (blobInfo, success, failure) {
-    return app.tinymceImagesUploadHandler(blobInfo, success, failure);
+    const base64 = blobInfo.base64();
+    const { type: mimeType } = blobInfo.blob() as Blob;
+    const filename = blobInfo.filename();
+    google.script.run
+    .withSuccessHandler(success)
+    .withFailureHandler(failure)
+    .uploadEditorFile(base64, mimeType, filename);
   },
 } as any);
 
@@ -71,16 +77,16 @@ const app = new Vue({
      * tinymce
      */
 
-    tinymceOnSaveCallback () {
-      return this.setHTML();
-    },
+    // tinymceOnSaveCallback () {
+    //   return this.setHTML();
+    // },
 
-    tinymceImagesUploadHandler (blobInfo, success, failure) {
-      return google.script.run
-      .withSuccessHandler(success)
-      .withFailureHandler(failure)
-      .uploadEditorFile(blobInfo.blob());
-    },
+    // tinymceImagesUploadHandler (blobInfo, success, failure) {
+    //   google.script.run
+    //   .withSuccessHandler(success)
+    //   .withFailureHandler(failure)
+    //   .uploadEditorFile(blobInfo.blob());
+    // },
 
     /**
      * loader

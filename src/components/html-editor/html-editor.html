@@ -96,7 +96,7 @@
 
           <div class="shell loader" :class="{'collapsed': !showLoader}">
             <div class="head">
-              <div class="title">Content loader</div>
+              <div class="title" @click="showLoader=!showLoader">Content loader</div>
               <a class="toggler" href="#"
                 @click.prevent="showLoader=!showLoader"
               >{{ !showLoader ? 'Show' : 'Hide' }}</a>
