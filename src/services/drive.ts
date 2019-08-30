@@ -13,7 +13,7 @@ import {
  * general
  */
 
- export const DRIVE_URL = 'https://drive.google.com';
+export const DRIVE_URL = 'https://drive.google.com';
 
 export const DRIVE_SHARING_PRESETS = {
   PUBLIC: {

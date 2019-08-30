@@ -1,12 +1,8 @@
 import { fetchPost } from './fetch';
-import { getProperty } from './properties';
-
-export function getWebhookUrl() {
-  return getProperty('WEBHOOK_URL');
-}
+import { getSettingWebhookUrl } from './project';
 
 export function emitWebhookEvent(event: string, data: any, resourceUrl = '') {
-  const webhookUrl = getWebhookUrl();
+  const webhookUrl = getSettingWebhookUrl();
   if (!webhookUrl) {
     throw new Error('No webhook!');
   }

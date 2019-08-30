@@ -61,7 +61,7 @@ export interface EditorConfig {
  * project
  */
 
-export interface ProjectBuiltinInfo {
+export interface ProjectBuiltinSettings {
   PROJECT_ID?: string;
   PROJECT_NAME?: string;
   DATABASE_ID?: string;
@@ -71,13 +71,13 @@ export interface ProjectBuiltinInfo {
   STORAGE_ID?: string;
 }
 
-export interface ProjectCustomInfo {
+export interface ProjectCustomSettings {
   HOMEPAGE?: string;
   GCP_ID?: string;
   WEBHOOK_URL?: string;
 }
 
-export interface ProjectInfo extends ProjectBuiltinInfo, ProjectCustomInfo {}
+export interface ProjectSettings extends ProjectBuiltinSettings, ProjectCustomSettings {}
 
 /**
  * Drive

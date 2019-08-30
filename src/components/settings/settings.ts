@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-import { ErrorAlert, Google, ActionMessage, ProjectInfo, ProjectCustomInfo } from '../../types';
+import { ErrorAlert, Google, ActionMessage, ProjectSettings } from '../../types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -11,29 +11,29 @@ const app = new Vue({
   data: {
     ready: false,
     page: 'general',
-    projectInfo: {} as ProjectInfo,
+    projectSettings: {} as ProjectSettings,
     settingsMsg: null as ActionMessage,
   },
 
   created () {
-    this.getProjectInfo();
+    this.getSettings();
   },
 
   methods: {
 
-    getProjectInfo (fresh = false) {
-      const successHandler = (info: ProjectInfo) => {
-        this.projectInfo = info;
+    getSettings (fresh = false) {
+      const successHandler = (settings: ProjectSettings) => {
+        this.projectSettings = settings;
         return this.ready = true;
       };
       this.ready = false; // reset ready status
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .getProjectInfo(fresh);
+      .getProjectSettings(fresh);
     },
 
-    saveSettings () {
+    setSettings () {
       const successHandler = () => {
         setTimeout(() => this.settingsMsg = null, 3000);
         return this.settingsMsg = {
@@ -44,11 +44,7 @@ const app = new Vue({
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .setProjectCustomInfo({
-        HOMEPAGE: this.projectInfo['HOMEPAGE'],
-        GCP_ID: this.projectInfo['GCP_ID'],
-        WEBHOOK_URL: this.projectInfo['WEBHOOK_URL'],
-      } as ProjectCustomInfo);
+      .setProjectSettings(this.projectSettings);
     },
 
   },

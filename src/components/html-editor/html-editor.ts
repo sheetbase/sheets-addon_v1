@@ -2,7 +2,7 @@
 import Vue from 'vue';
 import tinymce from 'tinymce';
 
-import { ErrorAlert, Google, ProjectInfo, EditorSetMode, EditorData } from '../../types';
+import { ErrorAlert, Google, ProjectSettings, EditorSetMode, EditorData } from '../../types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -13,9 +13,11 @@ declare const errorAlert: ErrorAlert;
 tinymce.init({
   selector: 'textarea#tinymce',
   entity_encoding: 'raw',
-  base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14',
-  content_css: false,
   height: 500,
+  skin_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14/skins/ui/oxide',
+  content_css: [
+    'https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.14/skins/content/default/content.min.css',
+  ],
   // plugins
   // EXCLUDED: bbcode & powerpaste mediaembed tinydrive tinycomments mentions tinymcespellchecker formatpainter linkchecker a11ychecker casechange checklist pageembed permanentpen advcode
   // INCLUDED: code paste spellchecker
@@ -24,8 +26,15 @@ tinymce.init({
   menubar: 'file edit view insert format tools table tc help',
   // toolbar
   toolbar_drawer: 'sliding',
-  toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment' + ' | code paste spellchecker',
+  toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment',
   selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+  // methods
+  save_onsavecallback () {
+    return app.tinymceOnSaveCallback();
+  },
+  images_upload_handler (blobInfo, success, failure) {
+    return app.tinymceImagesUploadHandler(blobInfo, success, failure);
+  },
 } as any);
 
 // init vue app
@@ -49,19 +58,34 @@ const app = new Vue({
   },
 
   created () {
-    this.getProjectInfo(); // check if there is the editor hook
+    this.getProjectSettings(); // check if there is the editor hook
   },
 
   methods: {
 
-    getProjectInfo () {
-      const successHandler = (info: ProjectInfo) => (
+    getProjectSettings () {
+      const successHandler = (info: ProjectSettings) => (
         this.hasWebHook = !!info.WEBHOOK_URL
       );
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .getProjectInfo();
+      .getProjectSettings();
+    },
+
+    /**
+     * tinymce
+     */
+
+    tinymceOnSaveCallback () {
+      return this.setHTML();
+    },
+
+    tinymceImagesUploadHandler (blobInfo, success, failure) {
+      return google.script.run
+      .withSuccessHandler(success)
+      .withFailureHandler(failure)
+      .uploadEditorFile(blobInfo.blob());
     },
 
     /**

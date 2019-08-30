@@ -8,11 +8,9 @@ import {
   getFileById,
   getFileContentById,
   createFileFromString,
-  getFolderById,
-  getFolderByName,
 } from './drive';
 import { fetchGet } from './fetch';
-import { getProperty } from './properties';
+import { getContentFolderChild } from './project';
 import { getSheet, getData, setData } from './sheets';
 import { isUrl, isJsonString } from './utils';
 import { emitWebhookEvent } from './webhook';
@@ -125,18 +123,13 @@ export function saveContent(
     // save content and set data by mode
     // NEW_INTERNAL
     if (setMode === 'NEW_INTERNAL') {
-      const contentFolderId = getProperty('CONTENT_ID');
       // load current cell associated info
       const sheet = getSheet();
-      const sheetName = sheet.getName();
       const activeCell = sheet.getActiveCell();
       const key = sheet.getRange(activeCell.getRow(), 3).getValue();
       const field = sheet.getRange(1, activeCell.getColumn()).getValue();
       // parent folder
-      const folder = getFolderByName(
-        sheetName.charAt(0).toUpperCase() + sheetName.slice(1), // folder by content type
-        getFolderById(contentFolderId),
-      );
+      const folder = getContentFolderChild(sheet.getName());
       // save the file
       const fileName = key + '--' + field + '.' + fileExt;
       const file = createFileFromString(folder, fileName, mimeType, content, 'PUBLIC');
@@ -166,11 +159,19 @@ export function saveContent(
     // re-evaluate values
     onDrive = isDriveFileId(source);
     // set data to active cell
-    const updateValue = (
+    // compare with current value
+    const currentValue = getData();
+    let updateValue = (
       (!!autoLoaded ? autoloadedScheme : '') +
       ((!autoLoaded && !!onDrive) ? sourceUrl : source)
     );
-    const currentValue = getData();
+    // add a link to the file
+    // if saving as the shorthand auto-loaded
+    if (!!autoLoaded && !!onDrive) {
+      updateValue = `=HYPERLINK("${ viewUrl }", "${ updateValue }")`;
+    }
+    // only set when no current value
+    // or the update value is different from the current one
     if (!currentValue || currentValue !== updateValue) {
       setData(updateValue);
     }

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import JSONEditor from 'jsoneditor';
 
-import { ErrorAlert, Google, ProjectInfo, EditorSetMode, EditorData } from '../../types';
+import { ErrorAlert, Google, ProjectSettings, EditorSetMode, EditorData } from '../../types';
 
 declare const google: Google;
 declare const errorAlert: ErrorAlert;
@@ -31,19 +31,19 @@ const app = new Vue({
   },
 
   created () {
-    this.getProjectInfo(); // check if there is the editor hook
+    this.getProjectSettings(); // check if there is the editor hook
   },
 
   methods: {
 
-    getProjectInfo () {
-      const successHandler = (info: ProjectInfo) => (
+    getProjectSettings () {
+      const successHandler = (info: ProjectSettings) => (
         this.hasWebHook = !!info.WEBHOOK_URL
       );
       return google.script.run
       .withSuccessHandler(successHandler)
       .withFailureHandler(errorAlert)
-      .getProjectInfo();
+      .getProjectSettings();
     },
 
     /**

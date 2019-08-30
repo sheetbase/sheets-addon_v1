@@ -90,7 +90,7 @@
           </ul>
 
           <div class="footer">
-            <button class="button" @click="getProjectInfo(true)">Refresh</button>
+            <button class="button" @click="getSettings(true)">Refresh</button>
           </div>
   
         </div>
@@ -131,7 +131,7 @@
           </div>
   
           <div class="submit">
-            <button class="button action" @click="saveSettings()">Save</button>
+            <button class="button action" @click="setSettings()">Save</button>
             <div :class="['message', settingsMsg.type]" v-if="!!settingsMsg">{{ settingsMsg.message }}</div>
           </div>
   

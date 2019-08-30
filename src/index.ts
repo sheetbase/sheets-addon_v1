@@ -1,4 +1,4 @@
-// shared functions
+// used by addon.js
 export { displayError } from './services/ui';
 
 // tool specific functions
