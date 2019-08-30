@@ -31,24 +31,14 @@ const app = new Vue({
   },
 
   created () {
-    this.getProjectSettings(); // check if there is the editor hook
+    // check if there is the editor hook
+    return google.script.run
+    .withSuccessHandler<ProjectSettings>(settings =>
+      this.hasWebHook = !!settings['WEBHOOK_URL'])
+    .getProjectSettings();
   },
 
   methods: {
-
-    getProjectSettings () {
-      const successHandler = (info: ProjectSettings) => (
-        this.hasWebHook = !!info.WEBHOOK_URL
-      );
-      return google.script.run
-      .withSuccessHandler(successHandler)
-      .withFailureHandler(errorAlert)
-      .getProjectSettings();
-    },
-
-    /**
-     * editor
-     */
 
     getEditorContent () {
       return editor.getText();

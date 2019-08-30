@@ -161,19 +161,18 @@ export function saveContent(
     // set data to active cell
     // compare with current value
     const currentValue = getData();
-    let updateValue = (
+    const updateValue = (
       (!!autoLoaded ? autoloadedScheme : '') +
       ((!autoLoaded && !!onDrive) ? sourceUrl : source)
     );
-    // add a link to the file
-    // if saving as the shorthand auto-loaded
-    if (!!autoLoaded && !!onDrive) {
-      updateValue = `=HYPERLINK("${ viewUrl }", "${ updateValue }")`;
-    }
     // only set when no current value
     // or the update value is different from the current one
     if (!currentValue || currentValue !== updateValue) {
-      setData(updateValue);
+      setData(
+        (!!autoLoaded && !!onDrive) ?
+        `=HYPERLINK("${ viewUrl }", "${ updateValue }")` :
+        updateValue,
+      );
     }
     // return to the client the data
     return { source, sourceUrl, viewUrl, autoLoaded, onDrive } as EditorData;
