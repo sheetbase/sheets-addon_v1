@@ -1,4 +1,3 @@
-import { buildCacheKey, getCache, setCache, clearCache } from './cache';
 import {
   isDriveFileId,
   isDriveFileUrl,
@@ -78,16 +77,7 @@ export function loadContent(editor: EditorType): EditorData {
       onDrive = true;
     }
     // load content
-    const cacheKey = buildCacheKey(source, cachePrefix);
-    const getContent = () => (
-      !!onDrive ?
-      getFileContentById(source) :
-      fetchGet(source).getContentText()
-    );
-    const content = (
-      getCache<string>(cacheKey, true) ||
-      setCache<string>(cacheKey, getContent(), 3600)
-    );
+    const content = !!onDrive ? getFileContentById(source) : fetchGet(source).getContentText();
     // final result
     return {
       source,
@@ -151,10 +141,6 @@ export function saveContent(
       } else { // update file externally
         emitWebhookEvent(webhookEvent, content, source);
       }
-      // clear cache
-      clearCache(
-        buildCacheKey(source, cachePrefix),
-      );
     }
     // re-evaluate values
     onDrive = isDriveFileId(source);
