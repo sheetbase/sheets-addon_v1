@@ -22,7 +22,7 @@ import {
 } from '../types';
 
 export const AUTO_LOADED_JSON_SCHEME = 'json://';
-export const AUTO_LOADED_CONTENT_SCHEME = 'content://';
+export const AUTO_LOADED_TEXT_SCHEME = 'content://';
 export const EDITOR_CONFIGS = {
   // json editor
   json: {
@@ -30,18 +30,16 @@ export const EDITOR_CONFIGS = {
     webhookEvent: 'jsoneditor',
     mimeType: 'application/json',
     fileExt: 'json',
-    cachePrefix: 'JSON_CONTENT',
     valueHandler: value => (
       !value ? '{}' : (isJsonString(value) ? value : JSON.stringify({ value }))
     ),
   },
   // html editor
   html: {
-    autoloadedScheme: AUTO_LOADED_CONTENT_SCHEME,
+    autoloadedScheme: AUTO_LOADED_TEXT_SCHEME,
     webhookEvent: 'htmleditor',
     mimeType: 'text/html',
     fileExt: 'html',
-    cachePrefix: 'HTML_CONTENT',
     valueHandler: value => (value || ''),
   },
 } as {
@@ -49,11 +47,7 @@ export const EDITOR_CONFIGS = {
 };
 
 export function loadContent(editor: EditorType): EditorData {
-  const { // load config
-    autoloadedScheme,
-    cachePrefix,
-    valueHandler,
-  } = EDITOR_CONFIGS[editor];
+  const { autoloadedScheme, valueHandler } = EDITOR_CONFIGS[editor]; // load config
   let value = getData(); // get current data
   const autoLoaded = ( // save auto-loaded status
     (value || '').substr(0, autoloadedScheme.length) === autoloadedScheme
@@ -108,7 +102,6 @@ export function saveContent(
       webhookEvent,
       mimeType,
       fileExt,
-      cachePrefix,
     } = EDITOR_CONFIGS[editor];
     // save content and set data by mode
     // NEW_INTERNAL

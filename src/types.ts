@@ -53,7 +53,6 @@ export interface EditorConfig {
   webhookEvent: string;
   mimeType: string;
   fileExt: string;
-  cachePrefix: string;
   valueHandler: (value: string) => string;
 }
 
