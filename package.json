@@ -30,7 +30,7 @@
       "url": "https://github.com/sheetbase/sheets-addon/issues"
    },
    "dependencies": {
-      "tinymce": "^5.0.14",
+      "tinymce": "^5.1.4",
       "jsoneditor": "^6.3.0",
       "vue": "^2.6.10"
    },
