@@ -44,7 +44,7 @@
       "@types/tinymce": "^4.5.23",
       "change-case": "^3.1.0",
       "fs-extra": "^8.1.0",
-      "node-sass": "^4.12.0",
+      "node-sass": "^4.13.1",
       "prettier": "^1.18.2",
       "rollup": "^1.19.4",
       "tslint": "^5.18.0",
